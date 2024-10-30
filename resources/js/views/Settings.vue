@@ -90,6 +90,7 @@
                                             transition="scale-transition"
                                         >
                                             <v-time-picker
+                                                format="24hr"
                                                 v-if="menu2"
                                                 v-model="time"
                                                 full-width
@@ -113,6 +114,7 @@
                                             width="auto"
                                         >
                                             <v-time-picker
+                                                format="24hr"
                                                 v-if="modal2"
                                                 v-model="time"
                                             ></v-time-picker>
