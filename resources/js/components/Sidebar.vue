@@ -38,7 +38,7 @@
       <div class="menu">
         <router-link class="button" to="/calender/configuration">
           <span class="material-icons material-symbols-outlined">settings</span>
-          <span class="text">Settings </span>
+          <span class="text">Configuration </span>
         </router-link>
       </div>
     </aside>

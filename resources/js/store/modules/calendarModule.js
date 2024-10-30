@@ -13,6 +13,7 @@ const calendarModule = {
   mutations: {
     SET_EVENTS(state, events) {
       state.events = events;
+      console.log(events);
     },
   },
   actions: {
