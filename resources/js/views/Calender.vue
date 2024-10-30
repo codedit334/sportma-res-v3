@@ -45,7 +45,7 @@
             :drag-to-create-event="false"
             show-time-in-cells
             :snap-to-time="15"
-            editable-events
+            :editable-events="{ title: false, drag: false, resize: true, delete: false, create: true }"
             :events="events"
             :split-days="splitDays"
             :min-cell-width="minCellWidth"
@@ -82,12 +82,10 @@
                     <!-- <div class="vuecal__event-title" v-html="event.title" /> -->
                     <!-- Or if your events are editable: -->
                     <div
-                        class="vuecal__event-title vuecal__event-title--edit"
-                        style="cursor: text"
-                        contenteditable
+                        class="vuecal__event-title "
+                        style="cursor: pointer"
                         @blur="event.title = $event.target.innerHTML"
                         v-html="event.title"
-                        @dblclick.stop
                     />
 
                     <div class="vuecal__event-time">
@@ -142,7 +140,7 @@
                 <!-- Title Input -->
                 <v-text-field
                     label="Titre"
-                    v-model="selectedEvent.title"
+                    v-model="selectedEventTitle"
                     outlined
                     style="margin-top: 20px"
                 ></v-text-field>
@@ -216,6 +214,7 @@ export default {
             selectedEvent: null,
             selectedStatus: "disabled",
             selectedEventClass: null,
+            selectedEventTitle: null,
             updatedEvents: this.events || [],
         };
     },
@@ -472,7 +471,7 @@ export default {
         confirm() {
             this.selectedEvent.statut = this.selectedStatus;
             this.selectedEvent.class = this.selectedEventClass;
-
+            this.selectedEvent.title = this.selectedEventTitle;
             // Find and replace the event with the same id
             const eventIndex = this.updatedEvents.findIndex(
                 (event) => event.id === this.selectedEvent.id
@@ -622,6 +621,8 @@ export default {
                         statut: "En-cours",
                         category: splitType.type,
                         terrain: matchingTerrain.label,
+                        titleEditable: false,
+                        deletable: false,
                     });
 
                     this.SET_EVENTS(this.updatedEvents);
@@ -669,6 +670,7 @@ export default {
             if (event.clickable === true) {
                 this.selectedEvent = event;
                 this.selectedStatus = event.statut;
+                this.selectedEventTitle = event.title;
                 // Update the class relative to the selected status
                 if (this.selectedStatus === "Annulé") {
                     this.selectedEventClass = "red" + "-event";
