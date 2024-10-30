@@ -237,6 +237,7 @@ export default {
     },
     mounted() {
         console.log(this.updatedEvents);
+        console.log(this.splitTypes);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }

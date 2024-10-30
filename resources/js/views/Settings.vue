@@ -6,12 +6,18 @@
             <v-btn color="primary" @click="openAddModal">Add Split Type</v-btn>
 
             <!-- Data Table -->
-            <v-data-table :items="splitTypes" class="mt-4" item-key="type">
+            <v-data-table
+                :headers="headers"
+                :items="splitTypes"
+                class="mt-4"
+                item-key="type"
+            >
                 <template #item.actions="{ item, index }">
                     <v-btn icon @click="openEditModal(index)">
                         <v-icon>mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon color="red" @click="removeSplitType(index)">
+                    &nbsp;
+                    <v-btn icon @click="removeSplitType(index)">
                         <v-icon>mdi-delete</v-icon>
                     </v-btn>
                 </template>
@@ -23,7 +29,7 @@
                             :key="tIndex"
                         >
                             <v-list-item-title>{{
-                                terrain.name
+                                terrain.label
                             }}</v-list-item-title>
                             <v-list-item-subtitle
                                 v-for="price in terrain.prices"
@@ -60,26 +66,26 @@
                         <v-select
                             v-model="newSplitType"
                             :items="['Football', 'Padel']"
-                            label="Select Split Type"
-                            placeholder="Choose a sport"
+                            label="Choisir le sport"
+                            placeholder="Choisir le sport"
                         ></v-select>
 
                         <v-text-field
                             v-model="newTerrain"
-                            label="Add Terrain"
+                            label="Terrain"
                             placeholder="e.g., Terrain 1, Terrain 2"
                             class="mt-4"
                         ></v-text-field>
 
-                        <!-- Price Range Input Fields with v-time-picker -->
                         <v-container>
                             <v-row justify="space-around">
-                                <v-col cols="11" sm="5">
+                                <!-- Start Time Picker -->
+                                <v-col cols="11" sm="4">
                                     <v-text-field
-                                        v-model="time"
+                                        v-model="startPicker"
                                         :active="menu2"
                                         :focus="menu2"
-                                        label="Picker in menu"
+                                        label="Début"
                                         prepend-icon="mdi-clock-time-four-outline"
                                         readonly
                                     >
@@ -92,19 +98,20 @@
                                             <v-time-picker
                                                 format="24hr"
                                                 v-if="menu2"
-                                                v-model="time"
+                                                v-model="startPicker"
                                                 full-width
                                             ></v-time-picker>
                                         </v-menu>
                                     </v-text-field>
                                 </v-col>
 
-                                <v-col cols="11" sm="5">
+                                <!-- End Time Picker -->
+                                <v-col cols="11" sm="4">
                                     <v-text-field
-                                        v-model="time"
+                                        v-model="endPicker"
                                         :active="modal2"
                                         :focused="modal2"
-                                        label="Picker in dialog"
+                                        label="Fin"
                                         prepend-icon="mdi-clock-time-four-outline"
                                         readonly
                                     >
@@ -116,22 +123,32 @@
                                             <v-time-picker
                                                 format="24hr"
                                                 v-if="modal2"
-                                                v-model="time"
+                                                v-model="endPicker"
                                             ></v-time-picker>
                                         </v-dialog>
                                     </v-text-field>
                                 </v-col>
-                            </v-row>
-                        </v-container>
 
-                        <!-- Add Price Range Button -->
-                        <v-btn
-                            color="secondary"
-                            @click="addPriceRange"
-                            class="mt-2"
-                        >
-                            Add Price Range
-                        </v-btn>
+                                <!-- Price Input Field -->
+                                <v-col cols="11" sm="4">
+                                    <v-text-field
+                                        v-model="price"
+                                        label="Prix"
+                                        prepend-icon="mdi-currency-usd"
+                                        type="number"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+
+                            <!-- Add Price Range Button -->
+                            <v-btn
+                                color="secondary"
+                                @click="addPriceRange"
+                                class="mt-2"
+                            >
+                            Ajouter une plage de prix
+                            </v-btn>
+                        </v-container>
 
                         <!-- Display Added Price Ranges -->
                         <v-list dense class="mt-2">
@@ -140,16 +157,16 @@
                                 :key="index"
                             >
                                 <v-list-item-title>
-                                    {{ price.startTime }} - {{ price.endTime }}:
-                                    {{ price.price }}
+                                    De {{ price.startTime }} &agrave; {{ price.endTime }}:
+                                    {{ price.price }} DH
+                                    <v-btn
+                                        icon
+                                        color="red"
+                                        @click="removePriceRange(index)"
+                                    >
+                                        <v-icon>mdi-delete</v-icon>
+                                    </v-btn>
                                 </v-list-item-title>
-                                <v-btn
-                                    icon
-                                    color="red"
-                                    @click="removePriceRange(index)"
-                                >
-                                    <v-icon>mdi-delete</v-icon>
-                                </v-btn>
                             </v-list-item>
                         </v-list>
                     </v-form>
@@ -183,8 +200,9 @@ import { VTimePicker } from "vuetify/labs/VTimePicker";
 
 const store = useStore();
 const dialog = ref(false);
-const startPicker = ref(false);
-const endPicker = ref(false);
+const startPicker = ref(null);
+const endPicker = ref(null);
+const price = ref(null);
 const editIndex = ref(null);
 const newSplitType = ref("");
 const newTerrain = ref("");
@@ -195,6 +213,13 @@ const time = ref(null);
 const menu2 = ref(false);
 const modal2 = ref(false);
 
+// Define your data table headers
+const headers = ref([
+    { title: "Type", value: "type" },
+    { title: "Terrain", value: "terrains" },
+    { title: "Actions", value: "actions" },
+]);
+
 const openAddModal = () => {
     resetForm();
     editIndex.value = null;
@@ -204,7 +229,7 @@ const openAddModal = () => {
 const openEditModal = (index) => {
     const split = splitTypes.value[index];
     newSplitType.value = split.type;
-    newTerrain.value = split.terrains.length ? split.terrains[0].name : "";
+    newTerrain.value = split.terrains.length ? split.terrains[0].label : "";
     newPrices.value = split.terrains[0]?.prices || [];
     editIndex.value = index;
     dialog.value = true;
@@ -215,7 +240,11 @@ const saveSplitType = () => {
         store.commit("calendarConfig/ADD_SPLIT_TYPE", {
             type: newSplitType.value,
             terrains: [
-                { name: newTerrain.value, prices: [...newPrices.value] },
+                {
+                    id: newSplitType.value + " " + Date.now(),
+                    label: newTerrain.value,
+                    prices: [...newPrices.value],
+                },
             ],
         });
         resetForm();
@@ -237,11 +266,16 @@ const updateSplitType = () => {
 };
 
 const addPriceRange = () => {
+    newPrice.value.startTime = startPicker;
+    newPrice.value.endTime = endPicker;
+    newPrice.value.price = price;
+
     if (
         newPrice.value.startTime &&
         newPrice.value.endTime &&
         newPrice.value.price
     ) {
+        console.log(newPrice);
         newPrices.value.push({ ...newPrice.value });
         newPrice.value = { startTime: "", endTime: "", price: "" };
     }
