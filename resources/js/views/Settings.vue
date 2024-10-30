@@ -1,9 +1,9 @@
 <template>
     <v-card class="my-5 mx-5">
-        <v-card-title>Calendar Configuration</v-card-title>
+        <v-card-title>Configuration Calendrier </v-card-title>
         <v-card-text>
             <!-- Add Split Type Button -->
-            <v-btn color="primary" @click="openAddModal">Add Split Type</v-btn>
+            <v-btn color="primary" @click="openAddModal">Ajout Sport / Terrain</v-btn>
 
             <!-- Data Table -->
             <v-data-table
@@ -35,8 +35,8 @@
                                 v-for="price in terrain.prices"
                                 :key="price.startTime"
                             >
-                                {{ price.startTime }} - {{ price.endTime }}:
-                                {{ price.price }}
+                                {{ price.startTime }} --- {{ price.endTime }}:
+                                {{ price.price }} DH
                             </v-list-item-subtitle>
                         </v-list-item>
                     </v-list>
@@ -50,8 +50,8 @@
                 <v-card-title>
                     <span>{{
                         editIndex === null
-                            ? "Add Split Type"
-                            : "Edit Split Type"
+                            ? "Ajout Sport / Terrain"
+                            : "Modification Sport / Terrain"
                     }}</span>
                 </v-card-title>
 
