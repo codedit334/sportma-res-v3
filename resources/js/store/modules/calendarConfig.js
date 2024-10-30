@@ -23,7 +23,7 @@ export default {
         type: splitType.type,
         timeStep: timeStep,
         timeCellHeight: timeCellHeight,
-        terrains: [],
+        terrains: splitType.terrains,
       });
     },
     REMOVE_SPLIT_TYPE(state, index) {

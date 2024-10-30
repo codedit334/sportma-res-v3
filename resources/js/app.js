@@ -9,6 +9,13 @@ import { createVuetify } from "vuetify";
 import '@mdi/font/css/materialdesignicons.css';
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
+
+export default createVuetify({
+  components: {
+    VTimePicker,
+  },
+})
 
 const vuetify = createVuetify({
   components,
