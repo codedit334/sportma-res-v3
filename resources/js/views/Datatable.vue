@@ -11,6 +11,10 @@
             ></v-text-field>
         </template>
 
+        <v-btn class="mt-2 mb-4 mx-5" color="primary" @click="exportToPDF">
+            Exporter en PDF
+        </v-btn>
+
         <!-- Dropdown filters for each column -->
         <v-row class="mb-4 ml-1">
             <v-col cols="12" md="2">
@@ -75,6 +79,9 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 
 const store = useStore();
 
@@ -132,4 +139,24 @@ const filteredReservations = computed(() => {
 function applyFilters() {
     // Just here to trigger `filteredReservations` to recompute
 }
+
+const exportToPDF = () => {
+  const doc = new jsPDF();
+  
+  console.log("reservations", reservations.value);
+  // Define table columns and rows
+  const columns = headers.map(header => header.title);
+  const rows = filteredReservations.value.map(row => headers.map(header => row[header.key]));
+
+  // Add the table to the PDF
+  doc.autoTable({
+    head: [columns],
+    body: rows,
+    startY: 10,
+  });
+
+  // Save the PDF
+  doc.save("reservations.pdf");
+};
+
 </script>
