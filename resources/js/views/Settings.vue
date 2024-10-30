@@ -209,13 +209,12 @@ const newTerrain = ref("");
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
-const time = ref(null);
 const menu2 = ref(false);
 const modal2 = ref(false);
 
 // Define your data table headers
 const headers = ref([
-    { title: "Type", value: "type" },
+    { title: "Sport", value: "type" },
     { title: "Terrain", value: "terrains" },
     { title: "Actions", value: "actions" },
 ]);

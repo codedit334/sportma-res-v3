@@ -236,8 +236,9 @@ export default {
         },
     },
     mounted() {
-        console.log(this.updatedEvents);
-        console.log(this.splitTypes);
+        this.updatedEvents = [ ...this.events ];
+        console.log("updated", this.updatedEvents);
+        console.log('thisevents', this.events);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
@@ -656,7 +657,7 @@ export default {
                 const rangeEnd = timeToDate(endTime);
 
                 // handle the case next day
-                if (rangeEnd < rangeStart) {
+                if (rangeEnd <= rangeStart) {
                     rangeEnd.setDate(rangeEnd.getDate() + 1);
                 }
 
