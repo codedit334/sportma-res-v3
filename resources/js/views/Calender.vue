@@ -139,7 +139,7 @@
 
                 <!-- Title Input -->
                 <v-text-field
-                    label="Titre"
+                    label="Nom"
                     v-model="selectedEventTitle"
                     outlined
                     style="margin-top: 20px"
