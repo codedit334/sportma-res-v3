@@ -581,15 +581,27 @@ export default {
                     }
 
                     // Decide price
-                    const splitType = this.splitTypes.find((splitType) =>
-                        event.split
-                            .toLowerCase()
-                            .includes(splitType.type.toLowerCase())
+                    const matchingSplitTypes = this.splitTypes.filter(
+                        (splitType) =>
+                            event.split
+                                .toLowerCase()
+                                .includes(splitType.type.toLowerCase())
                     );
 
-                    const matchingTerrain = splitType.terrains.find(
-                        (terrain) => terrain.id === event.split
-                    );
+                    let splitType = matchingSplitTypes[0];
+                    let matchingTerrain = null;
+
+                    // Loop through each splitType and stop once a matching terrain is found
+                    for (const splitType of matchingSplitTypes) {
+                        matchingTerrain = splitType.terrains.find(
+                            (terrain) => terrain.id === event.split
+                        );
+
+                        // Exit the loop if a matching terrain is found
+                        if (matchingTerrain) break;
+                    }
+
+                    console.log("matchingSplitTypes", matchingSplitTypes); 
 
                     const prices = matchingTerrain
                         ? matchingTerrain.prices

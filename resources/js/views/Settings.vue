@@ -3,7 +3,9 @@
         <v-card-title>Configuration Calendrier </v-card-title>
         <v-card-text>
             <!-- Add Split Type Button -->
-            <v-btn color="primary" @click="openAddModal">Ajout Sport / Terrain</v-btn>
+            <v-btn color="primary" @click="openAddModal"
+                >Ajout Sport / Terrain</v-btn
+            >
 
             <!-- Data Table -->
             <v-data-table
@@ -146,7 +148,7 @@
                                 @click="addPriceRange"
                                 class="mt-2"
                             >
-                            Ajouter une plage de prix
+                                Ajouter une plage de prix
                             </v-btn>
                         </v-container>
 
@@ -157,8 +159,8 @@
                                 :key="index"
                             >
                                 <v-list-item-title>
-                                    De {{ price.startTime }} &agrave; {{ price.endTime }}:
-                                    {{ price.price }} DH
+                                    De {{ price.startTime }} &agrave;
+                                    {{ price.endTime }}: {{ price.price }} DH
                                     <v-btn
                                         icon
                                         color="red"
@@ -265,16 +267,37 @@ const updateSplitType = () => {
 };
 
 const addPriceRange = () => {
+    console.log("newPrices", newPrices.value);
     newPrice.value.startTime = startPicker;
     newPrice.value.endTime = endPicker;
     newPrice.value.price = price;
 
-    if (
+    // Convert start and end times to Date objects for easy comparison
+    const newStartTime = new Date(`1970-01-01T${newPrice.value.startTime}:00`);
+    const newEndTime = new Date(`1970-01-01T${newPrice.value.endTime}:00`);
+
+    // Check if any existing price range overlaps with the new range
+    const isOverlap = newPrices.value.some((range) => {
+        const existingStart = new Date(`1970-01-01T${range.startTime}:00`);
+        const existingEnd = new Date(`1970-01-01T${range.endTime}:00`);
+        return (
+            (newStartTime >= existingStart && newStartTime < existingEnd) ||
+            (newEndTime > existingStart && newEndTime <= existingEnd) ||
+            (newStartTime <= existingStart && newEndTime >= existingEnd)
+        );
+    });
+
+    // If there's an overlap, alert an error in French
+    if (isOverlap) {
+        alert(
+            "Erreur : Cette plage de temps chevauche une autre plage existante."
+        );
+    } else if (
         newPrice.value.startTime &&
         newPrice.value.endTime &&
         newPrice.value.price
     ) {
-        console.log(newPrice);
+        // Push the new price range if no overlap
         newPrices.value.push({ ...newPrice.value });
         newPrice.value = { startTime: "", endTime: "", price: "" };
     }
