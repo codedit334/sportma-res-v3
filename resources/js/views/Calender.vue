@@ -20,7 +20,7 @@
 
         <!-- Radio buttons for selecting sport -->
         <div class="sport-selection">
-            <label v-for="sport in sports" :key="sport">
+            <label v-for="sport in uniqueSports" :key="sport">
                 <input
                     type="radio"
                     v-model="selectedSport"
@@ -45,7 +45,13 @@
             :drag-to-create-event="false"
             show-time-in-cells
             :snap-to-time="15"
-            :editable-events="{ title: false, drag: false, resize: true, delete: false, create: true }"
+            :editable-events="{
+                title: false,
+                drag: false,
+                resize: true,
+                delete: false,
+                create: true,
+            }"
             :events="events"
             :split-days="splitDays"
             :min-cell-width="minCellWidth"
@@ -82,7 +88,7 @@
                     <!-- <div class="vuecal__event-title" v-html="event.title" /> -->
                     <!-- Or if your events are editable: -->
                     <div
-                        class="vuecal__event-title "
+                        class="vuecal__event-title"
                         style="cursor: pointer"
                         @blur="event.title = $event.target.innerHTML"
                         v-html="event.title"
@@ -227,6 +233,9 @@ export default {
                 ? this.splitTypes.map((split) => split.type)
                 : [];
         },
+        uniqueSports() {
+            return [...new Set(this.sports)];
+        },
     },
     watch: {
         sports(newSports) {
@@ -236,12 +245,12 @@ export default {
         },
     },
     mounted() {
-        this.updatedEvents = [ ...this.events ];
-        console.log("updated", this.updatedEvents);
-        console.log('thisevents', this.events);
+        this.updatedEvents = [...this.events];
+        console.log("sports", this.sports);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
+        console.log("stypes", this.splitTypes);
         this.updateSplits(); // Initialize splitDays on mount
     },
     methods: {
@@ -518,25 +527,31 @@ export default {
             console.log("Selected status changed to:", this.selectedStatus);
         },
         updateSplits() {
-            // Retrieve the selected sport split type from the Vuex store
-            const selectedSplitType = this.splitTypes.find(
+            // Retrieve all matching split types from the Vuex store based on the selected sport
+            const selectedSplitsTypes = this.splitTypes.filter(
                 (splitType) =>
                     splitType.type.toLowerCase() ===
                     this.selectedSport.toLowerCase()
             );
 
-            // If a matching split type is found, update the split properties
-            if (selectedSplitType) {
-                this.timeStep = selectedSplitType.timeStep;
-                this.timeCellHeight = selectedSplitType.timeCellHeight;
+            // Reset splitDays
+            this.splitDays = [];
 
-                // Map each terrain to the expected format for splitDays
-                this.splitDays = selectedSplitType.terrains.map(
-                    (terrain, index) => ({
-                        id: terrain.id,
-                        label: terrain.label,
-                        class: index % 2 === 0 ? "white" : "grey", // Alternating classes for styling
-                    })
+            // If matching split types are found, update split properties and merge terrains
+            if (selectedSplitsTypes.length) {
+                // Set timeStep and timeCellHeight based on the first matching split type
+                this.timeStep = selectedSplitsTypes[0].timeStep;
+                this.timeCellHeight = selectedSplitsTypes[0].timeCellHeight;
+
+                // Combine terrains from all matching split types
+                this.splitDays = selectedSplitsTypes.flatMap(
+                    (splitType, index) =>
+                        splitType.terrains.map((terrain, tIndex) => ({
+                            id: terrain.id,
+                            label: terrain.label,
+                            class:
+                                (index + tIndex) % 2 === 0 ? "white" : "grey", // Alternating classes for styling
+                        }))
                 );
             }
         },
