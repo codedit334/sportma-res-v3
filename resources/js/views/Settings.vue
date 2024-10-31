@@ -208,6 +208,7 @@ const price = ref(null);
 const editIndex = ref(null);
 const newSplitType = ref("");
 const newTerrain = ref("");
+const newTerrainID = ref(null);
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
@@ -231,6 +232,8 @@ const openEditModal = (index) => {
     const split = splitTypes.value[index];
     newSplitType.value = split.type;
     newTerrain.value = split.terrains.length ? split.terrains[0].label : "";
+    // get terrain id
+    newTerrainID.value = split.terrains[0]?.id || null;
     newPrices.value = split.terrains[0]?.prices || [];
     editIndex.value = index;
     dialog.value = true;
@@ -259,6 +262,7 @@ const updateSplitType = () => {
             index: editIndex.value,
             splitType: newSplitType.value,
             terrain: newTerrain.value,
+            terrainID: newTerrainID.value,
             prices: [...newPrices.value],
         });
         resetForm();
