@@ -246,12 +246,12 @@ export default {
     },
     mounted() {
         this.updatedEvents = [...this.events];
-        console.log("sports", this.sports);
+        console.log("splitTypes", this.splitTypes);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
-        console.log("stypes", this.splitTypes);
-        this.updateSplits(); // Initialize splitDays on mount
+        this.updateSplits(); 
+        console.log("splitDays", this.splitDays);
     },
     methods: {
         // Mapping mutations to modify the events
@@ -269,6 +269,7 @@ export default {
             }
         },
         checkForCreationOverlapping(newEvent) {
+            console.log("splitTypes", this.splitTypes);
             let duration = 60; // Default duration
             let newEventStart = moment(this.snapToNearest1h(newEvent.date));
             // Check if event.split contains the word "padel"
@@ -547,7 +548,9 @@ export default {
                 this.splitDays = selectedSplitsTypes.flatMap(
                     (splitType, index) =>
                         splitType.terrains.map((terrain, tIndex) => ({
-                            id: terrain.id,
+                            type: splitType.type,
+                            terrainID: terrain.terrainID,
+                            id: splitType.type + " " + terrain.terrainID,
                             label: terrain.label,
                             class:
                                 (index + tIndex) % 2 === 0 ? "white" : "grey", // Alternating classes for styling
@@ -557,6 +560,7 @@ export default {
         },
 
         createEventInSplit(event) {
+            console.log("event", event);
             if (!event.hasOwnProperty("split")) {
                 alert(
                     "Veuillez configurer votre calendrier dans la page de configuration."
@@ -591,22 +595,28 @@ export default {
                     let splitType = matchingSplitTypes[0];
                     let matchingTerrain = null;
 
+                    console.log("matchingSplitTypes", matchingSplitTypes);
+
+                    console.log("event.split", event.split);
+
                     // Loop through each splitType and stop once a matching terrain is found
                     for (const splitType of matchingSplitTypes) {
                         matchingTerrain = splitType.terrains.find(
-                            (terrain) => terrain.id === event.split
+                            (terrain) =>  event.split.toLowerCase().includes(terrain.terrainID.toLowerCase())
                         );
 
                         // Exit the loop if a matching terrain is found
                         if (matchingTerrain) break;
                     }
 
-                    console.log("matchingSplitTypes", matchingSplitTypes); 
 
                     const prices = matchingTerrain
                         ? matchingTerrain.prices
                         : null;
 
+                        console.log("matchingTerrain", matchingTerrain);
+
+                        console.log("splitType.type", splitType.type);
                     if (splitType.type.toLowerCase() === "football") {
                         newDate = this.snapToNearest1h(newDate);
                     } else if (splitType.type.toLowerCase() === "padel") {

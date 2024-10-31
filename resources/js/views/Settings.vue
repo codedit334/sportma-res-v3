@@ -102,7 +102,17 @@
                                                 v-if="menu2"
                                                 v-model="startPicker"
                                                 full-width
-                                            ></v-time-picker>
+                                            >
+                                                <!-- Actions slot for closing the picker -->
+                                                <template #actions>
+                                                    <v-btn
+                                                        text
+                                                        color="primary"
+                                                        @click="menu2 = false"
+                                                        >Fermer</v-btn
+                                                    >
+                                                </template>
+                                            </v-time-picker>
                                         </v-menu>
                                     </v-text-field>
                                 </v-col>
@@ -126,7 +136,17 @@
                                                 format="24hr"
                                                 v-if="modal2"
                                                 v-model="endPicker"
-                                            ></v-time-picker>
+                                            >
+                                                <!-- Actions slot for closing the picker -->
+                                                <template #actions>
+                                                    <v-btn
+                                                        text
+                                                        color="primary"
+                                                        @click="modal2 = false"
+                                                        >Fermer</v-btn
+                                                    >
+                                                </template>
+                                            </v-time-picker>
                                         </v-dialog>
                                     </v-text-field>
                                 </v-col>
@@ -177,7 +197,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" text @click="closeDialog"
-                        >Cancel</v-btn
+                        >Annuler</v-btn
                     >
                     <v-btn
                         color="blue darken-1"
@@ -187,7 +207,7 @@
                                 ? saveSplitType()
                                 : updateSplitType()
                         "
-                        >Save</v-btn
+                        >Enregistrer</v-btn
                     >
                 </v-card-actions>
             </v-card>
@@ -199,6 +219,7 @@
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
+import { v4 as uuidv4 } from "uuid";
 
 const store = useStore();
 const dialog = ref(false);
@@ -233,7 +254,7 @@ const openEditModal = (index) => {
     newSplitType.value = split.type;
     newTerrain.value = split.terrains.length ? split.terrains[0].label : "";
     // get terrain id
-    newTerrainID.value = split.terrains[0]?.id || null;
+    newTerrainID.value = split.terrains[0]?.terrainID || null;
     newPrices.value = split.terrains[0]?.prices || [];
     editIndex.value = index;
     dialog.value = true;
@@ -245,7 +266,8 @@ const saveSplitType = () => {
             type: newSplitType.value,
             terrains: [
                 {
-                    id: newSplitType.value + " " + Date.now(),
+                    type: newSplitType.value,
+                    terrainID: uuidv4(),
                     label: newTerrain.value,
                     prices: [...newPrices.value],
                 },
@@ -271,7 +293,6 @@ const updateSplitType = () => {
 };
 
 const addPriceRange = () => {
-    console.log("newPrices", newPrices.value);
     newPrice.value.startTime = startPicker;
     newPrice.value.endTime = endPicker;
     newPrice.value.price = price;

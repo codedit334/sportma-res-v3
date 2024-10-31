@@ -11,7 +11,6 @@ export default {
         ADD_SPLIT_TYPE(state, splitType) {
             let timeStep;
             let timeCellHeight;
-            console.log(splitType);
             if (splitType.type.toLowerCase() === "football") {
                 timeStep = 60;
                 timeCellHeight = 80;
@@ -28,7 +27,6 @@ export default {
         },
         UPDATE_SPLIT_TYPE(state, { index, splitType, terrain, terrainID, prices }) {
             const currentSplitType = state.splitTypes[index];
-            console.log(terrainID)
             if (currentSplitType) {
                 let timeStep, timeCellHeight;
 
@@ -43,7 +41,6 @@ export default {
                     timeStep = currentSplitType.timeStep; // retain existing values
                     timeCellHeight = currentSplitType.timeCellHeight;
                 }
-                console.log("before", state.splitTypes);
 
                 // Update the split type properties
                 state.splitTypes.splice(index, 1, {
@@ -53,13 +50,12 @@ export default {
                     timeCellHeight: timeCellHeight,
                     terrains: [
                         ...currentSplitType.terrains.map((t) =>
-                            t.id === terrainID
+                            t.terrainID === terrainID
                                 ? { ...t, label: terrain, prices: [...prices] }
                                 : t
                         ),
                     ],
                 });
-                console.log("after", state.splitTypes);
             }
         },
 
