@@ -148,21 +148,26 @@ function uniqueValues(key) {
 
 const filteredReservations = computed(() => {
     return reservations.value.filter((item) => {
-        const matchesFilters = Object.keys(selectedFilters.value).every(
-            (key) => {
-                if (key === "dateRange" && selectedFilters.value.dateRange) {
-                    const [start, end] = selectedFilters.value.dateRange;
-                    return item.date >= start && item.date <= end;
+        const matchesFilters = Object.keys(selectedFilters.value).every((key) => {
+            if (key === "dateRange" && selectedFilters.value.dateRange) {
+                const [start, end] = selectedFilters.value.dateRange;
+
+                // Check if only one date is selected
+                if (!end) {
+                    // For a single selected day, match the item's date to that exact day
+                    return new Date(item.date).toDateString() === new Date(start).toDateString();
+                } else {
+                    // For a range, check if the item's date is within the range
+                    return item.date >= new Date(start) && item.date <= new Date(end);
                 }
-                return (
-                    !selectedFilters.value[key] ||
-                    item[key] === selectedFilters.value[key]
-                );
             }
-        );
+            return !selectedFilters.value[key] || item[key] === selectedFilters.value[key];
+        });
         return matchesFilters;
     });
 });
+
+
 
 function applyFilters() {}
 
