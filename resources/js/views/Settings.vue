@@ -326,6 +326,8 @@ const addPriceRange = () => {
         newPrices.value.push({ ...newPrice.value });
         newPrice.value = { startTime: "", endTime: "", price: "" };
     }
+
+    resetTimePicker();
 };
 
 const removePriceRange = (index) => {
@@ -346,5 +348,12 @@ const resetForm = () => {
     newTerrain.value = "";
     newPrices.value = [];
     newPrice.value = { startTime: "", endTime: "", price: "" };
+    resetTimePicker();
+};
+
+const resetTimePicker = () => {
+    startPicker.value = null;
+    endPicker.value = null;
+    price.value = null;
 };
 </script>
