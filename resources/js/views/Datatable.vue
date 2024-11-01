@@ -3,7 +3,7 @@
         <template v-slot:text class="my-5 mx-5">
             <v-text-field
                 v-model="search"
-                label="Search"
+                label="Rechercher..."
                 prepend-inner-icon="mdi-magnify"
                 variant="outlined"
                 hide-details
@@ -11,12 +11,14 @@
             ></v-text-field>
         </template>
 
-        <v-btn class="mt-2 mb-4 mx-5" color="primary" @click="exportToPDF">
-            Exporter en PDF
-        </v-btn>
-
         <!-- Dropdown filters for each column -->
         <v-row class="mb-4 ml-1">
+            <!-- Right-aligned button column -->
+            <v-col cols="12" class="d-flex justify-end">
+                <v-btn class="mt-2 mb-4 mr-5" color="primary" @click="exportToPDF">
+                    Exporter en PDF
+                </v-btn>
+            </v-col>
             <v-col cols="12" md="2">
                 <v-select
                     v-model="selectedFilters.nom"
@@ -62,18 +64,17 @@
                     @change="applyFilters"
                 ></v-select>
             </v-col>
+            <v-col cols="12" sm="3">
+                <v-date-input
+                    v-model="selectedFilters.dateRange"
+                    label="Du - Au"
+                    max-width="368"
+                    multiple="range"
+                    prepend-icon=""
+                    prepend-inner-icon="$calendar"
+                ></v-date-input>
+            </v-col>
         </v-row>
-
-        <v-col cols="11" sm="4">
-            <v-date-input
-                v-model="selectedFilters.dateRange"
-                label="Select range"
-                max-width="368"
-                multiple="range"
-                prepend-icon=""
-                prepend-inner-icon="$calendar"
-            ></v-date-input>
-        </v-col>
 
         <v-data-table
             :headers="headers"
@@ -92,7 +93,7 @@ import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { VDateInput } from 'vuetify/labs/VDateInput'
+import { VDateInput } from "vuetify/labs/VDateInput";
 
 const store = useStore();
 
@@ -148,26 +149,35 @@ function uniqueValues(key) {
 
 const filteredReservations = computed(() => {
     return reservations.value.filter((item) => {
-        const matchesFilters = Object.keys(selectedFilters.value).every((key) => {
-            if (key === "dateRange" && selectedFilters.value.dateRange) {
-                const [start, end] = selectedFilters.value.dateRange;
+        const matchesFilters = Object.keys(selectedFilters.value).every(
+            (key) => {
+                if (key === "dateRange" && selectedFilters.value.dateRange) {
+                    const [start, end] = selectedFilters.value.dateRange;
 
-                // Check if only one date is selected
-                if (!end) {
-                    // For a single selected day, match the item's date to that exact day
-                    return new Date(item.date).toDateString() === new Date(start).toDateString();
-                } else {
-                    // For a range, check if the item's date is within the range
-                    return item.date >= new Date(start) && item.date <= new Date(end);
+                    // Check if only one date is selected
+                    if (!end) {
+                        // For a single selected day, match the item's date to that exact day
+                        return (
+                            new Date(item.date).toDateString() ===
+                            new Date(start).toDateString()
+                        );
+                    } else {
+                        // For a range, check if the item's date is within the range
+                        return (
+                            item.date >= new Date(start) &&
+                            item.date <= new Date(end)
+                        );
+                    }
                 }
+                return (
+                    !selectedFilters.value[key] ||
+                    item[key] === selectedFilters.value[key]
+                );
             }
-            return !selectedFilters.value[key] || item[key] === selectedFilters.value[key];
-        });
+        );
         return matchesFilters;
     });
 });
-
-
 
 function applyFilters() {}
 
