@@ -1,5 +1,6 @@
 <template>
     <div class="app">
+        <navbar />
         <sidebar />
 
         <div
@@ -12,8 +13,9 @@
 </template>
 
 <script setup>
-
 import Sidebar from "./components/Sidebar.vue";
+import Navbar from "./components/Navbar.vue";
+
 </script>
 
 <style lang="scss">
