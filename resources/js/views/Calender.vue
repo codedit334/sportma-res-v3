@@ -37,7 +37,6 @@
             ref="vuecal2"
             locale="fr"
             style="height: 550px; width: 100%"
-            hide-view-selector
             active-view="day"
             :time-step="timeStep"
             :time-cell-height="timeCellHeight"
@@ -66,6 +65,7 @@
             @event-duration-change="dragEvent"
             @event-delete="stopDeleteEvent"
             @event-title-change="logEvents('event-title-change', $event)"
+            @view-change="handleViewChange"
         >
             <!-- Split Label Template -->
             <template #split-label="{ split, events, view }">
@@ -214,6 +214,7 @@ export default {
             minEventWidth: 100,
             timeCellHeight: 65,
             timeStep: 30,
+            currentView: "day",
             splitDays: [], // To be updated based on selected sport
             overlapsPerTimeStep: true,
             dialog: false,
@@ -250,7 +251,7 @@ export default {
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
-        this.updateSplits(); 
+        this.updateSplits();
         console.log("splitDays", this.splitDays);
     },
     methods: {
@@ -259,6 +260,9 @@ export default {
 
         logEvents(event, data) {
             console.log(event, data);
+        },
+        handleViewChange(view) {
+            this.currentView = view.view;
         },
         stopDeleteEvent(event) {
             if (!event.clickable) {
@@ -560,7 +564,12 @@ export default {
         },
 
         createEventInSplit(event) {
-            console.log("event", event);
+            const currentView = this.currentView;
+
+            // If the view is month, do nothing
+            if (currentView === "month") {
+                return; // Exit the method to avoid showing the alert
+            }
             if (!event.hasOwnProperty("split")) {
                 alert(
                     "Veuillez configurer votre calendrier dans la page de configuration."
@@ -601,22 +610,23 @@ export default {
 
                     // Loop through each splitType and stop once a matching terrain is found
                     for (const splitType of matchingSplitTypes) {
-                        matchingTerrain = splitType.terrains.find(
-                            (terrain) =>  event.split.toLowerCase().includes(terrain.terrainID.toLowerCase())
+                        matchingTerrain = splitType.terrains.find((terrain) =>
+                            event.split
+                                .toLowerCase()
+                                .includes(terrain.terrainID.toLowerCase())
                         );
 
                         // Exit the loop if a matching terrain is found
                         if (matchingTerrain) break;
                     }
 
-
                     const prices = matchingTerrain
                         ? matchingTerrain.prices
                         : null;
 
-                        console.log("matchingTerrain", matchingTerrain);
+                    console.log("matchingTerrain", matchingTerrain);
 
-                        console.log("splitType.type", splitType.type);
+                    console.log("splitType.type", splitType.type);
                     if (splitType.type.toLowerCase() === "football") {
                         newDate = this.snapToNearest1h(newDate);
                     } else if (splitType.type.toLowerCase() === "padel") {
