@@ -3,7 +3,7 @@
         <nav class="navbar">
             <div class="navbar-content">
                 <img
-                    src="https://sportma.ma/assets/sportmaApp-ERXWPjF0.jpeg"
+                    src="https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                     class="logo"
                     alt="Sportma logo"
                 />
@@ -33,6 +33,8 @@
 
 .logo {
     width: 2.5rem;
-    filter: grayscale(100%);
+    height: 2.5rem;
+    border-radius: 50%; // Makes the logo circular
+    object-fit: cover; // Ensures the image fits within the circle
 }
 </style>
