@@ -15,7 +15,11 @@
         <v-row class="mb-4 ml-1">
             <!-- Right-aligned button column -->
             <v-col cols="12" class="d-flex justify-end">
-                <v-btn class="mt-2 mb-4 mr-5" color="primary" @click="exportToPDF">
+                <v-btn
+                    class="mt-2 mb-4 mr-5"
+                    color="primary"
+                    @click="exportToPDF"
+                >
                     Exporter en PDF
                 </v-btn>
             </v-col>
@@ -70,7 +74,6 @@
                     label="Du - Au"
                     max-width="368"
                     multiple="range"
-                    clearable
                     prepend-icon=""
                     prepend-inner-icon="$calendar"
                 ></v-date-input>
@@ -148,26 +151,32 @@ function uniqueValues(key) {
     return [...new Set(reservations.value.map((item) => item[key]))];
 }
 
+
 const filteredReservations = computed(() => {
     return reservations.value.filter((item) => {
-        const matchesFilters = Object.keys(selectedFilters.value).every((key) => {
-            if (key === "dateRange" && selectedFilters.value.dateRange && selectedFilters.value.dateRange.length) {
-                const dateRange = selectedFilters.value.dateRange.map(date => new Date(date).toDateString());
+        return Object.keys(selectedFilters.value).every((key) => {
+            if (key === "dateRange") {
+                // Reset filter if dateRange is empty
+                if (!selectedFilters.value.dateRange || !selectedFilters.value.dateRange.length) {
+                    return true;
+                }
                 
-                // Check if the item's date falls on any of the selected dates in the range
-                return dateRange.some(rangeDate => 
-                    new Date(item.date).toDateString() === rangeDate
+                // Filter by date range if dateRange has values
+                const [start, end] = selectedFilters.value.dateRange;
+                const itemDate = new Date(item.date);
+
+                return (
+                    itemDate >= new Date(start) && itemDate <= new Date(end)
                 );
             }
+            
             return (
                 !selectedFilters.value[key] ||
                 item[key] === selectedFilters.value[key]
             );
         });
-        return matchesFilters;
     });
 });
-
 
 function applyFilters() {}
 
