@@ -266,7 +266,7 @@ const saveSplitType = () => {
             type: newSplitType.value,
             terrains: [
                 {
-                    type: newSplitType.value,
+                    // type: newSplitType.value,
                     terrainID: uuidv4(),
                     label: newTerrain.value,
                     prices: [...newPrices.value],

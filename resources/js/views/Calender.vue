@@ -552,7 +552,7 @@ export default {
                 this.splitDays = selectedSplitsTypes.flatMap(
                     (splitType, index) =>
                         splitType.terrains.map((terrain, tIndex) => ({
-                            type: splitType.type,
+                            // type: splitType.type,
                             terrainID: terrain.terrainID,
                             id: splitType.type + " " + terrain.terrainID,
                             label: terrain.label,

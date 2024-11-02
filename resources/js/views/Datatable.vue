@@ -70,6 +70,7 @@
                     label="Du - Au"
                     max-width="368"
                     multiple="range"
+                    clearable
                     prepend-icon=""
                     prepend-inner-icon="$calendar"
                 ></v-date-input>
