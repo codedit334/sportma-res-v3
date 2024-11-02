@@ -40,7 +40,8 @@
             active-view="day"
             :time-step="timeStep"
             :time-cell-height="timeCellHeight"
-            :disable-views="['years', 'year', 'month', 'week', 'day']"
+            :disable-views="['years', 'year', 'week']"
+            hide-view-selector
             :drag-to-create-event="false"
             show-time-in-cells
             :snap-to-time="15"

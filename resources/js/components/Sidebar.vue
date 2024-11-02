@@ -31,7 +31,7 @@
         </router-link>
         <router-link class="button" to="/data">
           <span class="material-icons material-symbols-outlined"> table </span>
-          <span class="text">Data</span>
+          <span class="text">Comptabilité</span>
         </router-link>
         <router-link class="button" to="/calender/configuration">
           <span class="material-icons material-symbols-outlined">settings</span>
