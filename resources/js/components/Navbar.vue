@@ -7,9 +7,11 @@
                     class="logo"
                     alt="Sportma logo"
                 />
-                <div class="user-info">
-                    <span v-if="isLoggedIn">Bonjour, {{ userName }}!</span>
-                    <button @click="toggleLogin" class="auth-button">
+                <div class="right-section">
+                    <span v-if="isLoggedIn" class="username"
+                        >Bonjour, {{ userName }}!</span
+                    >
+                    <button @click="handleAuthAction" class="auth-button">
                         {{ isLoggedIn ? "Se déconnecter" : "Se connecter" }}
                     </button>
                 </div>
@@ -20,7 +22,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const isLoggedIn = ref(false);
 const userName = ref("");
 
@@ -34,19 +38,16 @@ onMounted(() => {
     }
 });
 
-// Toggle login/logout functionality
-const toggleLogin = () => {
+// Handle login or logout action
+const handleAuthAction = () => {
     if (isLoggedIn.value) {
-        // Log out: clear localStorage and reset state
+        // Log out
         localStorage.removeItem("user");
         isLoggedIn.value = false;
         userName.value = "";
     } else {
-        // Log in: for demo purposes, use a static name
-        const user = { name: "Jean Dupont" }; // Replace with actual login logic if needed
-        localStorage.setItem("user", JSON.stringify(user));
-        isLoggedIn.value = true;
-        userName.value = user.name;
+        // Redirect to login page
+        router.push("/login");
     }
 };
 </script>
@@ -73,10 +74,22 @@ const toggleLogin = () => {
     object-fit: cover;
 }
 
-.user-info {
+.navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.right-section {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.username {
+    font-size: 1rem;
+    color: #333;
 }
 
 .auth-button {
