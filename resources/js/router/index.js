@@ -26,4 +26,17 @@ const router = createRouter({
     ],
 });
 
+router.beforeEach((to, from, next) => {
+    const store = useStore();
+    const isAuthenticated = store.getters["auth/isAuthenticated"];
+
+    if (to.path !== "/login" && !isAuthenticated) {
+        next("/login");
+    } else if (to.path === "/login" && isAuthenticated) {
+        next("/"); // Redirect to home if already authenticated
+    } else {
+        next();
+    }
+});
+
 export default router;
