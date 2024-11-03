@@ -9,6 +9,7 @@ const mutations = {
     },
     SET_USER_NAME(state, name) {
         state.userName = name;
+        console.log("Set_USER_NAME", state.userName);
     },
 };
 
@@ -16,6 +17,7 @@ const actions = {
     login({ commit }, userName) {
         commit("SET_AUTHENTICATED", true);
         commit("SET_USER_NAME", userName);
+        console.log("login", userName);
     },
     logout({ commit }) {
         commit("SET_AUTHENTICATED", false);
