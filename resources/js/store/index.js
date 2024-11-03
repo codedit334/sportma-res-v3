@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import calendarConfig from './modules/calendarConfig';
 import calendarModule from './modules/calendarModule';
+import auth from './modules/auth';
 
 const store = createStore({
 
@@ -10,6 +11,7 @@ const store = createStore({
   modules: {
     calendarConfig,
     calendar: calendarModule,
+    auth
   },
   mutations: {
     increment(state) {
