@@ -1,7 +1,7 @@
 <template>
     <div class="app">
         <navbar />
-        <sidebar />
+        <sidebar v-if="isAuthenticated" />
 
         <div
             class="app-content"
@@ -15,6 +15,11 @@
 <script setup>
 import Sidebar from "./components/Sidebar.vue";
 import Navbar from "./components/Navbar.vue";
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const store = useStore();
+const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
 
 </script>
 

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useStore } from "vuex";
 
 const router = createRouter({
     history: createWebHistory(),
