@@ -14,43 +14,16 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
-const userName = ref("");
+const store = useStore();
 const router = useRouter();
+const userName = ref("");
 
 const login = () => {
     if (userName.value.trim()) {
-        const user = { name: userName.value };
-        localStorage.setItem("user", JSON.stringify(user));
-        router.push("/"); // Redirect to the main page after login
+        store.dispatch("auth/login", userName.value); // Dispatch login action to Vuex
+        router.push("/"); // Redirect to home or any other page
     }
 };
 </script>
-
-<style scoped>
-.login-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 5rem;
-}
-
-.login-input {
-    padding: 0.5rem;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-}
-
-.login-button {
-    background-color: #007bff;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.login-button:hover {
-    background-color: #0056b3;
-}
-</style>

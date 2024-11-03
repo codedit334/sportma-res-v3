@@ -22,6 +22,8 @@ const vuetify = createVuetify({
   directives,
 });
 
+store.dispatch("auth/initializeAuth");
+
 import router from "./router";
 
 createApp(App).use(store).use(router).use(vuetify).mount("#app");
