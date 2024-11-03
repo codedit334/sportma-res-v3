@@ -21,32 +21,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed } from "vue";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
+const store = useStore();
 const router = useRouter();
-const isLoggedIn = ref(false);
-const userName = ref("");
 
-// Check localStorage on component mount to set the login state
-onMounted(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-        const user = JSON.parse(storedUser);
-        isLoggedIn.value = true;
-        userName.value = user.name;
-    }
-});
+const isLoggedIn = computed(() => store.getters["auth/isLoggedIn"]);
+const userName = computed(() => store.getters["auth/userName"]);
 
-// Handle login or logout action
 const handleAuthAction = () => {
     if (isLoggedIn.value) {
-        // Log out
-        localStorage.removeItem("user");
-        isLoggedIn.value = false;
-        userName.value = "";
+        store.dispatch("auth/logout");
     } else {
-        // Redirect to login page
         router.push("/login");
     }
 };
