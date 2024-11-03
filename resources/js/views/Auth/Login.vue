@@ -4,10 +4,11 @@
         <input
             v-model="userName"
             type="text"
-            placeholder="Enter your name"
+            placeholder="Enter your name (user or admin)"
             class="login-input"
         />
         <button @click="login" class="login-button">Log In</button>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
 </template>
 
@@ -19,11 +20,17 @@ import { useStore } from "vuex";
 const store = useStore();
 const router = useRouter();
 const userName = ref("");
+const errorMessage = ref("");
 
 const login = () => {
-    if (userName.value.trim()) {
-        store.dispatch("auth/login", userName.value); // Dispatch login action to Vuex
+    const normalizedUser = userName.value.trim().toLowerCase();
+
+    if (normalizedUser === "user" || normalizedUser === "admin") {
+        // Dispatch login action to Vuex
+        store.dispatch("auth/login", userName.value);
         router.push("/"); // Redirect to home or any other page
+    } else {
+        errorMessage.value = "Invalid login. Please enter 'user' or 'admin'.";
     }
 };
 </script>
@@ -53,5 +60,10 @@ const login = () => {
 
 .login-button:hover {
     background-color: #0056b3;
+}
+
+.error-message {
+    color: red;
+    margin-top: 0.5rem;
 }
 </style>
