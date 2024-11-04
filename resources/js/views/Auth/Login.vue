@@ -28,27 +28,20 @@ const router = useRouter();
 const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
-
 const login = async () => {
     try {
-        // Dispatch login action to Vuex with email and password
         await store.dispatch("auth/login", {
             email: email.value,
             password: password.value,
         });
-
-        // Check if login was successful, based on Vuex state
-        if (store.getters["auth/isAuthenticated"]) {
-            router.push("/"); // Redirect to home or any other page
-        } else {
-            errorMessage.value = "Invalid login credentials.";
-        }
+        
+        router.push("/"); 
     } catch (error) {
-        console.error("Login error:", error);
-        errorMessage.value =
-            "An error occurred during login. Please try again.";
+        errorMessage.value = error.message || "Login failed. Please try again.";
     }
 };
+
+
 </script>
 
 <style scoped>

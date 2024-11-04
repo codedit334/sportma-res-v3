@@ -25,11 +25,21 @@ const mutations = {
 const actions = {
     async login({ commit }, { email, password }) {
         try {
+            // Make API call to login
             const response = await axios.post("/api/login", {
                 email,
                 password,
             });
-            if (response.data.success) {
+
+            // Log the complete response data for debugging
+            console.log("Login response:", response.data);
+
+            // Store the token in local storage
+            localStorage.setItem("token", response.data.token);
+
+            // If login is successful, commit user data to the store
+            if (response.data.token) {
+                // Checking if token exists to confirm success
                 const { name, role, permissions } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
@@ -40,9 +50,13 @@ const actions = {
                 console.log("User logged in:", name);
             } else {
                 console.error("Login failed:", response.data.message);
+                throw new Error(response.data.message); // Optionally throw an error
             }
         } catch (error) {
             console.error("Error during login:", error);
+            throw new Error(
+                error.response?.data?.error || "Login failed. Please try again."
+            );
         }
     },
 
