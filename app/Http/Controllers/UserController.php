@@ -24,14 +24,14 @@ class UserController extends Controller
         ]);
 
         $user = User::create([
-            'full_name' => $request->full_name,
+            'name' => $request->full_name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,
-            'permissions' => $request->permissions,
+            'permissions' => json_encode($request->permissions), // Convert to JSON
             'profile_picture' => $request->profile_picture,
         ]);
-
+        
         return response()->json($user, 201);
     }
 

@@ -17,6 +17,3 @@ use App\Http\Controllers\UserController;
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
-
-
-Route::apiResource('users', UserController::class);

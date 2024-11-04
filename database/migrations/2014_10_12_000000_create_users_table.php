@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('role');
             $table->text('permissions')->nullable(); // Consider using JSON if you need complex permissions
             $table->string('profile_picture')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
