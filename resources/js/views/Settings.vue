@@ -158,6 +158,7 @@
                                         label="Prix"
                                         prepend-icon="mdi-currency-usd"
                                         type="number"
+                                        min="0"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>

@@ -159,6 +159,7 @@
                     outlined
                     style="margin-top: 20px"
                     type="number"
+                    min="0"
                 ></v-text-field>
 
                 <!-- Remarks Text Area for event.notes -->
