@@ -47,6 +47,16 @@
                     >
                     <span class="text">Configuration</span>
                 </router-link>
+                <router-link
+                    v-if="isAdmin"
+                    class="button"
+                    to="/users"
+                >
+                    <span class="material-icons material-symbols-outlined"
+                        >staff</span
+                    >
+                    <span class="text">Staff</span>
+                </router-link>
             </div>
             <div class="flex"></div>
             <div class="menu"></div>
