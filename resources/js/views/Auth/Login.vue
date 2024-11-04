@@ -35,7 +35,7 @@ const login = async () => {
             password: password.value,
         });
         
-        router.push("/"); 
+        router.push("/calendar"); 
     } catch (error) {
         errorMessage.value = error.message || "Login failed. Please try again.";
     }

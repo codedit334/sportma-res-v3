@@ -21,11 +21,11 @@
                     <span class="material-icons material-symbols-outlined">insert_chart</span>
                     <span class="text">Dashboard</span>
                 </router-link>
-                <router-link v-if="hasPermission('Calendrier')" class="button" to="/calender">
+                <router-link v-if="hasPermission('Calendrier')" class="button" to="/calendar">
                     <span class="material-icons material-symbols-outlined">calendar_today</span>
                     <span class="text">Calendrier</span>
                 </router-link>
-                <router-link class="button" to="/data">
+                <router-link v-if="hasPermission('Comptabilite')" class="button" to="/data">
                     <span class="material-icons material-symbols-outlined">table</span>
                     <span class="text">Comptabilité</span>
                 </router-link>
@@ -34,7 +34,7 @@
                 <router-link
                     v-if="hasPermission('Configuration')"
                     class="button"
-                    to="/calender/configuration"
+                    to="/calendar/configuration"
                 >
                     <span class="material-icons material-symbols-outlined">settings</span>
                     <span class="text">Configuration</span>

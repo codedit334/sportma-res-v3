@@ -122,7 +122,7 @@ const passwordConfirmation = ref("");
 const roles = ["Admin", "User"];
 const availablePermissions = [
     "Dashboard",
-    "Contabilite",
+    "Comptabilite",
     "Configuration",
     "Calendrier",
     "Staff",
