@@ -1,6 +1,10 @@
+import axios from "axios";
+
 const state = {
     isAuthenticated: false,
     userName: null,
+    isAdmin: false,
+    permissions: [],
 };
 
 const mutations = {
@@ -9,25 +13,62 @@ const mutations = {
     },
     SET_USER_NAME(state, name) {
         state.userName = name;
-        console.log("Set_USER_NAME", state.userName);
+    },
+    SET_IS_ADMIN(state, isAdmin) {
+        state.isAdmin = isAdmin;
+    },
+    SET_PERMISSIONS(state, permissions) {
+        state.permissions = permissions;
     },
 };
 
 const actions = {
-    login({ commit }, userName) {
-        commit("SET_AUTHENTICATED", true);
-        commit("SET_USER_NAME", userName);
-        console.log("login", userName);
+    async login({ commit }, { username, password }) {
+        try {
+            const response = await axios.post("/api/login", {
+                username,
+                password,
+            });
+            if (response.data.success) {
+                const { userName, role, permissions } = response.data;
+
+                commit("SET_AUTHENTICATED", true);
+                commit("SET_USER_NAME", userName);
+                commit("SET_IS_ADMIN", role === "Admin"); // Set isAdmin if the role is "Admin"
+                commit("SET_PERMISSIONS", permissions || []); // Store permissions array
+
+                console.log("User logged in:", userName);
+            } else {
+                console.error("Login failed:", response.data.message);
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+        }
     },
-    logout({ commit }) {
-        commit("SET_AUTHENTICATED", false);
-        commit("SET_USER_NAME", null);
+
+    async logout({ commit }) {
+        try {
+            const response = await axios.post("/api/logout");
+            if (response.data.success) {
+                commit("SET_AUTHENTICATED", false);
+                commit("SET_USER_NAME", null);
+                commit("SET_IS_ADMIN", false);
+                commit("SET_PERMISSIONS", []);
+                console.log("User logged out");
+            } else {
+                console.error("Logout failed:", response.data.message);
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
     },
 };
 
 const getters = {
     isAuthenticated: (state) => state.isAuthenticated,
     userName: (state) => state.userName,
+    isAdmin: (state) => state.isAdmin,
+    permissions: (state) => state.permissions,
 };
 
 export default {
