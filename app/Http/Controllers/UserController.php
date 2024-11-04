@@ -35,5 +35,4 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    // Implement methods for show, update, and delete as needed
 }
