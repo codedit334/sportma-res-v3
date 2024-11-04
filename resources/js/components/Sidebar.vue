@@ -17,43 +17,34 @@
             </div>
             <h3>Menu</h3>
             <div class="menu">
-                <router-link class="button" to="/">
-                    <span class="material-icons material-symbols-outlined"
-                        >insert_chart</span
-                    >
+                <router-link v-if="hasPermission('Dashboard')" class="button" to="/">
+                    <span class="material-icons material-symbols-outlined">insert_chart</span>
                     <span class="text">Dashboard</span>
                 </router-link>
-                <router-link class="button" to="/calender">
-                    <span class="material-icons material-symbols-outlined"
-                        >calendar_today</span
-                    >
+                <router-link v-if="hasPermission('Calendrier')" class="button" to="/calender">
+                    <span class="material-icons material-symbols-outlined">calendar_today</span>
                     <span class="text">Calendrier</span>
                 </router-link>
                 <router-link class="button" to="/data">
-                    <span class="material-icons material-symbols-outlined"
-                        >table</span
-                    >
+                    <span class="material-icons material-symbols-outlined">table</span>
                     <span class="text">Comptabilité</span>
                 </router-link>
 
-                <!-- Conditional rendering for Configuration link -->
+                <!-- Conditional rendering based on permissions -->
                 <router-link
-                    v-if="isAdmin"
+                    v-if="hasPermission('Configuration')"
                     class="button"
                     to="/calender/configuration"
                 >
-                    <span class="material-icons material-symbols-outlined"
-                        >settings</span
-                    >
+                    <span class="material-icons material-symbols-outlined">settings</span>
                     <span class="text">Configuration</span>
                 </router-link>
                 <router-link
-                    v-if="isAdmin"
+                    v-if="hasPermission('Staff')"
                     class="button"
                     to="/users"
                 >
-                <span class="material-icons material-symbols-outlined">group</span>
-
+                    <span class="material-icons material-symbols-outlined">group</span>
                     <span class="text">Staff</span>
                 </router-link>
             </div>
@@ -71,13 +62,19 @@ const is_expanded = ref(false);
 const store = useStore();
 
 const userName = computed(() => store.getters['auth/userName']);
+const permissions = computed(() => store.getters['auth/permissions'] || []);
 const isAdmin = computed(() => userName.value && userName.value.toLowerCase() === 'admin');
 
+// Helper function to check if the user has a specific permission
+const hasPermission = (permission) => {
+    return permissions.value.includes(permission);
+};
 
 const ToggleMenu = () => {
     is_expanded.value = !is_expanded.value;
 };
 </script>
+
 
 <style lang="scss" scoped>
 aside {

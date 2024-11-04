@@ -125,6 +125,7 @@ const availablePermissions = [
     "Contabilite",
     "Configuration",
     "Calendrier",
+    "Staff",
 ];
 const userHeaders = [
     { align: "start", key: "name", title: "Full Name" },

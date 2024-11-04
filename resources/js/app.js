@@ -3,6 +3,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import store from "./store";
 
+// Axios
+import axios from "axios";
+
 // Vuetify
 import "vuetify/styles"; // Ensure you are using css-loader
 import { createVuetify } from "vuetify";
@@ -11,7 +14,7 @@ import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 // Translations provided by Vuetify
-import { pl, zhHans, fr } from "vuetify/locale";
+import { fr } from "vuetify/locale";
 
 export default createVuetify({
     components: {
@@ -28,7 +31,11 @@ const vuetify = createVuetify({
     },
 });
 
-store.dispatch("auth/initializeAuth");
+// Set the default Authorization header if a token exists
+const token = localStorage.getItem('token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 
 import router from "./router";
 
