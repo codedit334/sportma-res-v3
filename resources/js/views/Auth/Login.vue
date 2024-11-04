@@ -2,12 +2,13 @@
     <div class="login-page">
         <h2>Login</h2>
         <input
-            v-model="userName"
-            type="text"
-            placeholder="(user or admin)"
+            v-model="email"
+            type="email"
+            placeholder="Email"
             class="login-input"
         />
         <input
+            v-model="password"
             type="password"
             placeholder="Password"
             class="login-input"
@@ -24,18 +25,28 @@ import { useStore } from "vuex";
 
 const store = useStore();
 const router = useRouter();
-const userName = ref("");
+const email = ref("");
+const password = ref("");
 const errorMessage = ref("");
 
-const login = () => {
-    const normalizedUser = userName.value.trim().toLowerCase();
+const login = async () => {
+    try {
+        // Dispatch login action to Vuex with email and password
+        await store.dispatch("auth/login", {
+            email: email.value,
+            password: password.value,
+        });
 
-    if (normalizedUser === "user" || normalizedUser === "admin") {
-        // Dispatch login action to Vuex
-        store.dispatch("auth/login", userName.value);
-        router.push("/"); // Redirect to home or any other page
-    } else {
-        errorMessage.value = "Invalid login. Please enter 'user' or 'admin'.";
+        // Check if login was successful, based on Vuex state
+        if (store.getters["auth/isAuthenticated"]) {
+            router.push("/"); // Redirect to home or any other page
+        } else {
+            errorMessage.value = "Invalid login credentials.";
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        errorMessage.value =
+            "An error occurred during login. Please try again.";
     }
 };
 </script>

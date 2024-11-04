@@ -23,21 +23,21 @@ const mutations = {
 };
 
 const actions = {
-    async login({ commit }, { username, password }) {
+    async login({ commit }, { email, password }) {
         try {
             const response = await axios.post("/api/login", {
-                username,
+                email,
                 password,
             });
             if (response.data.success) {
-                const { userName, role, permissions } = response.data;
+                const { name, role, permissions } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
-                commit("SET_USER_NAME", userName);
-                commit("SET_IS_ADMIN", role === "Admin"); // Set isAdmin if the role is "Admin"
+                commit("SET_USER_NAME", name);
+                commit("SET_IS_ADMIN", role.toLowerCase() === "admin"); // Set isAdmin if the role is "Admin"
                 commit("SET_PERMISSIONS", permissions || []); // Store permissions array
 
-                console.log("User logged in:", userName);
+                console.log("User logged in:", name);
             } else {
                 console.error("Login failed:", response.data.message);
             }
