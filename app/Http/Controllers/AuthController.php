@@ -40,11 +40,15 @@ class AuthController extends Controller
 }
 
 
-    public function logout(Request $request)
-    {
-        auth()->logout();
-        return response()->json(['message' => 'Successfully logged out']);
-    }
+public function logout(Request $request)
+{
+    // Log out the user
+    auth()->logout();
+    
+    // Return a response with success status and message
+    return response()->json(['success' => true, 'message' => 'Successfully logged out']);
+}
+
 
     // Optionally, you can create a method to refresh the token
     public function refresh()

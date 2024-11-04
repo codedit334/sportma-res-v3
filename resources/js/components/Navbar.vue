@@ -37,9 +37,16 @@ const router = useRouter();
 const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
 const userName = computed(() => store.getters["auth/userName"]);
 
-const logout = () => {
-    store.dispatch("auth/logout");
-    router.push("/login");
+const logout = async () => {
+    try {
+        // Dispatch the logout action and wait for it to complete
+        await store.dispatch("auth/logout");
+
+        // After logout, redirect to the login page
+        router.push("/login");
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
 };
 
 const goToLogin = () => {
