@@ -52,9 +52,8 @@
                     class="button"
                     to="/users"
                 >
-                    <span class="material-icons material-symbols-outlined"
-                        >staff</span
-                    >
+                <span class="material-icons material-symbols-outlined">group</span>
+
                     <span class="text">Staff</span>
                 </router-link>
             </div>
