@@ -5,18 +5,16 @@
         </template>
 
         <!-- Conditional rendering of the data table or message -->
-        <div v-if="users.value && users.value.length > 0">
+        <!-- <div v-if="users.value && users.value.length > 0"> -->
             <v-data-table
                 :headers="userHeaders"
-                :items="users"
+                :items="users.value"
                 :search="search"
-                :no-data-text="'No users available'"
-                :loading-text="'Loading...'"
             ></v-data-table>
-        </div>
+        <!-- </div>
         <div v-else>
             <p>No users available</p>
-        </div>
+        </div> -->
 
         <v-dialog v-model="addUserDialog" max-width="600px">
             <v-card>
