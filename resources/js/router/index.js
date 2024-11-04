@@ -24,6 +24,10 @@ const router = createRouter({
             path: "/calender/configuration",
             component: () => import("../views/Settings.vue"),
         },
+        {
+            path: "/users",
+            component: () => import("../views/Users.vue"),
+        },
     ],
 });
 
