@@ -71,7 +71,7 @@ import axios from "axios";
 const users = ref([]);
 const addUserDialog = ref(false);
 const permissionsDialog = ref(false);
-const newUser = ref({ fullName: "", email: "", role: "" });
+const newUser = ref({ fullName: "", email: "", role: "", password: "" }); // Added password field
 const selectedPermissions = ref([]);
 
 const roles = ["Admin", "User"];
@@ -81,11 +81,11 @@ const availablePermissions = [
 ];
 
 const userHeaders = [
-    { align: "start", key: "nom", title: "Nom" },
-    { key: "categorie", title: "Categorie" },
-    { key: "terrain", title: "Terrain" },
-    { key: "prix", title: "Prix (DH)" },
-    { key: "statut", title: "Statut" },
+    { align: "start", key: "full_name", title: "Full Name" },
+    { key: "email", title: "Email" },
+    { key: "role", title: "Role" },
+    { key: "permissions", title: "Permissions" },
+    { key: "profile_picture", title: "Profile Picture" },
 ];
 
 const fetchUsers = async () => {
@@ -107,19 +107,21 @@ const openAddUserModal = () => {
 
 const closeAddUserModal = () => {
     addUserDialog.value = false;
+    newUser.value = { fullName: "", email: "", role: "", password: "" }; // Reset newUser data
 };
 
 const addUser = async () => {
     try {
         const response = await axios.post("/api/users", newUser.value);
-        users.value.push(response.data);
+        users.value.push(response.data); // Assuming response.data returns the newly created user
         closeAddUserModal();
     } catch (error) {
         console.error("Error adding user:", error);
     }
 };
 
-const openPermissionsModal = () => {
+const openPermissionsModal = (user) => {
+    selectedPermissions.value = user.permissions; // Load current permissions for the user
     permissionsDialog.value = true;
 };
 
@@ -133,6 +135,11 @@ const savePermissions = async () => {
             `/api/users/${newUser.value.id}/permissions`,
             selectedPermissions.value
         );
+        // Update user permissions in the local users array
+        const userIndex = users.value.findIndex(u => u.id === newUser.value.id);
+        if (userIndex !== -1) {
+            users.value[userIndex].permissions = selectedPermissions.value;
+        }
         closePermissionsDialog();
     } catch (error) {
         console.error("Error saving permissions:", error);
