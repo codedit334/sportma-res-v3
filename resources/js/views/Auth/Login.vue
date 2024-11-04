@@ -7,6 +7,11 @@
             placeholder="(user or admin)"
             class="login-input"
         />
+        <input
+            type="password"
+            placeholder="Password"
+            class="login-input"
+        />
         <button @click="login" class="login-button">Log In</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
