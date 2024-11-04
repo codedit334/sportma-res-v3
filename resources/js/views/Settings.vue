@@ -293,6 +293,12 @@ const updateSplitType = () => {
 };
 
 const addPriceRange = () => {
+    // Check if price is a positive number
+    if (price.value <= 0) {
+        alert("Erreur : Le prix doit être un nombre positif.");
+        return; // Exit the function if the price is invalid
+    }
+
     newPrice.value.startTime = startPicker;
     newPrice.value.endTime = endPicker;
     newPrice.value.price = price;
@@ -314,21 +320,20 @@ const addPriceRange = () => {
 
     // If there's an overlap, alert an error in French
     if (isOverlap) {
-        alert(
-            "Erreur : Cette plage de temps chevauche une autre plage existante."
-        );
+        alert("Erreur : Cette plage de temps chevauche une autre plage existante.");
     } else if (
         newPrice.value.startTime &&
         newPrice.value.endTime &&
         newPrice.value.price
     ) {
-        // Push the new price range if no overlap
+        // Push the new price range if no overlap and price is positive
         newPrices.value.push({ ...newPrice.value });
         newPrice.value = { startTime: "", endTime: "", price: "" };
     }
 
     resetTimePicker();
 };
+
 
 const removePriceRange = (index) => {
     newPrices.value.splice(index, 1);
