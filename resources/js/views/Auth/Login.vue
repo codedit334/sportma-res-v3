@@ -4,7 +4,7 @@
         <input
             v-model="userName"
             type="text"
-            placeholder="Enter your name (user or admin)"
+            placeholder="(user or admin)"
             class="login-input"
         />
         <button @click="login" class="login-button">Log In</button>
