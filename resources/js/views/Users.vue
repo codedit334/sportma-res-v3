@@ -70,7 +70,8 @@
         </v-dialog>
 
         <!-- Edit User Dialog -->
-        <v-dialog v-model="editUserDialog" max-width="600px">
+         <!-- Edit User Dialog -->
+         <v-dialog v-model="editUserDialog" max-width="600px">
             <v-card>
                 <v-card-title>Edit User</v-card-title>
                 <v-card-text>
@@ -98,6 +99,28 @@
                         chips
                         clearable
                     ></v-select>
+
+                    <!-- Change Password Button -->
+                    <v-btn text color="primary" @click="togglePasswordFields">
+                        Changer le mot de passe
+                    </v-btn>
+
+                    <!-- Password Fields, only shown if showPasswordFields is true -->
+                    <div v-if="showPasswordFields">
+                        <v-text-field
+                            v-model="newUser.newPassword"
+                            label="New Password"
+                            type="password"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="passwordConfirmation"
+                            label="Confirm New Password"
+                            type="password"
+                            :error-messages="passwordError"
+                            required
+                        ></v-text-field>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn text @click="saveUserChanges">Save</v-btn>
@@ -109,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 const users = ref([]);
@@ -121,8 +144,10 @@ const newUser = ref({
     role: "",
     password: "",
     permissions: [],
+    newPassword: "", // Add field for new password
 });
 const passwordConfirmation = ref("");
+const showPasswordFields = ref(false); // Ref to toggle password fields
 
 const roles = ["Admin", "User"];
 const availablePermissions = [
@@ -143,20 +168,10 @@ const userHeaders = [
 ];
 
 const passwordError = computed(() => {
-    return newUser.value.password !== passwordConfirmation.value
+    return newUser.value.newPassword !== passwordConfirmation.value
         ? "Passwords do not match"
         : "";
 });
-
-// Watch for changes in `newUser.permissions`
-// watch(
-//   () => newUser.value.permissions,
-//   (newVal) => {
-//     if (Array.isArray(newVal) && newVal.length === 0) {
-//       newUser.value.permissions = null;
-//     }
-//   }
-// );
 
 const fetchUsers = async () => {
     try {
@@ -210,8 +225,9 @@ const addUser = async () => {
 };
 
 const openEditUserModal = (user) => {
-    newUser.value = { ...user };
+    newUser.value = { ...user, newPassword: "" }; // Reset newPassword
     editUserDialog.value = true;
+    showPasswordFields.value = false; // Hide password fields initially
 };
 
 const closeEditUserModal = () => {
@@ -220,12 +236,22 @@ const closeEditUserModal = () => {
     fetchUsers();
 };
 
+const togglePasswordFields = () => {
+    showPasswordFields.value = !showPasswordFields.value;
+};
+
 const saveUserChanges = async () => {
+    if (showPasswordFields.value && passwordError.value) {
+        return;
+    }
+
+    const payload = {
+        ...newUser.value,
+        password: newUser.value.newPassword || undefined, // Only send if set
+    };
+
     try {
-        const response = await axios.put(
-            `/api/users/${newUser.value.id}`,
-            newUser.value
-        );
+        const response = await axios.put(`/api/users/${newUser.value.id}`, payload);
         const index = users.value.findIndex((u) => u.id === newUser.value.id);
         if (index !== -1) {
             users.value[index] = response.data;
