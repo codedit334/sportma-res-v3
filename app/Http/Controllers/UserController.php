@@ -54,7 +54,7 @@ public function update(Request $request, $id)
 
         // Validate the incoming data
         $validatedData = $request->validate([
-            'full_name' => 'sometimes|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
             'password' => 'sometimes|string|min:8', // Optional for updating
             'role' => 'sometimes|string',
@@ -63,8 +63,8 @@ public function update(Request $request, $id)
         ]);
 
         // Update user attributes conditionally
-        if (isset($validatedData['full_name'])) {
-            $user->name = $validatedData['full_name'];
+        if (isset($validatedData['name'])) {
+            $user->name = $validatedData['name'];
         }
 
         if (isset($validatedData['email'])) {

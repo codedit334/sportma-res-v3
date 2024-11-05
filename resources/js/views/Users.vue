@@ -1,7 +1,9 @@
 <template>
     <v-card title="User Management" flat class="my-5 mx-5">
         <template v-slot:text>
-            <v-btn color="primary" @click="openAddUserModal">Ajout utilisateur</v-btn>
+            <v-btn color="primary" @click="openAddUserModal"
+                >Ajout utilisateur</v-btn
+            >
         </template>
 
         <!-- User Data Table -->
@@ -23,7 +25,7 @@
                 <v-card-title>Ajout ustilisateur</v-card-title>
                 <v-card-text>
                     <v-text-field
-                        v-model="newUser.fullName"
+                        v-model="newUser.name"
                         label="Nom Complet"
                         required
                     ></v-text-field>
@@ -139,7 +141,7 @@ const users = ref([]);
 const addUserDialog = ref(false);
 const editUserDialog = ref(false);
 const newUser = ref({
-    fullName: "",
+    name: "",
     email: "",
     role: "",
     password: "",
@@ -213,13 +215,14 @@ const openAddUserModal = () => {
 const closeAddUserModal = () => {
     addUserDialog.value = false;
     newUser.value = {
-        fullName: "",
+        name: "",
         email: "",
         role: "",
         password: "",
         permissions: [],
     };
     passwordConfirmation.value = "";
+    fetchUsers();
 };
 
 const addUser = async () => {
@@ -228,7 +231,7 @@ const addUser = async () => {
     }
     try {
         const payload = {
-            full_name: newUser.value.fullName,
+            full_name: newUser.value.name,
             email: newUser.value.email,
             password: newUser.value.password,
             password_confirmation: passwordConfirmation2.value,
@@ -251,7 +254,7 @@ const openEditUserModal = (user) => {
 
 const closeEditUserModal = () => {
     editUserDialog.value = false;
-    newUser.value = { fullName: "", email: "", role: "", permissions: [] };
+    newUser.value = { name: "", email: "", role: "", permissions: [] };
     fetchUsers();
 };
 
