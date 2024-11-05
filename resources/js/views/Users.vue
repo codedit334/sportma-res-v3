@@ -1,13 +1,27 @@
 <template>
     <v-card title="User Management" flat class="my-5 mx-5">
         <template v-slot:text>
-            <v-btn color="primary" @click="openAddUserModal"
-                >Ajout utilisateur</v-btn
-            >
+            <v-btn color="primary" @click="openAddUserModal">
+                Ajout utilisateur
+            </v-btn>
         </template>
 
+        <!-- Search Input -->
+        <v-text-field
+            v-model="search"
+            label="Recherche"
+            class="my-3 mx-4"
+            clearable
+            @input="filterUsers"
+        ></v-text-field>
+
         <!-- User Data Table -->
-        <v-data-table :headers="userHeaders" :loading="loading" :items="users" :search="search">
+        <v-data-table
+            :headers="userHeaders"
+            :loading="loading"
+            :items="filteredUsers"
+            :search="search"
+        >
             <!-- Log users -->
             <template v-slot:item.actions="{ item }">
                 <v-btn icon color="blue" @click="openEditUserModal(item)">
@@ -22,7 +36,7 @@
         <!-- Add User Dialog -->
         <v-dialog v-model="addUserDialog" max-width="600px">
             <v-card>
-                <v-card-title>Ajout ustilisateur</v-card-title>
+                <v-card-title>Ajout utilisateur</v-card-title>
                 <v-card-text>
                     <v-text-field
                         v-model="newUser.name"
@@ -71,7 +85,6 @@
             </v-card>
         </v-dialog>
 
-        <!-- Edit User Dialog -->
         <!-- Edit User Dialog -->
         <v-dialog v-model="editUserDialog" max-width="600px">
             <v-card>
@@ -152,6 +165,7 @@ const newUser = ref({
 const passwordConfirmation = ref("");
 const passwordConfirmation2 = ref("");
 const showPasswordFields = ref(false); // Ref to toggle password fields
+const search = ref(""); // Reactive variable for search input
 
 const roles = ["Admin", "User"];
 const availablePermissions = [
@@ -176,6 +190,17 @@ const userHeaders = [
     { key: "permissions", title: "Permissions" },
     { key: "actions", title: "Actions", sortable: false },
 ];
+
+// Computed property to filter users based on search input
+const filteredUsers = computed(() => {
+    if (!search.value) return users.value; // Return all users if search is empty
+    return users.value.filter((user) => {
+        return (
+            user.name.toLowerCase().includes(search.value.toLowerCase()) ||
+            user.email.toLowerCase().includes(search.value.toLowerCase())
+        );
+    });
+});
 
 const passwordError = computed(() => {
     if (showPasswordFields.value) {
@@ -265,34 +290,28 @@ const openEditUserModal = (user) => {
 
 const closeEditUserModal = () => {
     editUserDialog.value = false;
-    newUser.value = { name: "", email: "", role: "", permissions: [] };
-    
-    fetchUsers();
-};
-
-const togglePasswordFields = () => {
-    showPasswordFields.value = !showPasswordFields.value;
+    newUser.value = {
+        name: "",
+        email: "",
+        role: "",
+        password: "",
+        permissions: [],
+    };
+    passwordConfirmation.value = "";
 };
 
 const saveUserChanges = async () => {
-    if (showPasswordFields.value && passwordError.value) {
-        return;
-    }
-
-    const payload = {
-        ...newUser.value,
-        password: newUser.value.newPassword || undefined, // Only send if set
-    };
-
     try {
+        const payload = {
+            ...newUser.value,
+            password: newUser.value.newPassword || undefined,
+        };
         const response = await axios.put(
             `/api/users/${newUser.value.id}`,
             payload
         );
         const index = users.value.findIndex((u) => u.id === newUser.value.id);
-        if (index !== -1) {
-            users.value[index] = response.data;
-        }
+        users.value[index] = response.data; // Update the user in the users array
         closeEditUserModal();
     } catch (error) {
         console.error("Error updating user:", error);
@@ -300,11 +319,26 @@ const saveUserChanges = async () => {
 };
 
 const deleteUser = async (user) => {
-    try {
-        await axios.delete(`/api/users/${user.id}`);
-        users.value = users.value.filter((u) => u.id !== user.id);
-    } catch (error) {
-        console.error("Error deleting user:", error);
+    const confirmed = confirm(
+        `Êtes-vous sûr de vouloir supprimer ${user.name} ?`
+    );
+    if (confirmed) {
+        try {
+            await axios.delete(`/api/users/${user.id}`);
+            users.value = users.value.filter((u) => u.id !== user.id); // Remove user from array
+        } catch (error) {
+            console.error("Error deleting user:", error);
+        }
     }
 };
+
+const togglePasswordFields = () => {
+    showPasswordFields.value = !showPasswordFields.value; // Toggle password fields
+};
 </script>
+
+<style scoped>
+.v-data-table {
+    margin-top: 20px;
+}
+</style>
