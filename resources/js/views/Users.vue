@@ -1,7 +1,7 @@
 <template>
     <v-card title="User Management" flat class="my-5 mx-5">
         <template v-slot:text>
-            <v-btn color="primary" @click="openAddUserModal">Add User</v-btn>
+            <v-btn color="primary" @click="openAddUserModal">Ajout utilisateur</v-btn>
         </template>
 
         <!-- User Data Table -->
@@ -20,11 +20,11 @@
         <!-- Add User Dialog -->
         <v-dialog v-model="addUserDialog" max-width="600px">
             <v-card>
-                <v-card-title>Add User</v-card-title>
+                <v-card-title>Ajout ustilisateur</v-card-title>
                 <v-card-text>
                     <v-text-field
                         v-model="newUser.fullName"
-                        label="Full Name"
+                        label="Nom Complet"
                         required
                     ></v-text-field>
                     <v-text-field
@@ -34,15 +34,15 @@
                     ></v-text-field>
                     <v-text-field
                         v-model="newUser.password"
-                        label="Password"
+                        label="Mot de passe"
                         type="password"
                         required
                     ></v-text-field>
                     <v-text-field
-                        v-model="passwordConfirmation"
-                        label="Confirm Password"
+                        v-model="passwordConfirmation2"
+                        label="Confirmer le mot de passe"
                         type="password"
-                        :error-messages="passwordError"
+                        :error-messages="passwordError2"
                         required
                     ></v-text-field>
                     <v-select
@@ -53,7 +53,7 @@
                     ></v-select>
                     <v-select
                         v-model="newUser.permissions"
-                        :items="availablePermissions"
+                        :items="availablePermissions2"
                         item-text="name"
                         item-value="id"
                         label="Permissions"
@@ -70,14 +70,14 @@
         </v-dialog>
 
         <!-- Edit User Dialog -->
-         <!-- Edit User Dialog -->
-         <v-dialog v-model="editUserDialog" max-width="600px">
+        <!-- Edit User Dialog -->
+        <v-dialog v-model="editUserDialog" max-width="600px">
             <v-card>
-                <v-card-title>Edit User</v-card-title>
+                <v-card-title>Modification utilisateur</v-card-title>
                 <v-card-text>
                     <v-text-field
                         v-model="newUser.name"
-                        label="Full Name"
+                        label="Nom Complet"
                         required
                     ></v-text-field>
                     <v-text-field
@@ -109,13 +109,13 @@
                     <div v-if="showPasswordFields">
                         <v-text-field
                             v-model="newUser.newPassword"
-                            label="New Password"
+                            label="Nouveau mot de passe"
                             type="password"
                             required
                         ></v-text-field>
                         <v-text-field
                             v-model="passwordConfirmation"
-                            label="Confirm New Password"
+                            label="Confirmer le mot de passe"
                             type="password"
                             :error-messages="passwordError"
                             required
@@ -147,6 +147,7 @@ const newUser = ref({
     newPassword: "", // Add field for new password
 });
 const passwordConfirmation = ref("");
+const passwordConfirmation2 = ref("");
 const showPasswordFields = ref(false); // Ref to toggle password fields
 
 const roles = ["Admin", "User"];
@@ -157,10 +158,16 @@ const availablePermissions = [
     { id: "calendrier", name: "Calendrier" },
     { id: "staff", name: "Staff" },
 ];
-const availablePermissions2 = ["Dashboard", "Comptabilite", "Configuration", "Calendrier", "Staff"];
+const availablePermissions2 = [
+    "Dashboard",
+    "Comptabilite",
+    "Configuration",
+    "Calendrier",
+    "Staff",
+];
 
 const userHeaders = [
-    { align: "start", key: "name", title: "Full Name" },
+    { align: "start", key: "name", title: "Nom Complet" },
     { key: "email", title: "Email" },
     { key: "role", title: "Role" },
     { key: "permissions", title: "Permissions" },
@@ -168,9 +175,21 @@ const userHeaders = [
 ];
 
 const passwordError = computed(() => {
-    return newUser.value.newPassword !== passwordConfirmation.value
-        ? "Passwords do not match"
-        : "";
+    if (showPasswordFields.value) {
+        return newUser.value.newPassword !== passwordConfirmation.value
+            ? "Les mots de passe ne correspondent pas."
+            : "";
+    }
+    return "";
+});
+
+const passwordError2 = computed(() => {
+    if (newUser.value.password) {
+        return newUser.value.password !== passwordConfirmation2.value
+            ? "Les mots de passe ne correspondent pas."
+            : "";
+    }
+    return "";
 });
 
 const fetchUsers = async () => {
@@ -188,7 +207,7 @@ onMounted(() => {
 
 const openAddUserModal = () => {
     addUserDialog.value = true;
-    newUser.value.permissions = ["calendrier"];
+    newUser.value.permissions = ["Calendrier"];
 };
 
 const closeAddUserModal = () => {
@@ -204,7 +223,7 @@ const closeAddUserModal = () => {
 };
 
 const addUser = async () => {
-    if (passwordError.value) {
+    if (passwordError2.value) {
         return;
     }
     try {
@@ -212,7 +231,7 @@ const addUser = async () => {
             full_name: newUser.value.fullName,
             email: newUser.value.email,
             password: newUser.value.password,
-            password_confirmation: passwordConfirmation.value,
+            password_confirmation: passwordConfirmation2.value,
             role: newUser.value.role,
             permissions: newUser.value.permissions,
         };
@@ -251,7 +270,10 @@ const saveUserChanges = async () => {
     };
 
     try {
-        const response = await axios.put(`/api/users/${newUser.value.id}`, payload);
+        const response = await axios.put(
+            `/api/users/${newUser.value.id}`,
+            payload
+        );
         const index = users.value.findIndex((u) => u.id === newUser.value.id);
         if (index !== -1) {
             users.value[index] = response.data;

@@ -27,30 +27,31 @@ const mutations = {
     },
     SET_TOKEN(state, token) {
         localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    },
+    CLEAR_TOKEN() {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
     },
 };
 
 const actions = {
     async login({ commit }, { email, password }) {
         try {
-            // Make API call to login
             const response = await axios.post("/api/login", {
                 email,
                 password,
             });
-
-            // Log the complete response data for debugging
             console.log("Login response:", response.data);
 
-            // If login is successful, commit user data to the store
             if (response.data.token) {
                 const { token, name, role, permissions } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
                 commit("SET_USER_NAME", name);
-                commit("SET_IS_ADMIN", role.toLowerCase() === "admin"); // Set isAdmin if the role is "Admin"
-                commit("SET_PERMISSIONS", permissions || []); // Store permissions array
-                commit("SET_TOKEN", token); // Store the token
+                commit("SET_IS_ADMIN", role.toLowerCase() === "admin");
+                commit("SET_PERMISSIONS", permissions || []);
+                commit("SET_TOKEN", token);
 
                 console.log("User logged in:", name);
             } else {
@@ -58,6 +59,7 @@ const actions = {
                 throw new Error(response.data.message);
             }
         } catch (error) {
+            commit("SET_AUTHENTICATED", false);
             console.error("Error during login:", error);
             throw new Error(
                 error.response?.data?.error || "Login failed. Please try again."
@@ -71,14 +73,12 @@ const actions = {
             console.log(response.data);
 
             if (response.data.success) {
-                // Clear both store and localStorage on logout
                 commit("SET_AUTHENTICATED", false);
                 commit("SET_USER_NAME", null);
                 commit("SET_IS_ADMIN", false);
                 commit("SET_PERMISSIONS", []);
+                commit("CLEAR_TOKEN");
 
-                // Remove items from localStorage
-                localStorage.removeItem("token");
                 localStorage.removeItem("isAuthenticated");
                 localStorage.removeItem("userName");
                 localStorage.removeItem("isAdmin");
