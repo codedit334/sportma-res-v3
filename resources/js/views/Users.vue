@@ -6,6 +6,7 @@
 
         <!-- User Data Table -->
         <v-data-table :headers="userHeaders" :items="users" :search="search">
+            <!-- Log users -->
             <template v-slot:item.actions="{ item }">
                 <v-btn icon color="blue" @click="openEditUserModal(item)">
                     <v-icon>mdi-pencil</v-icon>
@@ -74,7 +75,7 @@
                 <v-card-title>Edit User</v-card-title>
                 <v-card-text>
                     <v-text-field
-                        v-model="newUser.fullName"
+                        v-model="newUser.name"
                         label="Full Name"
                         required
                     ></v-text-field>
@@ -108,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
 const users = ref([]);
@@ -126,12 +127,12 @@ const passwordConfirmation = ref("");
 const roles = ["Admin", "User"];
 const availablePermissions = [
     { id: "dashboard", name: "Dashboard" },
-    { id: "comptabilite", name: "Comptabilité" },
+    { id: "comptabilite", name: "Comptabilite" },
     { id: "configuration", name: "Configuration" },
     { id: "calendrier", name: "Calendrier" },
     { id: "staff", name: "Staff" },
 ];
-const availablePermissions2 = ["Dashboard", "Comptabilité", "Configuration", "Calendrier", "Staff"];
+const availablePermissions2 = ["Dashboard", "Comptabilite", "Configuration", "Calendrier", "Staff"];
 
 const userHeaders = [
     { align: "start", key: "name", title: "Full Name" },
@@ -146,6 +147,16 @@ const passwordError = computed(() => {
         ? "Passwords do not match"
         : "";
 });
+
+// Watch for changes in `newUser.permissions`
+// watch(
+//   () => newUser.value.permissions,
+//   (newVal) => {
+//     if (Array.isArray(newVal) && newVal.length === 0) {
+//       newUser.value.permissions = null;
+//     }
+//   }
+// );
 
 const fetchUsers = async () => {
     try {
@@ -200,13 +211,13 @@ const addUser = async () => {
 
 const openEditUserModal = (user) => {
     newUser.value = { ...user };
-    console.log(newUser.value);
     editUserDialog.value = true;
 };
 
 const closeEditUserModal = () => {
     editUserDialog.value = false;
     newUser.value = { fullName: "", email: "", role: "", permissions: [] };
+    fetchUsers();
 };
 
 const saveUserChanges = async () => {
