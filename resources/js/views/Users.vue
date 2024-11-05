@@ -53,9 +53,12 @@
                     <v-select
                         v-model="newUser.permissions"
                         :items="availablePermissions"
+                        item-text="name"
+                        item-value="id"
                         label="Permissions"
                         multiple
-                        required
+                        chips
+                        clearable
                     ></v-select>
                 </v-card-text>
                 <v-card-actions>
@@ -88,10 +91,11 @@
                     ></v-select>
                     <v-select
                         v-model="newUser.permissions"
-                        :items="availablePermissions"
+                        :items="availablePermissions2"
                         label="Permissions"
                         multiple
-                        required
+                        chips
+                        clearable
                     ></v-select>
                 </v-card-text>
                 <v-card-actions>
@@ -121,12 +125,14 @@ const passwordConfirmation = ref("");
 
 const roles = ["Admin", "User"];
 const availablePermissions = [
-    "Dashboard",
-    "Comptabilite",
-    "Configuration",
-    "Calendrier",
-    "Staff",
+    { id: "dashboard", name: "Dashboard" },
+    { id: "comptabilite", name: "Comptabilité" },
+    { id: "configuration", name: "Configuration" },
+    { id: "calendrier", name: "Calendrier" },
+    { id: "staff", name: "Staff" },
 ];
+const availablePermissions2 = ["Dashboard", "Comptabilité", "Configuration", "Calendrier", "Staff"];
+
 const userHeaders = [
     { align: "start", key: "name", title: "Full Name" },
     { key: "email", title: "Email" },
@@ -156,7 +162,7 @@ onMounted(() => {
 
 const openAddUserModal = () => {
     addUserDialog.value = true;
-    newUser.value.permissions = ["Calendrier"];
+    newUser.value.permissions = ["calendrier"];
 };
 
 const closeAddUserModal = () => {
@@ -194,6 +200,7 @@ const addUser = async () => {
 
 const openEditUserModal = (user) => {
     newUser.value = { ...user };
+    console.log(newUser.value);
     editUserDialog.value = true;
 };
 

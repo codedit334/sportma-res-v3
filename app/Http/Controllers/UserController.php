@@ -4,13 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
     public function index()
-    {
-        return User::all();
-    }
+{
+    $users = User::all()->map(function ($user) {
+        // Decode permissions from JSON to array
+        $user->permissions = json_decode($user->permissions, true);
+        return $user;
+    });
+
+    return response()->json($users);
+}
 
     public function store(Request $request)
     {
@@ -37,7 +44,6 @@ class UserController extends Controller
 
     // app/Http/Controllers/UserController.php
 
-use Illuminate\Validation\ValidationException;
 
 public function update(Request $request, $id)
 {
