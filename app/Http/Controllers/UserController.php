@@ -35,4 +35,63 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
+    // app/Http/Controllers/UserController.php
+
+use Illuminate\Validation\ValidationException;
+
+public function update(Request $request, $id)
+{
+    try {
+        // Find the user by ID or return a 404 error if not found
+        $user = User::findOrFail($id);
+
+        // Validate the incoming data
+        $validatedData = $request->validate([
+            'full_name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'sometimes|string|min:8', // Optional for updating
+            'role' => 'sometimes|string',
+            'permissions' => 'nullable|array',
+            'profile_picture' => 'nullable|string',
+        ]);
+
+        // Update user attributes conditionally
+        if (isset($validatedData['full_name'])) {
+            $user->name = $validatedData['full_name'];
+        }
+
+        if (isset($validatedData['email'])) {
+            $user->email = $validatedData['email'];
+        }
+
+        if (isset($validatedData['password'])) {
+            $user->password = bcrypt($validatedData['password']);
+        }
+
+        if (isset($validatedData['role'])) {
+            $user->role = $validatedData['role'];
+        }
+
+        if (isset($validatedData['permissions'])) {
+            $user->permissions = json_encode($validatedData['permissions']); // Store as JSON
+        }
+
+        if (isset($validatedData['profile_picture'])) {
+            $user->profile_picture = $validatedData['profile_picture'];
+        }
+
+        // Save the updated user
+        $user->save();
+
+        // Return the updated user as JSON
+        return response()->json($user, 200);
+
+    } catch (ValidationException $e) {
+        return response()->json(['errors' => $e->errors()], 422);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'An error occurred while updating the user'], 500);
+    }
+}
+
+
 }

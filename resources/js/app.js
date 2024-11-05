@@ -35,6 +35,7 @@ const vuetify = createVuetify({
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    store.commit('auth/SET_AUTHENTICATED', true);
 }
 
 import router from "./router";

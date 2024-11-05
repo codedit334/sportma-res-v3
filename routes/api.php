@@ -26,6 +26,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     // Define routes that require authentication here
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
 });
 
 Route::post('login', [AuthController::class, 'login']);
