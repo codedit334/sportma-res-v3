@@ -7,7 +7,7 @@
         </template>
 
         <!-- User Data Table -->
-        <v-data-table :headers="userHeaders" :items="users" :search="search">
+        <v-data-table :headers="userHeaders" :loading="loading" :items="users" :search="search">
             <!-- Log users -->
             <template v-slot:item.actions="{ item }">
                 <v-btn icon color="blue" @click="openEditUserModal(item)">
@@ -65,8 +65,8 @@
                     ></v-select>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="addUser">Add</v-btn>
-                    <v-btn text @click="closeAddUserModal">Cancel</v-btn>
+                    <v-btn text @click="addUser">Ajouter</v-btn>
+                    <v-btn text @click="closeAddUserModal">Annuler</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -125,8 +125,8 @@
                     </div>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="saveUserChanges">Save</v-btn>
-                    <v-btn text @click="closeEditUserModal">Cancel</v-btn>
+                    <v-btn text @click="saveUserChanges">Enregister</v-btn>
+                    <v-btn text @click="closeEditUserModal">Annuler</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -138,6 +138,7 @@ import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 const users = ref([]);
+const loading = ref(false);
 const addUserDialog = ref(false);
 const editUserDialog = ref(false);
 const newUser = ref({
@@ -195,11 +196,14 @@ const passwordError2 = computed(() => {
 });
 
 const fetchUsers = async () => {
+    loading.value = true; // Set loading to true when fetching starts
     try {
         const response = await axios.get("/api/users");
         users.value = response.data || [];
     } catch (error) {
         console.error("Error fetching users:", error);
+    } finally {
+        loading.value = false; // Set loading to false after fetching
     }
 };
 
@@ -209,6 +213,13 @@ onMounted(() => {
 
 const openAddUserModal = () => {
     addUserDialog.value = true;
+    newUser.value = {
+        name: "",
+        email: "",
+        role: "",
+        password: "",
+        permissions: [],
+    };
     newUser.value.permissions = ["Calendrier"];
 };
 
@@ -255,6 +266,7 @@ const openEditUserModal = (user) => {
 const closeEditUserModal = () => {
     editUserDialog.value = false;
     newUser.value = { name: "", email: "", role: "", permissions: [] };
+    
     fetchUsers();
 };
 
