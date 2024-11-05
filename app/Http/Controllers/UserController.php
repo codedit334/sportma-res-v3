@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -98,6 +99,26 @@ public function update(Request $request, $id)
         return response()->json(['error' => 'An error occurred while updating the user'], 500);
     }
 }
+public function destroy($id)
+    {
+        try {
+            // Find the user by ID
+            $user = User::findOrFail($id);
+            
+            // Delete the user
+            $user->delete();
 
+            // Return a success response
+            return response()->json([
+                'message' => 'User deleted successfully.'
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Handle any errors
+            return response()->json([
+                'error' => 'User deletion failed.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
