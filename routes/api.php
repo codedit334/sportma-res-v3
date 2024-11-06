@@ -32,7 +32,7 @@ Route::middleware(['jwt.auth'])->group(function () {
 
 Route::get('/user/profile', function () {
     return auth()->user();
-})->middleware('jwr.auth');
+})->middleware('jwt.auth');
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
