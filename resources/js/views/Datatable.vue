@@ -151,51 +151,6 @@ function uniqueValues(key) {
     return [...new Set(reservations.value.map((item) => item[key]))];
 }
 
-// const filteredReservations = computed(() => {
-//     return reservations.value.filter((item) => {
-//         return Object.keys(selectedFilters.value).every((key) => {
-//             if (key === "dateRange") {
-//                 // Check if dateRange is defined
-//                 if (
-//                     !selectedFilters.value.dateRange ||
-//                     !selectedFilters.value.dateRange.length
-//                 ) {
-//                     return true;
-//                 }
-
-//                 // Convert itemDate to ISO string
-//                 const itemDate = new Date(item.date); // Keep only the date part
-
-//                 // Get start and end of date range as ISO strings
-//                 const formattedDateRange = selectedFilters.value.dateRange.map(
-//                     (date) => new Date(date)
-//                 );
-
-//                 console.log("itemDate", itemDate);
-//                 // console.log("dateRange", selectedFilters.value.dateRange);
-//                 console.log("formattedDateRange", formattedDateRange);
-
-//                 // Check if itemDate is within the dateRange
-//                 // return itemDate >= start && itemDate <= end;
-//                 // return true;
-//                 // Check if itemDate is within the dateRange
-//                 const isWithinRange = formattedDateRange.some((date) => {
-//                     return (
-//                         itemDate >= date &&
-//                         itemDate <= new Date(date.getTime() + 86400000)
-//                     ); 
-//                 });
-
-//                 return isWithinRange;
-//             }
-
-//             return (
-//                 !selectedFilters.value[key] ||
-//                 item[key] === selectedFilters.value[key]
-//             );
-//         });
-//     });
-// });
 
 const filteredReservations = computed(() => {
     return reservations.value.filter((item) => {

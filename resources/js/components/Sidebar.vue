@@ -63,7 +63,6 @@ const store = useStore();
 
 const userName = computed(() => store.getters['auth/userName']);
 const permissions = computed(() => store.getters['auth/permissions'] || []);
-console.log(permissions.value);
 const isAdmin = computed(() => userName.value && userName.value.toLowerCase() === 'admin');
 
 // Helper function to check if the user has a specific permission

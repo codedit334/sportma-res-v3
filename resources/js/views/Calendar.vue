@@ -249,12 +249,10 @@ export default {
     },
     mounted() {
         this.updatedEvents = [...this.events];
-        console.log("splitTypes", this.splitTypes);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
         this.updateSplits();
-        console.log("splitDays", this.splitDays);
     },
     methods: {
         // Mapping mutations to modify the events
@@ -275,7 +273,6 @@ export default {
             }
         },
         checkForCreationOverlapping(newEvent) {
-            console.log("splitTypes", this.splitTypes);
             let duration = 60; // Default duration
             let newEventStart = moment(this.snapToNearest1h(newEvent.date));
             // Check if event.split contains the word "padel"
@@ -606,10 +603,6 @@ export default {
                     let splitType = matchingSplitTypes[0];
                     let matchingTerrain = null;
 
-                    console.log("matchingSplitTypes", matchingSplitTypes);
-
-                    console.log("event.split", event.split);
-
                     // Loop through each splitType and stop once a matching terrain is found
                     for (const splitType of matchingSplitTypes) {
                         matchingTerrain = splitType.terrains.find((terrain) =>
@@ -626,9 +619,7 @@ export default {
                         ? matchingTerrain.prices
                         : null;
 
-                    console.log("matchingTerrain", matchingTerrain);
 
-                    console.log("splitType.type", splitType.type);
                     if (splitType.type.toLowerCase() === "football") {
                         newDate = this.snapToNearest1h(newDate);
                     } else if (splitType.type.toLowerCase() === "padel") {

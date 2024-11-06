@@ -70,7 +70,6 @@ const actions = {
     async logout({ commit }) {
         try {
             const response = await axios.post("/api/logout");
-            console.log(response.data);
 
             if (response.data.success) {
                 commit("SET_AUTHENTICATED", false);
