@@ -13,7 +13,7 @@ const routes = [
     },
     {
         path: "/calendar",
-        component: () => import("../views/calendar.vue"),
+        component: () => import("../views/Calendar.vue"),
         meta: { requiresAuth: true, permissions: ["Calendrier"] },
     },
     {
@@ -31,6 +31,11 @@ const routes = [
         component: () => import("../views/Users.vue"),
         meta: { requiresAuth: true, permissions: ["Staff"] },
     },
+    {
+        path: "/profile",
+        component: () => import("../views/ProfilePage.vue"),
+        meta: { requiresAuth: true },
+    },
 ];
 
 const router = createRouter({
@@ -47,8 +52,8 @@ router.beforeEach((to, from, next) => {
     // Check if the route requires authentication
     if (to.meta.requiresAuth && !isAuthenticated) {
         next("/login"); // Redirect to login if not authenticated
-    } else if (to.meta.requiresAuth) {
-        // Check if the user has the required permissions for the route
+    } else if (to.meta.requiresAuth && to.path !== "/profile") {
+        // Check permissions for routes other than "/profile"
         const hasPermission = to.meta.permissions.some((permission) =>
             userPermissions.includes(permission)
         );

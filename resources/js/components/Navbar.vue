@@ -15,12 +15,14 @@
                 <button v-else @click="goToLogin" class="auth-button">
                     Se connecter
                 </button>
-                <img
-                    v-if="isAuthenticated"
-                    src="https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    class="logo"
-                    alt="Sportma logo"
-                />
+                <router-link to="/profile">
+                    <img
+                        v-if="isAuthenticated"
+                        src="https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                        class="logo"
+                        alt="Sportma logo"
+                    />
+                </router-link>
             </div>
         </div>
     </nav>
