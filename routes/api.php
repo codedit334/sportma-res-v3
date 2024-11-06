@@ -30,6 +30,10 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 });
 
+Route::get('/user/profile', function () {
+    return auth()->user();
+})->middleware('jwr.auth');
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::post('refresh', [AuthController::class, 'refresh']);
