@@ -283,7 +283,12 @@ const addUser = async () => {
 };
 
 const openEditUserModal = (user) => {
-    newUser.value = { ...user, newPassword: "" }; // Reset newPassword
+    newUser.value = {
+        ...user,
+        newPassword: "", // Reset newPassword
+        // Parse permissions from JSON string to array
+        permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions) : user.permissions,
+    };
     editUserDialog.value = true;
     showPasswordFields.value = false; // Hide password fields initially
 };
