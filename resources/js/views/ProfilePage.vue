@@ -11,10 +11,10 @@
             <p><strong>Name:</strong> {{ user.name }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Role:</strong> {{ user.role }}</p>
-            <!-- <p v-if="user.permissions">
+            <p v-if="user.permissions">
                 <strong>Permissions:</strong>
                 {{ user.permissions.join(", ") }}
-            </p> -->
+            </p>
             <button @click="openEditModal">Edit Profile</button>
         </div>
 
@@ -139,6 +139,8 @@ export default {
                 );
                 this.user = { ...response.data }; // Update displayed data
                 this.editModal = false;
+                // Refresh the user profile after successful update
+                this.fetchUserProfile();
             } catch (error) {
                 console.error("Error updating profile:", error);
             }

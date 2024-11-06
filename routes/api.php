@@ -31,7 +31,14 @@ Route::middleware(['jwt.auth'])->group(function () {
 });
 
 Route::get('/user/profile', function () {
-    return auth()->user();
+    $user = auth()->user();
+    
+    // Decode the permissions field if it's a JSON string
+    if (is_string($user->permissions)) {
+        $user->permissions = json_decode($user->permissions, true); // Decode as an array
+    }
+
+    return response()->json($user);
 })->middleware('jwt.auth');
 
 Route::post('/user/profile/update', function (\Illuminate\Http\Request $request) {
