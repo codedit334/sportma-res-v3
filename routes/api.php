@@ -34,6 +34,21 @@ Route::get('/user/profile', function () {
     return auth()->user();
 })->middleware('jwt.auth');
 
+Route::post('/user/profile/update', function (\Illuminate\Http\Request $request) {
+    $user = auth()->user();
+
+    $user->update($request->only(['name', 'email', 'permissions']));
+
+    if ($request->hasFile('profile_picture')) {
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+        $user->profile_picture = $path;
+    }
+
+    $user->save();
+
+    return response()->json($user);
+})->middleware('jwt.auth');
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::post('refresh', [AuthController::class, 'refresh']);
