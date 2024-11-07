@@ -38,6 +38,15 @@ if (token) {
     store.commit('auth/SET_AUTHENTICATED', true);
 }
 
+setInterval(() => {
+    const tokenExpiration = store.state.auth.tokenExpiration;
+    const timeToExpire = tokenExpiration - Date.now();
+
+    if (timeToExpire < 300000 && timeToExpire > 0) { // refresh 5 minutes before expiration
+        store.dispatch("auth/refreshToken");
+    }
+}, 60000); // check every minute
+
 import router from "./router";
 
 createApp(App).use(store).use(router).use(vuetify).mount("#app");

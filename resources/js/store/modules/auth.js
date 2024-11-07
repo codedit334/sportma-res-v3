@@ -6,6 +6,9 @@ const state = {
     userName: localStorage.getItem("userName") || null,
     isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
     permissions: JSON.parse(localStorage.getItem("permissions")) || [],
+    tokenExpiration:
+        JSON.parse(localStorage.getItem("tokenExpiration")) || null, // new
+    refreshToken: localStorage.getItem("refreshToken") || null, // new
 };
 
 const mutations = {
@@ -29,8 +32,18 @@ const mutations = {
         localStorage.setItem("token", token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     },
+    SET_REFRESH_TOKEN(state, refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem("refreshToken", refreshToken);
+    },
+    SET_TOKEN_EXPIRATION(state, expiration) {
+        state.tokenExpiration = expiration;
+        localStorage.setItem("tokenExpiration", JSON.stringify(expiration));
+    },
     CLEAR_TOKEN() {
         localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("tokenExpiration");
         delete axios.defaults.headers.common["Authorization"];
     },
 };
@@ -45,13 +58,24 @@ const actions = {
             console.log("Login response:", response.data);
 
             if (response.data.token) {
-                const { token, name, role, permissions } = response.data;
+                const {
+                    token,
+                    refreshToken,
+                    name,
+                    role,
+                    permissions,
+                    expiresIn,
+                } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
                 commit("SET_USER_NAME", name);
                 commit("SET_IS_ADMIN", role.toLowerCase() === "admin");
                 commit("SET_PERMISSIONS", permissions || []);
                 commit("SET_TOKEN", token);
+                commit("SET_REFRESH_TOKEN", refreshToken);
+
+                const expirationTime = Date.now() + expiresIn * 1000;
+                commit("SET_TOKEN_EXPIRATION", expirationTime);
 
                 console.log("User logged in:", name);
             } else {
@@ -66,6 +90,21 @@ const actions = {
             );
         }
     },
+
+    async refreshToken({ commit }) {
+        try {
+            const response = await axios.post("/api/refresh-token");
+            const { access_token } = response.data;
+    
+            // Commit the new access token to the store and set it as the default for Axios
+            commit("SET_TOKEN", access_token);
+    
+            console.log("Token refreshed");
+        } catch (error) {
+            console.error("Failed to refresh token:", error);
+        }
+    },
+    
 
     async logout({ commit }) {
         try {

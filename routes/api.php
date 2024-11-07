@@ -20,7 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::post('/refresh-token', function () {
+    return response()->json([
+        'access_token' => JWTAuth::refresh(JWTAuth::getToken())
+    ]);
+})->middleware('jwt.auth');
 
 Route::middleware(['jwt.auth'])->group(function () {
     // Define routes that require authentication here
@@ -28,7 +32,10 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    
+    
 });
+
 
 Route::get('/user/profile', function () {
     $user = auth()->user();
