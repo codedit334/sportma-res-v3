@@ -3,24 +3,17 @@ import axios from "axios";
 const state = {
     isAuthenticated:
         JSON.parse(localStorage.getItem("isAuthenticated")) || false,
-    userName: localStorage.getItem("userName") || null,
-    profilePicture: null,
     isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
-    permissions: JSON.parse(localStorage.getItem("permissions")) || [],
     tokenExpiration:
         JSON.parse(localStorage.getItem("tokenExpiration")) || null, // new
     refreshToken: localStorage.getItem("refreshToken") || null, // new
-    user: null,
+    user: localStorage.getItem("user") || [],
 };
 
 const mutations = {
     SET_AUTHENTICATED(state, status) {
         state.isAuthenticated = status;
         localStorage.setItem("isAuthenticated", status);
-    },
-    SET_USER_NAME(state, name) {
-        state.userName = name;
-        localStorage.setItem("userName", name);
     },
     SET_USER_PROFILE(state, userData) {
         state.user = userData;
@@ -33,10 +26,6 @@ const mutations = {
     SET_IS_ADMIN(state, isAdmin) {
         state.isAdmin = isAdmin;
         localStorage.setItem("isAdmin", isAdmin);
-    },
-    SET_PERMISSIONS(state, permissions) {
-        state.permissions = permissions;
-        localStorage.setItem("permissions", JSON.stringify(permissions));
     },
     SET_TOKEN(state, token) {
         localStorage.setItem("token", token);
@@ -79,15 +68,11 @@ const actions = {
                 } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
-                commit("SET_USER_NAME", name);
                 commit("SET_IS_ADMIN", role.toLowerCase() === "admin");
-                commit("SET_PERMISSIONS", permissions || []);
                 commit("SET_TOKEN", token);
                 commit("SET_REFRESH_TOKEN", refreshToken);
                 commit("SET_USER_PROFILE", response.data);
                 
-                // await dispatch("fetchUserProfile");
-
                 const expirationTime = Date.now() + expiresIn * 1000;
                 commit("SET_TOKEN_EXPIRATION", expirationTime);
 
@@ -145,16 +130,12 @@ const actions = {
 
             if (response.data.success) {
                 commit("SET_AUTHENTICATED", false);
-                commit("SET_USER_NAME", null);
                 commit("SET_IS_ADMIN", false);
-                commit("SET_PERMISSIONS", []);
                 commit("CLEAR_TOKEN");
                 commit("CLEAR_USER_PROFILE");
 
                 localStorage.removeItem("isAuthenticated");
-                localStorage.removeItem("userName");
                 localStorage.removeItem("isAdmin");
-                localStorage.removeItem("permissions");
 
                 console.log("User logged out");
             } else {
@@ -168,10 +149,7 @@ const actions = {
 
 const getters = {
     isAuthenticated: (state) => state.isAuthenticated,
-    userName: (state) => state.userName,
     isAdmin: (state) => state.isAdmin,
-    permissions: (state) => state.permissions,
-    profilePicture: (state) => state.profilePicture,
     user: (state) => state.user,
 };
 

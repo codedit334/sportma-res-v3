@@ -37,7 +37,7 @@ class AuthController extends Controller
             'role' => $user->role, 
             'email' => $user->email,
             'profile_picture' => $user->profile_picture,
-            'permissions' => $user->permissions, 
+            'permissions' => json_decode($user->permissions), 
             'expiresIn' => $expiresIn,  // Add expiresIn
         ];
 

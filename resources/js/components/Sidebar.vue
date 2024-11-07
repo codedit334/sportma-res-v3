@@ -61,11 +61,11 @@ import { useStore } from "vuex"; // Import Vuex store
 const is_expanded = ref(false);
 const store = useStore();
 
-const permissions = computed(() => store.getters['auth/permissions'] || []);
+const user = computed(() => store.getters['auth/user']);
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {
-    return permissions.value.includes(permission);
+    return user.value ? user.value.permissions.includes(permission) : false;
 };
 
 const ToggleMenu = () => {

@@ -41,8 +41,6 @@ onMounted(() => {
 
 const user = computed(() => store.getters["auth/user"]) ;
 
-console.log("Computed user",user.value)
-console.log("Computed _user",user._value)
 
 watch(
     () => user.value,

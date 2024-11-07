@@ -47,7 +47,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const store = useStore();
     const isAuthenticated = store.getters["auth/isAuthenticated"];
-    const userPermissions = store.getters["auth/permissions"]; // Adjust according to your Vuex store structure
+    // const user = JSON.parse(store.getters["auth/user"]);
+    let user = store.getters["auth/user"];
+    // Check if user is a string and convert it to an array
+    if (typeof user === "string") {
+        user = JSON.parse(user);
+    }
 
     // Check if the route requires authentication
     if (to.meta.requiresAuth && !isAuthenticated) {
@@ -55,7 +60,7 @@ router.beforeEach((to, from, next) => {
     } else if (to.meta.requiresAuth && to.path !== "/profile") {
         // Check permissions for routes other than "/profile"
         const hasPermission = to.meta.permissions.some((permission) =>
-            userPermissions.includes(permission)
+            user.permissions.includes(permission)
         );
         if (!hasPermission) {
             next("/"); // Redirect to home or another designated page if no permission
