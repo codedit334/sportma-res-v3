@@ -23,21 +23,30 @@ class AuthController extends Controller
         // Fetch the user associated with the credentials
         $user = User::where('email', $credentials['email'])->first();
 
+        // Get the refresh token
+        $refreshToken = JWTAuth::getToken(); // Assuming you are using the same token for both purposes
+
+        // Get the token expiration time (TTL) in seconds
+        $expiresIn = config('jwt.ttl') * 60;  // Converting TTL from minutes to seconds
+
         // Prepare the response data
         $responseData = [
             'token' => $token,
+            'refreshToken' => $refreshToken,  // Add refresh token
             'name' => $user->name, 
             'role' => $user->role, 
             'permissions' => $user->permissions, 
+            'expiresIn' => $expiresIn,  // Add expiresIn
         ];
 
     } catch (JWTException $e) {
         return response()->json(['error' => 'Could not create token'], 500);
     }
 
-    // Return the response with token and user data
+    // Return the response with token, refreshToken, user data, and expiresIn
     return response()->json($responseData);
 }
+
 
 
 public function logout(Request $request)

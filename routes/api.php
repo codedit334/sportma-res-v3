@@ -21,9 +21,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/refresh-token', function () {
-    return response()->json([
-        'access_token' => JWTAuth::refresh(JWTAuth::getToken())
-    ]);
+    try {
+        // Get the current token
+        $token = JWTAuth::getToken();
+        
+        // Refresh the token
+        $newToken = JWTAuth::refresh($token);
+        
+        // Get the expiration time for the new token
+        $expiresIn = JWTAuth::factory()->getTTL() * 60;  // Convert from minutes to seconds
+        
+        return response()->json([
+            'access_token' => $newToken,
+            'expiresIn' => $expiresIn, // Pass the expiration time to frontend
+        ]);
+    } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+        return response()->json(['error' => 'Could not refresh token'], 500);
+    }
 })->middleware('jwt.auth');
 
 Route::middleware(['jwt.auth'])->group(function () {

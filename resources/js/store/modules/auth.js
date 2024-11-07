@@ -94,17 +94,20 @@ const actions = {
     async refreshToken({ commit }) {
         try {
             const response = await axios.post("/api/refresh-token");
-            const { access_token } = response.data;
-    
+            const { access_token, expiresIn } = response.data; // Assuming expiresIn is returned from the backend
+
             // Commit the new access token to the store and set it as the default for Axios
             commit("SET_TOKEN", access_token);
-    
+
+            // Update the expiration time (assuming `expiresIn` is the number of seconds the token is valid)
+            const expirationTime = Date.now() + expiresIn * 1000;
+            commit("SET_TOKEN_EXPIRATION", expirationTime);
+
             console.log("Token refreshed");
         } catch (error) {
             console.error("Failed to refresh token:", error);
         }
     },
-    
 
     async logout({ commit }) {
         try {
