@@ -24,6 +24,11 @@ const mutations = {
     },
     SET_USER_PROFILE(state, userData) {
         state.user = userData;
+        localStorage.setItem("user", JSON.stringify(userData));
+    },
+    CLEAR_USER_PROFILE(state) {
+        state.user = null;
+        localStorage.removeItem("user");
     },
     SET_IS_ADMIN(state, isAdmin) {
         state.isAdmin = isAdmin;
@@ -54,7 +59,7 @@ const mutations = {
 };
 
 const actions = {
-    async login({ commit }, { email, password }) {
+    async login({ commit, dispatch }, { email, password }) {
         try {
             const response = await axios.post("/api/login", {
                 email,
@@ -68,6 +73,7 @@ const actions = {
                     refreshToken,
                     name,
                     role,
+                    profile_picture,
                     permissions,
                     expiresIn,
                 } = response.data;
@@ -78,6 +84,9 @@ const actions = {
                 commit("SET_PERMISSIONS", permissions || []);
                 commit("SET_TOKEN", token);
                 commit("SET_REFRESH_TOKEN", refreshToken);
+                commit("SET_USER_PROFILE", response.data);
+                
+                // await dispatch("fetchUserProfile");
 
                 const expirationTime = Date.now() + expiresIn * 1000;
                 commit("SET_TOKEN_EXPIRATION", expirationTime);
@@ -140,6 +149,7 @@ const actions = {
                 commit("SET_IS_ADMIN", false);
                 commit("SET_PERMISSIONS", []);
                 commit("CLEAR_TOKEN");
+                commit("CLEAR_USER_PROFILE");
 
                 localStorage.removeItem("isAuthenticated");
                 localStorage.removeItem("userName");

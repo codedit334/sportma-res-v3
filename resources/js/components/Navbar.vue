@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar">
         <div class="navbar-content">
-            <div class="auth-controls">
+            <div class="auth-controls" v-if="user">
                 <span v-if="isAuthenticated && user" class="username">{{ user.name }}</span>
                 <button v-if="isAuthenticated" @click="logout" class="auth-button">
                     Se déconnecter
@@ -12,7 +12,7 @@
                 <router-link to="/profile">
                     <img
                         v-if="isAuthenticated && user"
-                        :src="'/storage/' + user.profile_picture"
+                        :src="user.profile_picture ? '/storage/' + user.profile_picture : '/assets/sportmalogo.jpeg'"
                         class="logo"
                         alt="User profile picture"
                     />
@@ -24,7 +24,7 @@
 
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -32,14 +32,24 @@ const store = useStore();
 const router = useRouter();
 
 const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
-const user = computed(() => store.getters["auth/user"]);
-console.log(user.value)
 
 onMounted(() => {
     if (isAuthenticated.value) {
         store.dispatch("auth/fetchUserProfile");
     }
 });
+
+const user = computed(() => store.getters["auth/user"]) ;
+
+console.log("Computed user",user.value)
+console.log("Computed _user",user._value)
+
+watch(
+    () => user.value,
+    (newValue) => {
+        console.log("User updated:", newValue);
+    }
+);
 
 const logout = async () => {
     try {

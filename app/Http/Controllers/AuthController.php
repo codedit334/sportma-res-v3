@@ -35,6 +35,8 @@ class AuthController extends Controller
             'refreshToken' => $refreshToken,  // Add refresh token
             'name' => $user->name, 
             'role' => $user->role, 
+            'email' => $user->email,
+            'profile_picture' => $user->profile_picture,
             'permissions' => $user->permissions, 
             'expiresIn' => $expiresIn,  // Add expiresIn
         ];

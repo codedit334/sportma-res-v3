@@ -61,9 +61,7 @@ import { useStore } from "vuex"; // Import Vuex store
 const is_expanded = ref(false);
 const store = useStore();
 
-const userName = computed(() => store.getters['auth/userName']);
 const permissions = computed(() => store.getters['auth/permissions'] || []);
-const isAdmin = computed(() => userName.value && userName.value.toLowerCase() === 'admin');
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {
