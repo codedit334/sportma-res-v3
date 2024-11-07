@@ -249,7 +249,6 @@ export default {
     },
     mounted() {
         this.updatedEvents = [...this.events];
-        console.log(this.updatedEvents);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
@@ -665,8 +664,6 @@ export default {
                         // Calculate the new duration to fit within the same day
                         duration = Math.floor((latestEnd - newDate) / 60000); // Duration in minutes
                     }
-                    
-                    console.log(duration)
 
                     this.$refs.vuecal2.createEvent(event.date, duration, {
                         id: uuidv4(),

@@ -12,6 +12,8 @@ const calendarModule = {
   },
   mutations: {
     SET_EVENTS(state, events) {
+      // Filter events with no id
+      events = events.filter((event) => event.id);
       state.events = events;
     },
   },
