@@ -2,14 +2,8 @@
     <nav class="navbar">
         <div class="navbar-content">
             <div class="auth-controls">
-                <span v-if="isAuthenticated" class="username">{{
-                    userName
-                }}</span>
-                <button
-                    v-if="isAuthenticated"
-                    @click="logout"
-                    class="auth-button"
-                >
+                <span v-if="isAuthenticated && user" class="username">{{ user.name }}</span>
+                <button v-if="isAuthenticated" @click="logout" class="auth-button">
                     Se déconnecter
                 </button>
                 <button v-else @click="goToLogin" class="auth-button">
@@ -17,10 +11,10 @@
                 </button>
                 <router-link to="/profile">
                     <img
-                        v-if="isAuthenticated"
-                        src="https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                        v-if="isAuthenticated && user"
+                        :src="'/storage/' + user.profile_picture"
                         class="logo"
-                        alt="Sportma logo"
+                        alt="User profile picture"
                     />
                 </router-link>
             </div>
@@ -28,8 +22,9 @@
     </nav>
 </template>
 
+
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -37,7 +32,14 @@ const store = useStore();
 const router = useRouter();
 
 const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
-const userName = computed(() => store.getters["auth/userName"]);
+const user = computed(() => store.getters["auth/user"]);
+console.log(user.value)
+
+onMounted(() => {
+    if (isAuthenticated.value) {
+        store.dispatch("auth/fetchUserProfile");
+    }
+});
 
 const logout = async () => {
     try {

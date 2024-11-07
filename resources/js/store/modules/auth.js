@@ -4,11 +4,13 @@ const state = {
     isAuthenticated:
         JSON.parse(localStorage.getItem("isAuthenticated")) || false,
     userName: localStorage.getItem("userName") || null,
+    profilePicture: null,
     isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
     permissions: JSON.parse(localStorage.getItem("permissions")) || [],
     tokenExpiration:
         JSON.parse(localStorage.getItem("tokenExpiration")) || null, // new
     refreshToken: localStorage.getItem("refreshToken") || null, // new
+    user: null,
 };
 
 const mutations = {
@@ -19,6 +21,9 @@ const mutations = {
     SET_USER_NAME(state, name) {
         state.userName = name;
         localStorage.setItem("userName", name);
+    },
+    SET_USER_PROFILE(state, userData) {
+        state.user = userData;
     },
     SET_IS_ADMIN(state, isAdmin) {
         state.isAdmin = isAdmin;
@@ -91,6 +96,22 @@ const actions = {
         }
     },
 
+    async fetchUserProfile({ commit }) {
+        try {
+            const response = await axios.get("/api/user/profile");
+            let userData = response.data;
+
+            // If permissions are stored as a string, parse it into an array
+            if (typeof userData.permissions === "string") {
+                userData.permissions = JSON.parse(userData.permissions);
+            }
+
+            commit("SET_USER_PROFILE", userData);
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    },
+
     async refreshToken({ commit }) {
         try {
             const response = await axios.post("/api/refresh-token");
@@ -140,6 +161,8 @@ const getters = {
     userName: (state) => state.userName,
     isAdmin: (state) => state.isAdmin,
     permissions: (state) => state.permissions,
+    profilePicture: (state) => state.profilePicture,
+    user: (state) => state.user,
 };
 
 export default {
