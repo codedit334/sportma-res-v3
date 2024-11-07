@@ -620,7 +620,6 @@ export default {
                         ? matchingTerrain.prices
                         : null;
 
-
                     if (splitType.type.toLowerCase() === "football") {
                         newDate = this.snapToNearest1h(newDate);
                     } else if (splitType.type.toLowerCase() === "padel") {
@@ -650,6 +649,24 @@ export default {
                         eventClass = "green-event"; // Default class for other users
                         clickable = true;
                     }
+
+
+                    // Calculate the event end time by adding the duration (in minutes) to the start time
+                    let eventEnd = new Date(
+                        newDate.getTime() + duration * 60000
+                    ); // duration in milliseconds
+
+                    // Set the latest possible end time as 23:59:59.999
+                    const latestEnd = new Date(newDate);
+                    latestEnd.setHours(23, 59, 59, 999);
+
+                    // If the event end exceeds 23:59, recalculate the duration to fit within the same day
+                    if (eventEnd > latestEnd) {
+                        // Calculate the new duration to fit within the same day
+                        duration = Math.floor((latestEnd - newDate) / 60000); // Duration in minutes
+                    }
+                    
+                    console.log(duration)
 
                     this.$refs.vuecal2.createEvent(event.date, duration, {
                         id: uuidv4(),
