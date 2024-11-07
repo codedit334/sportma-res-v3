@@ -32,10 +32,10 @@ const vuetify = createVuetify({
 });
 
 // Set the default Authorization header if a token exists
-const token = localStorage.getItem("token");
+const token = localStorage.getItem('token');
 if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    store.commit("auth/SET_AUTHENTICATED", true);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    store.commit('auth/SET_AUTHENTICATED', true);
 }
 
 setInterval(() => {
@@ -44,15 +44,12 @@ setInterval(() => {
 
     console.log("Time to token expiration:", timeToExpire);
 
-    if (timeToExpire <= 0) {
-        // Token is expired or about to expire
-        store.dispatch("auth/refreshToken");
-    } else if (timeToExpire <= 300000) {
-        // Refresh 5 minutes (300000 ms) before expiration
+    if (timeToExpire < 300000 && timeToExpire > 0) { // refresh 5 minutes before expiration
         store.dispatch("auth/refreshToken");
     }
-}, 3000); // check every minute
+}, 60000); // check every minute
 
 import router from "./router";
 
 createApp(App).use(store).use(router).use(vuetify).mount("#app");
+
