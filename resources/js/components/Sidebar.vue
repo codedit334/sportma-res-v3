@@ -61,11 +61,15 @@ import { useStore } from "vuex"; // Import Vuex store
 const is_expanded = ref(false);
 const store = useStore();
 
-const user = computed(() => store.getters['auth/user']);
+// const user = computed(() => store.getters['auth/user']);
+// get the user from the local storage
+const user = JSON.parse(localStorage.getItem("user"));
+console.log(user);
+
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {
-    return user.value ? user.value.permissions.includes(permission) : false;
+    return user ? user.permissions.includes(permission) : false;
 };
 
 const ToggleMenu = () => {

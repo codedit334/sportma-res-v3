@@ -47,7 +47,7 @@
             :snap-to-time="15"
             :editable-events="{
                 title: false,
-                drag: false,
+                drag: true,
                 resize: true,
                 delete: false,
                 create: true,
@@ -249,6 +249,7 @@ export default {
     },
     mounted() {
         this.updatedEvents = [...this.events];
+        console.log(this.updatedEvents);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
