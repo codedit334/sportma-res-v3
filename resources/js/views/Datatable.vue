@@ -210,10 +210,49 @@ const exportToPDF = () => {
         row.statut,
     ]);
 
+    // Add logos to the top
+    const logoLeft = "https://sportma.ma/assets/sportmaApp-ERXWPjF0.jpeg";
+    const logoRight =
+        "https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
+    const logoWidth = 15;
+    const logoHeight = 15;
+
+    // Set y-coordinate to position logos at the top of the page
+    const topYPosition = 10; // 10 units from the top
+
+    // Add the logos to the PDF
+    doc.addImage(
+        logoLeft,
+        "JPEG",
+        10,
+        topYPosition,
+        logoWidth,
+        logoHeight
+    );
+    doc.addImage(
+        logoRight,
+        "JPEG",
+        doc.internal.pageSize.width - logoWidth - 10,
+        topYPosition,
+        logoWidth,
+        logoHeight
+    );
+
+    // Add date or date range if selected
+    const dateText = dateRangeText.value
+        ? `Date: ${dateRangeText.value}`
+        : selectedFilters.value.dateRange
+        ? `Date: ${new Date(selectedFilters.value.dateRange[0]).toLocaleDateString()}`
+        : "No date selected";
+
+    const dateTextHeight = 10; // Height to ensure there's space for the date text
+    doc.text(dateText, 10, topYPosition + logoHeight + dateTextHeight);
+
+    // Add table below the date text
     doc.autoTable({
         head: [columns],
         body: rows,
-        startY: 10,
+        startY: topYPosition + logoHeight + dateTextHeight + 10, // Start the table below the date text
     });
 
     const totalPrice = calculateTotalPrice();
@@ -224,32 +263,10 @@ const exportToPDF = () => {
         styles: { fontStyle: "bold" },
     });
 
-    const logoLeft = "https://sportma.ma/assets/sportmaApp-ERXWPjF0.jpeg";
-    const logoRight =
-        "https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
-    const pageHeight = doc.internal.pageSize.height;
-    const logoWidth = 15;
-    const logoHeight = 15;
-
-    doc.addImage(
-        logoLeft,
-        "JPEG",
-        10,
-        pageHeight - logoHeight - 10,
-        logoWidth,
-        logoHeight
-    );
-    doc.addImage(
-        logoRight,
-        "JPEG",
-        doc.internal.pageSize.width - logoWidth - 10,
-        pageHeight - logoHeight - 10,
-        logoWidth,
-        logoHeight
-    );
-
     doc.save("reservations.pdf");
 };
+
+
 </script>
 
 <style scoped></style>
