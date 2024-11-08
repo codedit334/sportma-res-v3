@@ -65,17 +65,34 @@ Route::get('/user/profile', function () {
 Route::post('/user/profile/update', function (\Illuminate\Http\Request $request) {
     $user = auth()->user();
 
+    // Validate the incoming request
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'permissions' => 'nullable|array',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'new_password' => 'nullable|string|min:8|confirmed', // For new password
+    ]);
+
+    // Update the user's details
     $user->update($request->only(['name', 'email', 'permissions']));
 
+    // Update the profile picture if it exists
     if ($request->hasFile('profile_picture')) {
         $path = $request->file('profile_picture')->store('profile_pictures', 'public');
         $user->profile_picture = $path;
+    }
+
+    // Update password if a new password is provided
+    if ($request->filled('new_password')) {
+        $user->password = bcrypt($request->new_password);
     }
 
     $user->save();
 
     return response()->json($user);
 })->middleware('jwt.auth');
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);

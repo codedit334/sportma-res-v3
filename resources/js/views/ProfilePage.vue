@@ -29,7 +29,7 @@
                     <v-form ref="editForm" @submit.prevent="updateProfile">
                         <v-text-field
                             v-model="form.name"
-                            label="Name"
+                            label="Nom"
                             required
                         ></v-text-field>
                         <v-text-field
@@ -53,6 +53,31 @@
                             label="Télécharger la photo de profil"
                             accept="image/*"
                         ></v-file-input>
+
+                        <!-- Change Password Section -->
+                        <v-btn
+                            text
+                            color="primary"
+                            @click="toggleChangePassword"
+                        >
+                            Changer le mot de passe
+                        </v-btn>
+
+                        <div v-if="changePassword">
+                            <v-text-field
+                                v-model="form.new_password"
+                                label="Nouveau Mot de passe"
+                                type="password"
+                                required
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="form.confirm_new_password"
+                                label="Confirmer le mot de passe"
+                                type="password"
+                                :error-messages="passwordError"
+                                required
+                            ></v-text-field>
+                        </div>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
@@ -77,12 +102,15 @@ export default {
     data() {
         return {
             editModal: false,
+            changePassword: false,
             form: {
                 name: "",
                 email: "",
                 role: "",
                 permissions: [],
                 profile_picture: null,
+                new_password: "",
+                confirm_new_password: "",
             },
             permissionsOptions: [
                 "Dashboard",
@@ -97,24 +125,51 @@ export default {
         user() {
             return this.$store.getters["auth/user"];
         },
+        passwordError() {
+            if (this.form.new_password && this.form.confirm_new_password) {
+                return this.form.new_password !== this.form.confirm_new_password
+                    ? "Les mots de passe ne correspondent pas."
+                    : "";
+            }
+            return "";
+        },
     },
     methods: {
         openEditModal() {
             this.editModal = true;
             this.form = { ...this.user, profile_picture: null };
         },
+        toggleChangePassword() {
+            this.changePassword = !this.changePassword;
+        },
         async updateProfile() {
+            // Prevent update if password error exists
+            if (this.passwordError) {
+                return;
+            }
+
             const formData = new FormData();
             formData.append("name", this.form.name);
             formData.append("email", this.form.email);
             formData.append("role", this.form.role);
-            formData.append(
-                "permissions",
-                JSON.stringify(this.form.permissions)
-            );
+
+            // Append each permission individually to handle array format correctly
+            this.form.permissions.forEach((permission) => {
+                formData.append("permissions[]", permission);
+            });
+
             if (this.form.profile_picture) {
                 formData.append("profile_picture", this.form.profile_picture);
             }
+
+            if (this.changePassword) {
+                formData.append("new_password", this.form.new_password);
+                formData.append(
+                    "new_password_confirmation",
+                    this.form.confirm_new_password
+                );
+            }
+
             try {
                 const response = await axios.post(
                     "/api/user/profile/update",
@@ -123,8 +178,10 @@ export default {
                         headers: { "Content-Type": "multipart/form-data" },
                     }
                 );
+                console.log("DATA", response.data);
                 this.$store.dispatch("auth/fetchUserProfile");
                 this.editModal = false;
+                this.changePassword = false;
             } catch (error) {
                 console.error("Error updating profile:", error);
             }
