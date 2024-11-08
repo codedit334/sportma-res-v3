@@ -3,7 +3,11 @@
         <h2>Profile</h2>
         <div v-if="user" class="profile-details">
             <img
-                :src="user.profile_picture ? `/storage/${user.profile_picture}` : '/assets/sportmalogo.jpeg'"
+                :src="
+                    user.profile_picture
+                        ? `/storage/${user.profile_picture}`
+                        : '/assets/sportmalogo.jpeg'
+                "
                 alt="Profile Picture"
                 class="profile-picture"
             />
@@ -14,18 +18,30 @@
                 <strong>Permissions:</strong>
                 {{ user.permissions.join(", ") }}
             </p>
-            <button @click="openEditModal">Edit Profile</button>
+            <button @click="openEditModal">Modifier votre Profile</button>
         </div>
 
         <!-- Edit Profile Modal -->
         <v-dialog v-model="editModal" max-width="500px">
             <v-card>
-                <v-card-title>Edit Profile</v-card-title>
+                <v-card-title>Modification du Profile</v-card-title>
                 <v-card-text>
                     <v-form ref="editForm" @submit.prevent="updateProfile">
-                        <v-text-field v-model="form.name" label="Name" required></v-text-field>
-                        <v-text-field v-model="form.email" label="Email" required></v-text-field>
-                        <v-text-field v-model="form.role" label="Role" disabled></v-text-field>
+                        <v-text-field
+                            v-model="form.name"
+                            label="Name"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="form.email"
+                            label="Email"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="form.role"
+                            label="Role"
+                            disabled
+                        ></v-text-field>
                         <v-select
                             v-model="form.permissions"
                             label="Permissions"
@@ -34,14 +50,18 @@
                         ></v-select>
                         <v-file-input
                             v-model="form.profile_picture"
-                            label="Upload Profile Picture"
+                            label="Télécharger la photo de profil"
                             accept="image/*"
                         ></v-file-input>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="blue darken-1" text @click="editModal = false">Cancel</v-btn>
-                    <v-btn color="blue darken-1" text @click="updateProfile">Save</v-btn>
+                    <v-btn color="blue darken-1" text @click="editModal = false"
+                        >Annuler</v-btn
+                    >
+                    <v-btn color="blue darken-1" text @click="updateProfile"
+                        >Enregistrer</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -64,7 +84,13 @@ export default {
                 permissions: [],
                 profile_picture: null,
             },
-            permissionsOptions: ["Dashboard", "Comptabilite", "Configuration", "Calendrier", "Staff"],
+            permissionsOptions: [
+                "Dashboard",
+                "Comptabilite",
+                "Configuration",
+                "Calendrier",
+                "Staff",
+            ],
         };
     },
     computed: {
@@ -82,7 +108,10 @@ export default {
             formData.append("name", this.form.name);
             formData.append("email", this.form.email);
             formData.append("role", this.form.role);
-            formData.append("permissions", JSON.stringify(this.form.permissions));
+            formData.append(
+                "permissions",
+                JSON.stringify(this.form.permissions)
+            );
             if (this.form.profile_picture) {
                 formData.append("profile_picture", this.form.profile_picture);
             }
