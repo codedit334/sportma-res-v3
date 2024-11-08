@@ -6,11 +6,23 @@
             <v-btn color="primary" @click="openAddModal"
                 >Ajout Sport / Terrain</v-btn
             >
+            <!-- Search Bar -->
+            <v-text-field
+                class="mt-4"
+                v-model="search"
+                label="Rechercher..."
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                hide-details
+                single-line
+            ></v-text-field>
 
             <!-- Data Table -->
             <v-data-table
                 :headers="headers"
                 :items="splitTypes"
+                :search="search"
+                :custom-filter="customFilter"
                 class="mt-4"
                 item-key="type"
             >
@@ -228,21 +240,42 @@ const startPicker = ref(null);
 const endPicker = ref(null);
 const price = ref(null);
 const editIndex = ref(null);
+const search = ref("");
 const newSplitType = ref("");
 const newTerrain = ref("");
 const newTerrainID = ref(null);
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
+console.log(splitTypes.value);
 const menu2 = ref(false);
 const modal2 = ref(false);
 
 // Define your data table headers
 const headers = ref([
-    { title: "Sport", value: "type" },
-    { title: "Terrain", value: "terrains" },
-    { title: "Actions", value: "actions" },
+    { title: "Sport", key: "type" },
+    { title: "Terrain", key: "terrains" },
+    { title: "Actions", key: "actions" },
 ]);
+
+const customFilter = (value, search, item) => {
+    if (!search) return true; // Show all items if no search term
+
+    const lowerSearch = search.toLowerCase();
+
+    // Check if the sport name contains the search term
+    const matchesType = item.raw.type.toLowerCase().includes(lowerSearch);
+
+
+    // Check if any of the terrain names contain the search term
+    const matchesTerrain = item.raw.terrains.some((terrain) =>
+        terrain.label.toLowerCase().includes(lowerSearch)
+    );
+
+    // Return true if either the sport or any terrain name matches
+    return matchesType || matchesTerrain;
+};
+
 
 const openAddModal = () => {
     resetForm();
@@ -321,7 +354,9 @@ const addPriceRange = () => {
 
     // If there's an overlap, alert an error in French
     if (isOverlap) {
-        alert("Erreur : Cette plage de temps chevauche une autre plage existante.");
+        alert(
+            "Erreur : Cette plage de temps chevauche une autre plage existante."
+        );
     } else if (
         newPrice.value.startTime &&
         newPrice.value.endTime &&
@@ -334,7 +369,6 @@ const addPriceRange = () => {
 
     resetTimePicker();
 };
-
 
 const removePriceRange = (index) => {
     newPrices.value.splice(index, 1);
