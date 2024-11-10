@@ -12,7 +12,7 @@
                 <router-link to="/profile">
                     <img
                         v-if="isAuthenticated && user"
-                        :src="user.profile_picture ? '/storage/' + user.profile_picture : '/assets/sportmalogo.jpeg'"
+                        :src="user.profile_picture ? '/storage/' + user.profile_picture : defaultUser"
                         class="logo"
                         alt="User profile picture"
                     />
@@ -27,6 +27,7 @@
 import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import defaultUser from "../assets/user.png";
 
 const store = useStore();
 const router = useRouter();
@@ -40,6 +41,7 @@ onMounted(() => {
 });
 
 const user = computed(() => store.getters["auth/user"]) ;
+console.log("user new", user.value);
 
 
 watch(

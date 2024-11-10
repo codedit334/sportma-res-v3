@@ -3,12 +3,15 @@
         <h2>Profile</h2>
         <div v-if="user" class="profile-details">
             <img
-                :src="
-                    user.profile_picture
-                        ? `/storage/${user.profile_picture}`
-                        : '/assets/sportmalogo.jpeg'
-                "
+                v-if="user.profile_picture"
+                :src="'/storage/' + user.profile_picture"
                 alt="Profile Picture"
+                class="profile-picture"
+            />
+            <img
+                v-else
+                src="/resources/js/assets/user.png"
+                alt="Default Profile Picture"
                 class="profile-picture"
             />
             <p><strong>Name:</strong> {{ user.name }}</p>
@@ -97,6 +100,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
+import defaultUser from "@/assets/user.png";
 
 export default {
     data() {
@@ -189,6 +193,7 @@ export default {
     },
     mounted() {
         this.$store.dispatch("auth/fetchUserProfile");
+        console.log("Default user image:", defaultUser);
     },
 };
 </script>

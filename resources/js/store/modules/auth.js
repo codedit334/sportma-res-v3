@@ -36,6 +36,7 @@ const mutations = {
         localStorage.setItem("refreshToken", refreshToken);
     },
     SET_TOKEN_EXPIRATION(state, expiration) {
+        console.log("Token expiration Set:", expiration);
         state.tokenExpiration = expiration;
         localStorage.setItem("tokenExpiration", JSON.stringify(expiration));
     },
@@ -116,6 +117,7 @@ const actions = {
 
             // Update the expiration time (assuming `expiresIn` is the number of seconds the token is valid)
             const expirationTime = Date.now() + expiresIn * 1000;
+
             commit("SET_TOKEN_EXPIRATION", expirationTime);
 
             console.log("Token refreshed");
@@ -151,6 +153,7 @@ const getters = {
     isAuthenticated: (state) => state.isAuthenticated,
     isAdmin: (state) => state.isAdmin,
     user: (state) => state.user,
+    tokenExpiration: (state) => state.tokenExpiration,
 };
 
 export default {

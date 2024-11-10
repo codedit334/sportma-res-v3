@@ -1,5 +1,5 @@
 <template>
-    <v-card title="User Management" flat class="my-5 mx-5">
+    <v-card title="Gestion des utilisateurs" flat class="my-5 mx-5">
         <template v-slot:text>
             <v-btn color="primary" @click="openAddUserModal">
                 Ajout utilisateur
@@ -12,7 +12,6 @@
             label="Recherche"
             class="my-3 mx-4"
             clearable
-            @input="filterUsers"
         ></v-text-field>
 
         <!-- User Data Table -->
