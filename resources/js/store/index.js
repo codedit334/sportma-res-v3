@@ -5,28 +5,10 @@ import auth from './modules/auth';
 
 const store = createStore({
 
-  state: {
-    count: 0,
-  },
   modules: {
     calendarConfig,
     calendar: calendarModule,
     auth
-  },
-  mutations: {
-    increment(state) {
-      state.count++;
-    },
-  },
-  actions: {
-    increment({ commit }) {
-      commit('increment');
-    },
-  },
-  getters: {
-    getCount(state) {
-      return state.count;
-    },
   },
 });
 
