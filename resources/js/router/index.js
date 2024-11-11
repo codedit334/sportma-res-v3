@@ -47,19 +47,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const store = useStore();
     const isAuthenticated = store.getters["auth/isAuthenticated"];
-    // const user = JSON.parse(store.getters["auth/user"]);
     let user = store.getters["auth/user"];
-    // Check if user is a string and convert it to an array
+
+    // Check if user is a string and convert it to an object
     if (typeof user === "string") {
         user = JSON.parse(user);
     }
 
+    const isAdmin = user.isAdmin;
+
     // Check if the route requires authentication
     if (to.meta.requiresAuth && !isAuthenticated) {
         next("/login"); // Redirect to login if not authenticated
-    } else if (to.meta.requiresAuth && to.path !== "/profile") {
-        // Check permissions for routes other than "/profile"
-        const hasPermission = to.meta.permissions.some((permission) =>
+    } else if (to.meta.requiresAuth && !isAdmin && to.path !== "/profile") {
+        // If not admin, check permissions for routes other than "/profile"
+        const hasPermission = to.meta.permissions?.some((permission) =>
             user.permissions.includes(permission)
         );
         if (!hasPermission) {
