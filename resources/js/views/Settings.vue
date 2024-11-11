@@ -300,23 +300,33 @@ const openEditModal = (index) => {
     dialog.value = true;
 };
 
-const saveSplitType = () => {
+const saveSplitType = async () => {
     if (newSplitType.value) {
-        store.commit("calendarConfig/ADD_SPLIT_TYPE", {
+        // Prepare the data to be saved
+        const splitTypeData = {
             type: newSplitType.value,
             terrains: [
                 {
-                    // type: newSplitType.value,
                     terrainID: uuidv4(),
                     label: newTerrain.value,
                     prices: [...newPrices.value],
                 },
             ],
-        });
+        };
+
+        // Add the new split type to the store's state
+        store.commit("calendarConfig/ADD_SPLIT_TYPE", splitTypeData);
+
+
+        // Dispatch the action to save the updated calendar config to the backend
+        await store.dispatch("calendarConfig/saveCalendarConfig", user.value.company_id);
+
+        // After saving, reset the form and close the dialog
         resetForm();
         dialog.value = false;
     }
 };
+
 
 const updateSplitType = () => {
     if (editIndex.value !== null) {

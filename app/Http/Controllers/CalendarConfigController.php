@@ -30,13 +30,24 @@ class CalendarConfigController extends Controller
 
     // Create a new calendar config for a company
     public function store(Request $request)
-    {
-        $calendarConfig = new CalendarConfig();
-        $calendarConfig->company_id = $request->input('company_id');
-        $calendarConfig->created_by_user_id = $request->input('created_by_user_id');
-        $calendarConfig->configurations = $request->input('configurations');
-        $calendarConfig->save();
+{
+    // Validate the incoming request data
+    $validated = $request->validate([
+        'company_id' => 'required|exists:companies,id', // Make sure the company exists
+        'created_by_user_id' => 'required|exists:users,id', // Ensure the user exists
+        'configurations' => 'required|array', // Ensure configurations is an array
+    ]);
 
-        return response()->json($calendarConfig, 201);
-    }
+    // Create a new CalendarConfig record
+    $calendarConfig = new CalendarConfig();
+    $calendarConfig->company_id = $validated['company_id'];
+    $calendarConfig->created_by_user_id = $validated['created_by_user_id'];
+    $calendarConfig->configurations = json_encode($validated['configurations']); // Store configurations as JSON
+
+    // Save the calendar configuration
+    $calendarConfig->save();
+
+    // Return the newly created calendar configuration as JSON response
+    return response()->json($calendarConfig, 201); // HTTP status 201 Created
+}
 }

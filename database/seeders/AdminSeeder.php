@@ -24,8 +24,8 @@ class AdminSeeder extends Seeder
 
         // Create the admin user and link them to the company
         $admin = User::create([
-            'name' => 'Admin2',
-            'email' => 'admin2@example.com',
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
             'role' => 'Admin',
             'permissions' => null,
             'password' => Hash::make('password'),
