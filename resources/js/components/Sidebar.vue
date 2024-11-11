@@ -17,22 +17,22 @@
             </div>
             <h3>Menu</h3>
             <div class="menu">
-                <router-link v-if="hasPermission('Dashboard')" class="button" to="/">
+                <router-link v-if="hasPermission('Dashboard') || isAdmin" class="button" to="/">
                     <span class="material-icons material-symbols-outlined">insert_chart</span>
                     <span class="text">Dashboard</span>
                 </router-link>
-                <router-link v-if="hasPermission('Calendrier')" class="button" to="/calendar">
+                <router-link v-if="hasPermission('Calendrier') || isAdmin" class="button" to="/calendar">
                     <span class="material-icons material-symbols-outlined">calendar_today</span>
                     <span class="text">Calendrier</span>
                 </router-link>
-                <router-link v-if="hasPermission('Comptabilite')" class="button" to="/data">
+                <router-link v-if="hasPermission('Comptabilite') || isAdmin" class="button" to="/data">
                     <span class="material-icons material-symbols-outlined">table</span>
                     <span class="text">Comptabilité</span>
                 </router-link>
 
                 <!-- Conditional rendering based on permissions -->
                 <router-link
-                    v-if="hasPermission('Configuration')"
+                    v-if="hasPermission('Configuration') || isAdmin"
                     class="button"
                     to="/calendar/configuration"
                 >
@@ -40,7 +40,7 @@
                     <span class="text">Configuration</span>
                 </router-link>
                 <router-link
-                    v-if="hasPermission('Staff')"
+                    v-if="hasPermission('Staff') || isAdmin"
                     class="button"
                     to="/users"
                 >
@@ -64,8 +64,9 @@ const store = useStore();
 // const user = computed(() => store.getters['auth/user']);
 // get the user from the local storage
 const user = JSON.parse(localStorage.getItem("user"));
-console.log(user);
-
+// get isAdmin from store
+const isAdmin = computed(() => store.getters["auth/isAdmin"]);
+console.log('isAdmin:', isAdmin.value);
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {
