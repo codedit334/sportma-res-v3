@@ -303,9 +303,10 @@ const openEditModal = (index) => {
 const saveSplitType = async () => {
     if (newSplitType.value) {
         try {
+            console.log(user)
             await store.dispatch("calendarConfig/addSplitType", {
-                companyId: user.company_id, // assuming user object has the company_id
-                createdByUserId: user.id,   // assuming user object has the user id
+                companyId: user.value.company_id, // assuming user object has the company_id
+                createdByUserId: user.value.id,   // assuming user object has the user id
                 splitType: {
                     type: newSplitType.value,
                     terrains: [
