@@ -9,16 +9,17 @@ class CalendarConfigController extends Controller
 {
     // Fetch the calendar configuration for a specific company
     public function show($companyId)
-    {
-        $calendarConfig = CalendarConfig::where('company_id', $companyId)->first();
-        // Make sure its not a string
-        if (is_string($calendarConfig)) {
-            // $calendarConfig = json_decode($calendarConfig);
-        }
-        
-        return response()->json($calendarConfig);
-    }
+{
+    // Retrieve all calendar configurations for the specified company ID
+    $calendarConfigs = CalendarConfig::where('company_id', $companyId)->get();
 
+    // Decode each 'configurations' field and merge them into a single array
+    $configurations = $calendarConfigs->flatMap(function ($config) {
+        return json_decode($config->configurations, true);
+    })->toArray();
+
+    return response()->json(['configurations' => $configurations]);
+}
     // Update the calendar configuration for a specific company
     public function update(Request $request, $companyId)
     {
