@@ -27,7 +27,10 @@ class User extends Authenticatable implements JWTSubject
         'profile_picture',
     ];
 
-    
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
