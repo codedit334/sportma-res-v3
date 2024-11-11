@@ -166,7 +166,7 @@ const passwordConfirmation2 = ref("");
 const showPasswordFields = ref(false); // Ref to toggle password fields
 const search = ref(""); // Reactive variable for search input
 
-const roles = ["Admin", "User"];
+const roles = ["Responsable", "Receptionniste","Comptable", "Coordinateur d’Evenements"];
 const availablePermissions = [
     { id: "dashboard", name: "Dashboard" },
     { id: "comptabilite", name: "Comptabilite" },
