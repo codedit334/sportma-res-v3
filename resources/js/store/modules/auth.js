@@ -62,14 +62,12 @@ const actions = {
                     token,
                     refreshToken,
                     name,
-                    role,
-                    profile_picture,
-                    permissions,
+                    isAdmin,
                     expiresIn,
                 } = response.data;
 
                 commit("SET_AUTHENTICATED", true);
-                commit("SET_IS_ADMIN", role.toLowerCase() === "admin");
+                commit("SET_IS_ADMIN", isAdmin);
                 commit("SET_TOKEN", token);
                 commit("SET_REFRESH_TOKEN", refreshToken);
                 commit("SET_USER_PROFILE", response.data);
