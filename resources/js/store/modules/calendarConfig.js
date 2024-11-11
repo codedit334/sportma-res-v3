@@ -82,10 +82,18 @@ export default {
                 console.error("Error saving calendar config", error);
             }
         },
-        async addSplitType({ dispatch }, { companyId, splitType }) {
+        async addSplitType({ dispatch }, { companyId, createdByUserId, splitType }) {
             try {
-                await axios.post(`/api/calendar-configs/${companyId}/split-types`, splitType);
-                dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after addition
+                const response = await axios.post(`/api/calendar-configs`, {
+                    company_id: companyId,
+                    created_by_user_id: createdByUserId,
+                    configurations: [splitType], // Pass the new split type as an array of configurations
+                });
+        
+                // Fetch updated configurations after the creation
+                dispatch("fetchCalendarConfig", companyId);
+        
+                console.log("Calendar config created successfully");
             } catch (error) {
                 console.error("Error adding split type", error);
             }
