@@ -27,6 +27,8 @@ class AdminSeeder extends Seeder
                 'Staff',
             ]),
             'password' => Hash::make('password'),
+            'isAdmin' => true, // Set isAdmin to true
         ]);
     }
+    
 }

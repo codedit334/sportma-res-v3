@@ -12,20 +12,22 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('role');
-            $table->text('permissions')->nullable(); // Consider using JSON if you need complex permissions
-            $table->string('profile_picture')->nullable();
-            $table->string('password');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->string('role');
+        $table->text('permissions')->nullable(); // Consider using JSON if you need complex permissions
+        $table->string('profile_picture')->nullable();
+        $table->string('password');
+        $table->boolean('isAdmin')->default(false); // New isAdmin column
+        $table->timestamp('email_verified_at')->nullable();
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}
+
 
     /**
      * Reverse the migrations.
