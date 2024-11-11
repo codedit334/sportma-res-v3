@@ -14,4 +14,9 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function calendarConfigs()
+{
+    return $this->hasMany(CalendarConfig::class);
+}
 }

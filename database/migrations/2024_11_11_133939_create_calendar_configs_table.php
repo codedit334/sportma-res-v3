@@ -15,7 +15,7 @@ class CreateCalendarConfigsTable extends Migration
     {
         Schema::create('calendar_configs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id')->unique(); // Ensure only one config per company
+            $table->unsignedBigInteger('company_id'); // Ensure only one config per company
             $table->unsignedBigInteger('created_by_user_id');
             $table->json('configurations');  // Store configurations as JSON
             $table->timestamps();

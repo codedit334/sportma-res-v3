@@ -66,6 +66,7 @@ export default {
             try {
                 const response = await axios.get(`/api/calendar-configs/${companyId}`);
                 if (response.data && response.data.configurations) {
+                    console.log(response.data.configurations);
                     commit("SET_SPLIT_TYPES", response.data.configurations);
                 }
             } catch (error) {
@@ -84,7 +85,6 @@ export default {
         },
         async addSplitType({ dispatch }, { companyId, createdByUserId, splitType }) {
             try {
-                console.log(companyId, createdByUserId);
                 const response = await axios.post(`/api/calendar-configs`, {
                     company_id: companyId,
                     created_by_user_id: createdByUserId,

@@ -32,6 +32,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Company::class);
     }
 
+    public function calendarConfigs()
+{
+    return $this->hasMany(CalendarConfig::class, 'created_by_user_id');
+}
+
     /**
      * The attributes that should be hidden for serialization.
      *

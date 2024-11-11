@@ -15,10 +15,6 @@ class Event extends Model
         'reservations',
     ];
 
-    protected $casts = [
-        'reservations' => 'array',  // Automatically cast JSON to array
-    ];
-
     /**
      * Get the company that owns the event.
      */

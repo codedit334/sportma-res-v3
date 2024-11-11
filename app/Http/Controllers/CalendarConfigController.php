@@ -11,6 +11,11 @@ class CalendarConfigController extends Controller
     public function show($companyId)
     {
         $calendarConfig = CalendarConfig::where('company_id', $companyId)->first();
+        // Make sure its not a string
+        if (is_string($calendarConfig)) {
+            // $calendarConfig = json_decode($calendarConfig);
+        }
+        
         return response()->json($calendarConfig);
     }
 
