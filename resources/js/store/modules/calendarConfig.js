@@ -3,12 +3,11 @@ import axios from "axios";
 export default {
     namespaced: true,
     state: {
-        splitTypes: JSON.parse(localStorage.getItem("splitTypes")) || [],
+        splitTypes: [], // Remove localStorage reference; initialize as empty array
     },
     mutations: {
         SET_SPLIT_TYPES(state, splitTypes) {
-            state.splitTypes = splitTypes;
-            localStorage.setItem("splitTypes", JSON.stringify(splitTypes)); // Save to localStorage
+            state.splitTypes = splitTypes; // No localStorage update here
         },
         ADD_SPLIT_TYPE(state, splitType) {
             let timeStep;
@@ -26,15 +25,8 @@ export default {
                 timeCellHeight: timeCellHeight,
                 terrains: splitType.terrains,
             });
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
         },
-        UPDATE_SPLIT_TYPE(
-            state,
-            { index, splitType, terrain, terrainID, prices }
-        ) {
+        UPDATE_SPLIT_TYPE(state, { index, splitType, terrain, terrainID, prices }) {
             const currentSplitType = state.splitTypes[index];
             if (currentSplitType) {
                 let timeStep, timeCellHeight;
@@ -63,65 +55,16 @@ export default {
                         ),
                     ],
                 });
-                localStorage.setItem(
-                    "splitTypes",
-                    JSON.stringify(state.splitTypes)
-                ); // Update localStorage
             }
         },
         REMOVE_SPLIT_TYPE(state, index) {
-            state.splitTypes.splice(index, 1);
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
-        },
-        ADD_TERRAIN(state, { index, terrain }) {
-            state.splitTypes[index].terrains.push({
-                id: state.splitTypes[index].type + " " + Date.now(),
-                label: terrain,
-                prices: [],
-            });
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
-        },
-        REMOVE_TERRAIN(state, { splitIndex, terrainIndex }) {
-            state.splitTypes[splitIndex].terrains.splice(terrainIndex, 1);
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
-        },
-        ADD_PRICE_RANGE(state, { splitIndex, terrainIndex, priceRange }) {
-            const terrain = state.splitTypes[splitIndex].terrains[terrainIndex];
-            if (!terrain.prices) {
-                terrain.prices = [];
-            }
-            terrain.prices.push(priceRange);
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
-        },
-        REMOVE_PRICE_RANGE(state, { splitIndex, terrainIndex, priceIndex }) {
-            state.splitTypes[splitIndex].terrains[terrainIndex].prices.splice(
-                priceIndex,
-                1
-            );
-            localStorage.setItem(
-                "splitTypes",
-                JSON.stringify(state.splitTypes)
-            ); // Update localStorage
+            state.splitTypes.splice(index, 1); // No localStorage update
         },
     },
     actions: {
         async fetchCalendarConfig({ commit }, companyId) {
             try {
-                const response = await axios.get(
-                    `/api/calendar-configs/${companyId}`
-                );
+                const response = await axios.get(`/api/calendar-configs/${companyId}`);
                 if (response.data && response.data.configurations) {
                     commit("SET_SPLIT_TYPES", response.data.configurations);
                 }
@@ -131,19 +74,37 @@ export default {
         },
         async saveCalendarConfig({ state }, companyId) {
             try {
-                const response = await axios.put(
-                    `/api/calendar-configs/${companyId}`,
-                    {
-                        configurations: state.splitTypes,
-                    }
-                );
-                console.log("Calendar config saved:", response.data);
+                await axios.put(`/api/calendar-configs/${companyId}`, {
+                    configurations: state.splitTypes,
+                });
+                console.log("Calendar config saved successfully");
             } catch (error) {
                 console.error("Error saving calendar config", error);
             }
         },
-        updateSplitTypes({ commit }, splitTypes) {
-            commit("SET_SPLIT_TYPES", splitTypes);
+        async addSplitType({ dispatch }, { companyId, splitType }) {
+            try {
+                await axios.post(`/api/calendar-configs/${companyId}/split-types`, splitType);
+                dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after addition
+            } catch (error) {
+                console.error("Error adding split type", error);
+            }
+        },
+        async updateSplitType({ dispatch }, { companyId, splitTypeId, splitTypeData }) {
+            try {
+                await axios.put(`/api/calendar-configs/${companyId}/split-types/${splitTypeId}`, splitTypeData);
+                dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after update
+            } catch (error) {
+                console.error("Error updating split type", error);
+            }
+        },
+        async removeSplitType({ dispatch }, { companyId, splitTypeId }) {
+            try {
+                await axios.delete(`/api/calendar-configs/${companyId}/split-types/${splitTypeId}`);
+                dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after deletion
+            } catch (error) {
+                console.error("Error removing split type", error);
+            }
         },
     },
     getters: {

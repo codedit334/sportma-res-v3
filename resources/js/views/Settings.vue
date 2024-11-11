@@ -229,7 +229,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { v4 as uuidv4 } from "uuid";
@@ -247,9 +247,15 @@ const newTerrainID = ref(null);
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
-console.log(splitTypes.value);
+const user = computed(() => store.getters["auth/user"]);
+console.log(user.value);
 const menu2 = ref(false);
 const modal2 = ref(false);
+
+onMounted(async () => {
+    await store.dispatch("calendarConfig/fetchCalendarConfig", user.value.company_id);
+});
+
 
 // Define your data table headers
 const headers = ref([
