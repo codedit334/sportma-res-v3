@@ -47,8 +47,10 @@
                         ></v-text-field>
                         <v-select
                             v-model="form.permissions"
+                            v-if="!user.isAdmin"
                             label="Permissions"
                             :items="permissionsOptions"
+                            disabled
                             multiple
                         ></v-select>
                         <v-file-input
