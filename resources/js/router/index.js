@@ -49,12 +49,13 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = store.getters["auth/isAuthenticated"];
     let user = store.getters["auth/user"];
 
+
     // Check if user is a string and convert it to an object
     if (typeof user === "string") {
         user = JSON.parse(user);
     }
 
-    const isAdmin = user.isAdmin;
+    const isAdmin = store.getters["auth/isAdmin"];
 
     // Check if the route requires authentication
     if (to.meta.requiresAuth && !isAuthenticated) {

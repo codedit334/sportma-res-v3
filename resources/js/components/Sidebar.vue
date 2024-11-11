@@ -70,7 +70,7 @@ console.log('isAdmin:', isAdmin.value);
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {
-    return user ? user.permissions.includes(permission) : false;
+    return user.permissions ? user.permissions.includes(permission) : false;
 };
 
 const ToggleMenu = () => {
