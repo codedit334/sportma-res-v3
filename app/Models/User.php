@@ -27,6 +27,8 @@ class User extends Authenticatable implements JWTSubject
         'profile_picture',
     ];
 
+    
+
     /**
      * The attributes that should be hidden for serialization.
      *
