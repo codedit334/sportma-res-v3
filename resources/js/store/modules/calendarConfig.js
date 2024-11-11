@@ -1,8 +1,9 @@
-// store/modules/calendarConfig.js
+import axios from "axios";
+
 export default {
     namespaced: true,
     state: {
-        splitTypes: JSON.parse(localStorage.getItem("splitTypes")) || [], // Load from localStorage
+        splitTypes: JSON.parse(localStorage.getItem("splitTypes")) || [],
     },
     mutations: {
         SET_SPLIT_TYPES(state, splitTypes) {
@@ -38,7 +39,6 @@ export default {
             if (currentSplitType) {
                 let timeStep, timeCellHeight;
 
-                // Update timeStep and timeCellHeight based on type if needed
                 if (splitType.toLowerCase() === "football") {
                     timeStep = 60;
                     timeCellHeight = 80;
@@ -46,11 +46,10 @@ export default {
                     timeStep = 30;
                     timeCellHeight = 50;
                 } else {
-                    timeStep = currentSplitType.timeStep; // retain existing values
+                    timeStep = currentSplitType.timeStep;
                     timeCellHeight = currentSplitType.timeCellHeight;
                 }
 
-                // Update the split type properties
                 state.splitTypes.splice(index, 1, {
                     ...currentSplitType,
                     type: splitType,
@@ -118,6 +117,31 @@ export default {
         },
     },
     actions: {
+        async fetchCalendarConfig({ commit }, companyId) {
+            try {
+                const response = await axios.get(
+                    `/api/calendar-configs/${companyId}`
+                );
+                if (response.data && response.data.configurations) {
+                    commit("SET_SPLIT_TYPES", response.data.configurations);
+                }
+            } catch (error) {
+                console.error("Error fetching calendar config", error);
+            }
+        },
+        async saveCalendarConfig({ state }, companyId) {
+            try {
+                const response = await axios.put(
+                    `/api/calendar-configs/${companyId}`,
+                    {
+                        configurations: state.splitTypes,
+                    }
+                );
+                console.log("Calendar config saved:", response.data);
+            } catch (error) {
+                console.error("Error saving calendar config", error);
+            }
+        },
         updateSplitTypes({ commit }, splitTypes) {
             commit("SET_SPLIT_TYPES", splitTypes);
         },
