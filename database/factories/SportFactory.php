@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Sport;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,10 +15,13 @@ class SportFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = Sport::class;
+
     public function definition()
     {
         return [
-            //
+            'type' => $this->faker->randomElement(['Football', 'Padel']),
+            'company_id' => null, // Set in seeder
         ];
     }
 }

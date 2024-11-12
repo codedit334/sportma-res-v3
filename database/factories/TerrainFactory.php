@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Terrain;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,10 +15,13 @@ class TerrainFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = Terrain::class;
+
     public function definition()
     {
         return [
-            //
+            'label' => $this->faker->word,
+            'sport_id' => null, // Set in seeder
         ];
     }
 }
