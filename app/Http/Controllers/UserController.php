@@ -10,15 +10,22 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
     public function index()
-{
-    $users = User::all()->map(function ($user) {
-        // Decode permissions from JSON to array
-        $user->permissions = json_decode($user->permissions, true);
-        return $user;
-    });
+    {
+        $authUser = auth()->user();
+    
+        // Retrieve users with the same company_id as the authenticated user and where is_admin is false
+        $users = User::where('company_id', $authUser->company_id)
+                     ->where('is_admin', false)
+                     ->get()
+                     ->map(function ($user) {
+                         // Decode permissions from JSON to array
+                         $user->permissions = json_decode($user->permissions, true);
+                         return $user;
+                     });
+    
+        return response()->json($users);
+    }
 
-    return response()->json($users);
-}
 
     public function store(Request $request)
     {

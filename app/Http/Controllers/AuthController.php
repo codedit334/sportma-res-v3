@@ -35,7 +35,7 @@ class AuthController extends Controller
             'refreshToken' => $refreshToken,  // Add refresh token
             'name' => $user->name, 
             'role' => $user->role, 
-            'isAdmin' => $user->isAdmin,
+            'isAdmin' => $user->is_admin,
             'email' => $user->email,
             'profile_picture' => $user->profile_picture,
             'permissions' => json_decode($user->permissions), 
