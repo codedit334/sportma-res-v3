@@ -12,7 +12,6 @@ class Sport extends Model
     protected $fillable = [
         'company_id',
         'type',
-        'slug',
     ];
 
     public function company()

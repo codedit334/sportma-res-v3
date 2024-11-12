@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('sport_id'); // Foreign key to sports table
             $table->string('label'); // E.g., "P1", "F1", etc.
-            $table->uuid('terrainID')->unique();
+            $table->uuid('terrainID')->nullable();
             $table->json('prices')->nullable(); // Optional prices JSON field
             $table->timestamps();
 

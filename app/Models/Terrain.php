@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Terrain extends Model
 {
     use HasFactory;
-    protected $fillable = ['sport_id', 'label', 'prices'];
+    protected $fillable = ['sport_id', 'label', 'prices', 'terrainID'];
 
     protected $casts = [
         'prices' => 'array',

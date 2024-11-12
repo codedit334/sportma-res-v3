@@ -17,7 +17,6 @@ return new class extends Migration
         $table->id();
         $table->unsignedBigInteger('company_id');  // Foreign key to company
         $table->string('type');  // e.g., Football, Padel
-        $table->string('slug')->unique();  // e.g., football, padel
         $table->timestamps();
 
         // Foreign Key Constraints

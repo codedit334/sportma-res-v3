@@ -23,7 +23,6 @@ class SportFactory extends Factory
         $type = $this->faker->randomElement(['Football', 'Padel']);
         return [
             'type' => $this->faker->randomElement(['Football', 'Padel']),
-            'slug' => Str::slug($type) . '-' . Str::random(5),
             'company_id' => null, // Set in seeder
         ];
     }
