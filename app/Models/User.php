@@ -25,17 +25,20 @@ class User extends Authenticatable implements JWTSubject
         'role',
         'permissions',
         'profile_picture',
+        'company_id',
+        'isAdmin',
     ];
+
 
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function calendarConfigs()
-{
-    return $this->hasMany(CalendarConfig::class, 'created_by_user_id');
-}
+    public function sports()
+    {
+        return $this->hasMany(Sport::class);  // If users can create sports
+    }
 
     /**
      * The attributes that should be hidden for serialization.

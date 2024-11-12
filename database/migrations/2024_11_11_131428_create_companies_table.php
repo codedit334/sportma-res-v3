@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Schema;
 class CreateCompaniesTable extends Migration
 {
     public function up()
-    {
-        Schema::create('companies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('address')->nullable();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('companies', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('address')->nullable();
+        $table->timestamps();
+    });
+}
 
     public function down()
     {

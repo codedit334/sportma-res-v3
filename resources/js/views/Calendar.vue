@@ -249,6 +249,7 @@ export default {
     },
     mounted() {
         this.updatedEvents = [...this.events];
+        console.log("Reservations:", this.updatedEvents);
         if (this.sports.length && !this.selectedSport) {
             this.selectedSport = this.sports[0];
         }
