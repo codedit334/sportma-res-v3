@@ -40,6 +40,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Sport::class);  // If users can create sports
     }
 
+    public function reservations()
+{
+    return $this->hasMany(Reservation::class);
+}
+
     /**
      * The attributes that should be hidden for serialization.
      *
