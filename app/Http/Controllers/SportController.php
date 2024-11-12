@@ -10,6 +10,14 @@ use App\Models\Terrain;
 
 class SportController extends Controller
 {
+
+    public function index()
+    {
+        // Retrieve all sports with their associated terrains
+        $sports = Sport::with('terrains')->get();
+
+        return response()->json(['sports' => $sports], 200);
+    }
     public function store(Request $request)
     {
         // Validate the request data
