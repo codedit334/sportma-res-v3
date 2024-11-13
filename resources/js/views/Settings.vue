@@ -228,202 +228,177 @@
     </v-card>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from "vue";
+<script>
 import { useStore } from "vuex";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { v4 as uuidv4 } from "uuid";
-import { split } from "lodash";
-import { id } from "vuetify/locale";
 
-onMounted(async () => {
-    await store.dispatch("calendarConfig/fetchCalendarConfig", user.value.company_id);
-});
-
-const store = useStore();
-const dialog = ref(false);
-const startPicker = ref(null);
-const endPicker = ref(null);
-const price = ref(null);
-const editIndex = ref(null);
-const search = ref("");
-const newSplitType = ref("");
-const newTerrain = ref("");
-const newTerrainID = ref(null);
-const newTerrains = ref([]);
-const newPrice = ref({ startTime: "", endTime: "", price: "" });
-const newPrices = ref([]);
-
-const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
-// const splitTypes = [];
-const user = computed(() => store.getters["auth/user"]);
-const menu2 = ref(false);
-const modal2 = ref(false);
-
-console.log("WTF",user);
-console.log("SPLITTYPES",splitTypes.value);
-
-
-
-
-// Define your data table headers
-const headers = ref([
-    { title: "Sport", key: "type" },
-    { title: "Terrain", key: "terrains" },
-    { title: "Actions", key: "actions" },
-]);
-
-const customFilter = (value, search, item) => {
-    if (!search) return true; // Show all items if no search term
-
-    const lowerSearch = search.toLowerCase();
-
-    // Check if the sport name contains the search term
-    const matchesType = item.raw.type.toLowerCase().includes(lowerSearch);
-
-
-    // Check if any of the terrain names contain the search term
-    const matchesTerrain = item.raw.terrains.some((terrain) =>
-        terrain.label.toLowerCase().includes(lowerSearch)
-    );
-
-    // Return true if either the sport or any terrain name matches
-    return matchesType || matchesTerrain;
-};
-
-
-const openAddModal = () => {
-    resetForm();
-    editIndex.value = null;
-    dialog.value = true;
-};
-
-const openEditModal = (index) => {
-    const split = splitTypes.value.sports[index];
-    newSplitType.value = split.type;
-    newTerrain.value = split.terrains.length ? split.terrains[0].label : "";
-    // get terrain id
-    newTerrainID.value = split.terrains[0]?.terrainID || null;
-    newPrices.value = split.terrains[0]?.prices || [];
-    editIndex.value = index;
-    dialog.value = true;
-};
-
-const saveSplitType = async () => {
-    if (newSplitType.value) {
-        try {
-            console.log(user)
-            await store.dispatch("calendarConfig/addSplitType", {
-                companyId: user.value.company_id, // assuming user object has the company_id
-                createdByUserId: user.value.id,   // assuming user object has the user id
-                splitType: {
-                    type: newSplitType.value,
-                    terrains: [
-                        {
-                            terrainID: uuidv4(),
-                            label: newTerrain.value,
-                            prices: [...newPrices.value],
+export default {
+    components: {
+        VTimePicker,
+    },
+    data() {
+        return {
+            dialog: false,
+            startPicker: null,
+            endPicker: null,
+            price: null,
+            editIndex: null,
+            search: "",
+            newSplitType: "",
+            newTerrain: "",
+            newTerrainID: null,
+            newTerrains: [],
+            newPrice: { startTime: "", endTime: "", price: "" },
+            newPrices: [],
+            menu2: false,
+            modal2: false,
+            headers: [
+                { title: "Sport", key: "type" },
+                { title: "Terrain", key: "terrains" },
+                { title: "Actions", key: "actions" },
+            ],
+        };
+    },
+    computed: {
+        user() {
+            return this.$store.getters["auth/user"];
+        },
+        splitTypes() {
+            return this.$store.getters["calendarConfig/splitTypes"];
+        },
+    },
+    methods: {
+        customFilter(value, search, item) {
+            if (!search) return true;
+            const lowerSearch = search.toLowerCase();
+            const matchesType = item.raw.type.toLowerCase().includes(lowerSearch);
+            const matchesTerrain = item.raw.terrains.some((terrain) =>
+                terrain.label.toLowerCase().includes(lowerSearch)
+            );
+            return matchesType || matchesTerrain;
+        },
+        openAddModal() {
+            this.resetForm();
+            this.editIndex = null;
+            this.dialog = true;
+        },
+        openEditModal(index) {
+            const split = this.splitTypes.sports[index];
+            this.newSplitType = split.type;
+            this.newTerrain = split.terrains.length ? split.terrains[0].label : "";
+            this.newTerrainID = split.terrains[0]?.terrainID || null;
+            this.newPrices = split.terrains[0]?.prices || [];
+            this.editIndex = index;
+            this.dialog = true;
+        },
+        async saveSplitType() {
+            if (this.newSplitType) {
+                try {
+                    await this.$store.dispatch("calendarConfig/addSplitType", {
+                        companyId: this.user.company_id,
+                        createdByUserId: this.user.id,
+                        splitType: {
+                            type: this.newSplitType,
+                            terrains: [
+                                {
+                                    terrainID: uuidv4(),
+                                    label: this.newTerrain,
+                                    prices: [...this.newPrices],
+                                },
+                            ],
                         },
-                    ],
-                },
+                    });
+                    this.resetForm();
+                    this.dialog = false;
+                } catch (error) {
+                    console.error("Error saving split type", error);
+                }
+            }
+        },
+        updateSplitType() {
+            if (this.editIndex !== null) {
+                const split = this.splitTypes.sports[this.editIndex];
+                this.newTerrains = [
+                    {
+                        label: this.newTerrain,
+                        prices: [...this.newPrices],
+                    },
+                ];
+
+                this.$store.dispatch("calendarConfig/updateSplitType", {
+                    id: split.id,
+                    type: this.newSplitType,
+                    terrains: this.newTerrains,
+                    companyId: this.user.company_id,
+                });
+                this.resetForm();
+                this.dialog = false;
+            }
+        },
+        addPriceRange() {
+            if (this.price <= 0) {
+                alert("Erreur : Le prix doit être un nombre positif.");
+                return;
+            }
+
+            this.newPrice.startTime = this.startPicker;
+            this.newPrice.endTime = this.endPicker;
+            this.newPrice.price = this.price;
+
+            const newStartTime = new Date(`1970-01-01T${this.newPrice.startTime}:00`);
+            const newEndTime = new Date(`1970-01-01T${this.newPrice.endTime}:00`);
+
+            const isOverlap = this.newPrices.some((range) => {
+                const existingStart = new Date(`1970-01-01T${range.startTime}:00`);
+                const existingEnd = new Date(`1970-01-01T${range.endTime}:00`);
+                return (
+                    (newStartTime >= existingStart && newStartTime < existingEnd) ||
+                    (newEndTime > existingStart && newEndTime <= existingEnd) ||
+                    (newStartTime <= existingStart && newEndTime >= existingEnd)
+                );
             });
-            resetForm();
-            dialog.value = false;
-        } catch (error) {
-            console.error("Error saving split type", error);
-        }
-    }
-};
 
-const updateSplitType = () => {
-    if (editIndex.value !== null) {
-        const split = splitTypes.value.sports[editIndex.value];
-        newTerrains.value = [
-            {
-            label: newTerrain.value,
-            prices: [...newPrices.value],
-        }];
+            if (isOverlap) {
+                alert("Erreur : Cette plage de temps chevauche une autre plage existante.");
+            } else if (this.newPrice.startTime && this.newPrice.endTime && this.newPrice.price) {
+                this.newPrices.push({ ...this.newPrice });
+                this.newPrice = { startTime: "", endTime: "", price: "" };
+            }
 
-        store.dispatch("calendarConfig/updateSplitType", {
-            id: split.id,
-            type: newSplitType.value,
-            terrains: newTerrains.value,
-            companyId: user.value.company_id
-        });
-        resetForm();
-        dialog.value = false;
-    }
-};
-
-const addPriceRange = () => {
-    // Check if price is a positive number
-    if (price.value <= 0) {
-        alert("Erreur : Le prix doit être un nombre positif.");
-        return; // Exit the function if the price is invalid
-    }
-
-    newPrice.value.startTime = startPicker;
-    newPrice.value.endTime = endPicker;
-    newPrice.value.price = price;
-
-    // Convert start and end times to Date objects for easy comparison
-    const newStartTime = new Date(`1970-01-01T${newPrice.value.startTime}:00`);
-    const newEndTime = new Date(`1970-01-01T${newPrice.value.endTime}:00`);
-
-    // Check if any existing price range overlaps with the new range
-    const isOverlap = newPrices.value.some((range) => {
-        const existingStart = new Date(`1970-01-01T${range.startTime}:00`);
-        const existingEnd = new Date(`1970-01-01T${range.endTime}:00`);
-        return (
-            (newStartTime >= existingStart && newStartTime < existingEnd) ||
-            (newEndTime > existingStart && newEndTime <= existingEnd) ||
-            (newStartTime <= existingStart && newEndTime >= existingEnd)
-        );
-    });
-
-    // If there's an overlap, alert an error in French
-    if (isOverlap) {
-        alert(
-            "Erreur : Cette plage de temps chevauche une autre plage existante."
-        );
-    } else if (
-        newPrice.value.startTime &&
-        newPrice.value.endTime &&
-        newPrice.value.price
-    ) {
-        // Push the new price range if no overlap and price is positive
-        newPrices.value.push({ ...newPrice.value });
-        newPrice.value = { startTime: "", endTime: "", price: "" };
-    }
-
-    resetTimePicker();
-};
-
-const removePriceRange = (index) => {
-    newPrices.value.splice(index, 1);
-};
-
-const removeSplitType = (index) => {
-    store.dispatch("calendarConfig/removeSplitType", { id: index, companyId: user.value.company_id });
-};
-
-const closeDialog = () => {
-    resetForm();
-    dialog.value = false;
-};
-
-const resetForm = () => {
-    newSplitType.value = "";
-    newTerrain.value = "";
-    newTerrains.value = [];
-    newPrices.value = [];
-    newPrice.value = { startTime: "", endTime: "", price: "" };
-    resetTimePicker();
-};
-
-const resetTimePicker = () => {
-    startPicker.value = null;
-    endPicker.value = null;
-    price.value = null;
+            this.resetTimePicker();
+        },
+        removePriceRange(index) {
+            this.newPrices.splice(index, 1);
+        },
+        removeSplitType(index) {
+            this.$store.dispatch("calendarConfig/removeSplitType", {
+                id: index,
+                companyId: this.user.company_id,
+            });
+        },
+        closeDialog() {
+            this.resetForm();
+            this.dialog = false;
+        },
+        resetForm() {
+            this.newSplitType = "";
+            this.newTerrain = "";
+            this.newTerrains = [];
+            this.newPrices = [];
+            this.newPrice = { startTime: "", endTime: "", price: "" };
+            this.resetTimePicker();
+        },
+        resetTimePicker() {
+            this.startPicker = null;
+            this.endPicker = null;
+            this.price = null;
+        },
+    },
+    async mounted() {
+       await this.$store.dispatch("auth/fetchUserProfile");
+       await this.$store.dispatch("calendarConfig/fetchCalendarConfig", this.user.company_id);
+    },
 };
 </script>
+

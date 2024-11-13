@@ -11,10 +11,21 @@ class ReservationController extends Controller
 {
     // Get all reservations
     public function index()
-    {
-        $reservations = Reservation::with(['user', 'terrain'])->get();
-        return response()->json($reservations, 200);
-    }
+{
+    // Get the authenticated user's company_id
+    $companyId = auth()->user()->company_id;
+
+    // Fetch reservations that belong to the same company as the authenticated user
+    $reservations = Reservation::with(['user', 'terrain'])
+        ->whereHas('user', function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })
+        ->get();
+
+    // Return the reservations as a JSON response
+    return response()->json($reservations, 200);
+}
+
 
     // Get a specific reservation by ID
     public function show($id)

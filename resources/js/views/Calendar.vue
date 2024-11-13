@@ -189,6 +189,7 @@
 
 <script>
 import { v4 as uuidv4 } from "uuid";
+import { useStore } from "vuex";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 
 import VueCal from "vue-cal";
@@ -196,7 +197,9 @@ import moment from "moment";
 import { extendMoment } from "moment-range";
 
 import "vue-cal/dist/vuecal.css";
+import { map } from "lodash";
 
+const store = useStore();
 const momentRange = extendMoment(moment);
 
 export default {
@@ -230,10 +233,11 @@ export default {
     computed: {
         ...mapGetters("calendarConfig", ["splitTypes"]),
         ...mapState("calendar", ["events"]),
+        ...mapState("auth", ["user"]),
         ...mapGetters("calendar", ["getEvents"]),
         sports() {
-            return this.splitTypes
-                ? this.splitTypes.map((split) => split.type)
+            return this.splitTypes.sports
+                ? this.splitTypes.sports.map((split) => split.type)
                 : [];
         },
         uniqueSports() {
@@ -247,17 +251,32 @@ export default {
             }
         },
     },
-    mounted() {
-        this.updatedEvents = [...this.events];
-        console.log("Reservations:", this.updatedEvents);
-        if (this.sports.length && !this.selectedSport) {
-            this.selectedSport = this.sports[0];
+    mounted: async function () {
+        try {
+            await this.fetchUserProfile();
+            await this.fetchCalendarConfig(this.user.company_id);
+            await this.fetchEvents();
+
+            this.updatedEvents = [...this.events];
+            console.log("Reservations:", this.updatedEvents);
+
+            if (this.sports.length && !this.selectedSport) {
+                this.selectedSport = this.sports[0];
+            }
+
+            this.updateSplits();
+        } catch (error) {
+            console.error("Error during mounted:", error);
         }
-        this.updateSplits();
     },
+
     methods: {
         // Mapping mutations to modify the events
         ...mapMutations("calendar", ["SET_EVENTS"]),
+        // Map actions using mapActions
+        ...mapActions("auth", ["fetchUserProfile"]),
+        ...mapActions("calendarConfig", ["fetchCalendarConfig"]),
+        ...mapActions("calendar", ["fetchEvents"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -533,7 +552,7 @@ export default {
         },
         updateSplits() {
             // Retrieve all matching split types from the Vuex store based on the selected sport
-            const selectedSplitsTypes = this.splitTypes.filter(
+            const selectedSplitsTypes = this.splitTypes.sports.filter(
                 (splitType) =>
                     splitType.type.toLowerCase() ===
                     this.selectedSport.toLowerCase()
@@ -594,7 +613,7 @@ export default {
                     }
 
                     // Decide price
-                    const matchingSplitTypes = this.splitTypes.filter(
+                    const matchingSplitTypes = this.splitTypes.sports.filter(
                         (splitType) =>
                             event.split
                                 .toLowerCase()
@@ -649,7 +668,6 @@ export default {
                         eventClass = "green-event"; // Default class for other users
                         clickable = true;
                     }
-
 
                     // Calculate the event end time by adding the duration (in minutes) to the start time
                     let eventEnd = new Date(

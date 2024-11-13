@@ -65,6 +65,7 @@ export default {
         async fetchCalendarConfig({ commit }, companyId) {
             try {
                 console.log(companyId);
+                console.log("III")
                 const response = await axios.get(`/api/sports/${companyId}`);
                 if (response.data) {
                     console.log("Sports config",response.data);
