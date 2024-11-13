@@ -64,9 +64,10 @@ export default {
     actions: {
         async fetchCalendarConfig({ commit }, companyId) {
             try {
-                const response = await axios.get(`/api/calendar-configs/${companyId}`);
-                if (response.data && response.data.configurations) {
-                    console.log(response.data.configurations);
+                console.log(companyId);
+                const response = await axios.get(`/api/sports/${companyId}`);
+                if (response.data) {
+                    console.log(response.data);
                     commit("SET_SPLIT_TYPES", response.data.configurations);
                 }
             } catch (error) {
@@ -75,7 +76,8 @@ export default {
         },
         async saveCalendarConfig({ state }, companyId) {
             try {
-                await axios.put(`/api/calendar-configs/${companyId}`, {
+                await axios.put(`/api/sports/`, {
+                    company_id: companyId,
                     configurations: state.splitTypes,
                 });
                 console.log("Calendar config saved successfully");
@@ -83,12 +85,12 @@ export default {
                 console.error("Error saving calendar config", error);
             }
         },
-        async addSplitType({ dispatch }, { companyId, createdByUserId, splitType }) {
+        async addSplitType({ dispatch }, { companyId, splitType }) {
             try {
-                const response = await axios.post(`/api/calendar-configs`, {
+                const response = await axios.post(`/api/sports`, {
                     company_id: companyId,
-                    created_by_user_id: createdByUserId,
-                    configurations: [splitType], // Pass the new split type as an array of configurations
+                    type: splitType.type, // Pass the new split type as an array of configurations
+                    terrains: splitType.terrains, // Pass the new split type as an array of configurations
                 });
         
                 // Fetch updated configurations after the creation

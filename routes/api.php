@@ -50,7 +50,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::get('/sports', [SportController::class, 'index']);
+    Route::get('/sports/{id}', [SportController::class, 'index']);
     Route::post('/sports', [SportController::class, 'store']);
     Route::put('/sports/{id}', [SportController::class, 'update']);
     Route::delete('/sports/{id}', [SportController::class, 'destroy']);

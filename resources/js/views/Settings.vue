@@ -248,7 +248,6 @@ const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
 const user = computed(() => store.getters["auth/user"]);
-console.log(user.value);
 const menu2 = ref(false);
 const modal2 = ref(false);
 

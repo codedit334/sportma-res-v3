@@ -11,13 +11,16 @@ use App\Models\Terrain;
 class SportController extends Controller
 {
 
-    public function index()
-    {
-        // Retrieve all sports with their associated terrains
-        $sports = Sport::with('terrains')->get();
+    public function index($companyId)
+{
+    // Retrieve sports with their associated terrains, filtered by company_id
+    $sports = Sport::with('terrains')
+                ->where('company_id', $companyId)
+                ->get();
 
-        return response()->json(['sports' => $sports], 200);
-    }
+    return response()->json(['sports' => $sports], 200);
+}
+
 
     public function update(Request $request, int $id)
     {
