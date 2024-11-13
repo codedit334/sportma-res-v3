@@ -46,8 +46,10 @@ class ReservationController extends Controller
         ]);
 
         // Create the reservation
-        $reservation = Reservation::create($validated);
+        // $reservation = Reservation::create($validated);
+        $reservation = Reservation::create($request -> all());
 
+        // return response()->json($reservation, 201); // Return created reservation
         return response()->json($reservation, 201); // Return created reservation
     }
 
