@@ -93,4 +93,20 @@ class SportController extends Controller
 
         return response()->json(['sport' => $sport->load('terrains')], 201);
     }
+    public function destroy(int $id)
+{
+    // Find the sport by ID
+    $sport = Sport::findOrFail($id);
+
+    // Delete associated terrains
+    $sport->terrains()->delete();
+
+    // Delete the sport
+    $sport->delete();
+
+    return response()->json([
+        'message' => 'Sport and associated terrains deleted successfully'
+    ], 200);
+}
+
 }

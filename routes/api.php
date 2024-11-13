@@ -53,6 +53,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/sports', [SportController::class, 'index']);
     Route::post('/sports', [SportController::class, 'store']);
     Route::put('/sports/{id}', [SportController::class, 'update']);
+    Route::delete('/sports/{id}', [SportController::class, 'destroy']);
 
     Route::get('/calendar-configs/{companyId}', [CalendarConfigController::class, 'show']);
     Route::post('/calendar-configs', [CalendarConfigController::class, 'store']);
