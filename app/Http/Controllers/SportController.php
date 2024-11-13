@@ -18,6 +18,41 @@ class SportController extends Controller
 
         return response()->json(['sports' => $sports], 200);
     }
+
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'type' => 'required|string|max:255',
+            'terrains' => 'required|array',
+            'terrains.*.label' => 'required|string|max:255',
+            'terrains.*.prices' => 'nullable|array',
+        ]);
+
+        // Find the sport by ID
+        $sport = Sport::findOrFail($id);
+        $sport->update([
+            'type' => $validatedData['type'],
+        ]);
+
+        // Update or create terrains
+        foreach ($validatedData['terrains'] as $terrainData) {
+            $terrain = Terrain::updateOrCreate(
+                [
+                    'sport_id' => $sport->id,
+                    'label' => $terrainData['label'],
+                ],
+                [
+                    'prices' => $terrainData['prices'],
+                ]
+            );
+        }
+
+        return response()->json([
+            'message' => 'Sport and terrains updated successfully',
+            'sport' => $sport->load('terrains'),
+        ]);
+    }
+    
     public function store(Request $request)
     {
         // Validate the request data
