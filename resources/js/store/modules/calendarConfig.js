@@ -74,17 +74,17 @@ export default {
                 console.error("Error fetching calendar config", error);
             }
         },
-        async saveCalendarConfig({ state }, companyId) {
-            try {
-                await axios.put(`/api/sports/`, {
-                    company_id: companyId,
-                    configurations: state.splitTypes,
-                });
-                console.log("Calendar config saved successfully");
-            } catch (error) {
-                console.error("Error saving calendar config", error);
-            }
-        },
+        // async saveCalendarConfig({ state }, companyId) {
+        //     try {
+        //         await axios.put(`/api/sports/`, {
+        //             company_id: companyId,
+        //             configurations: state.splitTypes,
+        //         });
+        //         console.log("Calendar config saved successfully");
+        //     } catch (error) {
+        //         console.error("Error saving calendar config", error);
+        //     }
+        // },
         async addSplitType({ dispatch }, { companyId, splitType }) {
             try {
                 const response = await axios.post(`/api/sports`, {
@@ -101,9 +101,12 @@ export default {
                 console.error("Error adding split type", error);
             }
         },
-        async updateSplitType({ dispatch }, { companyId, splitTypeId, splitTypeData }) {
+        async updateSplitType({ dispatch }, { id, type, terrains, companyId }) {
             try {
-                await axios.put(`/api/calendar-configs/${companyId}/split-types/${splitTypeId}`, splitTypeData);
+                await axios.put(`/api/sports/${id}`, {
+                    type: type, // Pass the new split type as an array of configurations
+                    terrains: terrains, // Pass the new split type as an array of configurations
+                });
                 dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after update
             } catch (error) {
                 console.error("Error updating split type", error);

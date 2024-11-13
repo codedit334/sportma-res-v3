@@ -234,6 +234,7 @@ import { useStore } from "vuex";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { v4 as uuidv4 } from "uuid";
 import { split } from "lodash";
+import { id } from "vuetify/locale";
 
 onMounted(async () => {
     await store.dispatch("calendarConfig/fetchCalendarConfig", user.value.company_id);
@@ -249,6 +250,7 @@ const search = ref("");
 const newSplitType = ref("");
 const newTerrain = ref("");
 const newTerrainID = ref(null);
+const newTerrains = ref([]);
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
 
@@ -297,7 +299,7 @@ const openAddModal = () => {
 };
 
 const openEditModal = (index) => {
-    const split = splitTypes.value[index];
+    const split = splitTypes.value.sports[index];
     newSplitType.value = split.type;
     newTerrain.value = split.terrains.length ? split.terrains[0].label : "";
     // get terrain id
@@ -335,15 +337,35 @@ const saveSplitType = async () => {
 
 const updateSplitType = () => {
     if (editIndex.value !== null) {
-        store.commit("calendarConfig/UPDATE_SPLIT_TYPE", {
-            index: editIndex.value,
-            splitType: newSplitType.value,
-            terrain: newTerrain.value,
-            terrainID: newTerrainID.value,
+        const split = splitTypes.value.sports[editIndex.value];
+        console.log('id',split.id);
+        console.log(newSplitType.value);
+        // console.log(split.terrains);
+        newTerrains.value = [
+            {
+            label: newTerrain.value,
             prices: [...newPrices.value],
+        }];
+        console.log(newTerrains.value);
+
+
+        store.dispatch("calendarConfig/updateSplitType", {
+            id: split.id,
+            type: newSplitType.value,
+            terrains: newTerrains.value,
+            companyId: user.value.company_id
         });
         resetForm();
         dialog.value = false;
+        
+
+        // store.commit("calendarConfig/UPDATE_SPLIT_TYPE", {
+        //     index: editIndex.value,
+        //     splitType: newSplitType.value,
+        //     terrain: newTerrain.value,
+        //     terrainID: newTerrainID.value,
+        //     prices: [...newPrices.value],
+        // });
     }
 };
 
@@ -407,6 +429,7 @@ const closeDialog = () => {
 const resetForm = () => {
     newSplitType.value = "";
     newTerrain.value = "";
+    newTerrains.value = [];
     newPrices.value = [];
     newPrice.value = { startTime: "", endTime: "", price: "" };
     resetTimePicker();
