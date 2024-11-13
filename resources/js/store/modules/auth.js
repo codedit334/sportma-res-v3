@@ -7,7 +7,7 @@ const state = {
     tokenExpiration:
         JSON.parse(localStorage.getItem("tokenExpiration")) || null, // new
     refreshToken: localStorage.getItem("refreshToken") || null, // new
-    user: localStorage.getItem("user") || [],
+    user: [],
 };
 
 const mutations = {
@@ -17,7 +17,6 @@ const mutations = {
     },
     SET_USER_PROFILE(state, userData) {
         state.user = userData;
-        localStorage.setItem("user", JSON.stringify(userData));
     },
     CLEAR_USER_PROFILE(state) {
         state.user = null;
@@ -93,6 +92,7 @@ const actions = {
         try {
             const response = await axios.get("/api/user/profile");
             let userData = response.data;
+            console.log("User data STORE:", userData);
 
             // If permissions are stored as a string, parse it into an array
             if (typeof userData.permissions === "string") {

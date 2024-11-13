@@ -44,13 +44,22 @@ const router = createRouter({
 });
 
 // Route guard for authentication and permissions
-router.beforeEach((to, from, next) => {
+
+router.beforeEach(async (to, from, next) => {
     const store = useStore();
     const isAuthenticated = store.getters["auth/isAuthenticated"];
     let user = store.getters["auth/user"];
+    // console.log("Final countdown", user)
+
+    // Fetch user profile if not already loaded
+    if (isAuthenticated && !user) {
+        await store.dispatch("auth/fetchUserProfile");
+        user = store.getters["auth/user"]; // Re-fetch the user after dispatch
+    }
+    // console.log("Final countdown2", user)
 
 
-    // Check if user is a string and convert it to an object
+    // Convert user to an object if needed
     if (typeof user === "string") {
         user = JSON.parse(user);
     }
@@ -66,13 +75,14 @@ router.beforeEach((to, from, next) => {
             user.permissions.includes(permission)
         );
         if (!hasPermission) {
-            next("/"); // Redirect to home or another designated page if no permission
+            next("/"); // Redirect if no permission
         } else {
-            next(); // Allow access to the route
+            next(); // Allow access
         }
     } else {
-        next(); // Allow access to the route
+        next(); // Allow access
     }
 });
+
 
 export default router;

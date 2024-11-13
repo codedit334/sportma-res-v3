@@ -63,7 +63,7 @@ const store = useStore();
 
 // const user = computed(() => store.getters['auth/user']);
 // get the user from the local storage
-const user = JSON.parse(localStorage.getItem("user"));
+const user = computed(() => store.getters["auth/user"]);
 // get isAdmin from store
 const isAdmin = computed(() => store.getters["auth/isAdmin"]);
 console.log('isAdmin:', isAdmin.value);

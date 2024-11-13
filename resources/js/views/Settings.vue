@@ -20,7 +20,7 @@
             <!-- Data Table -->
             <v-data-table
                 :headers="headers"
-                :items="splitTypes"
+                :items="splitTypes.sports"
                 :search="search"
                 :custom-filter="customFilter"
                 class="mt-4"
@@ -233,6 +233,11 @@ import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { v4 as uuidv4 } from "uuid";
+import { split } from "lodash";
+
+onMounted(async () => {
+    await store.dispatch("calendarConfig/fetchCalendarConfig", user.value.company_id);
+});
 
 const store = useStore();
 const dialog = ref(false);
@@ -246,14 +251,17 @@ const newTerrain = ref("");
 const newTerrainID = ref(null);
 const newPrice = ref({ startTime: "", endTime: "", price: "" });
 const newPrices = ref([]);
+
 const splitTypes = computed(() => store.getters["calendarConfig/splitTypes"]);
+// const splitTypes = [];
 const user = computed(() => store.getters["auth/user"]);
 const menu2 = ref(false);
 const modal2 = ref(false);
 
-onMounted(async () => {
-    await store.dispatch("calendarConfig/fetchCalendarConfig", user.value.company_id);
-});
+console.log("WTF",user);
+console.log("SPLITTYPES",splitTypes.value);
+
+
 
 
 // Define your data table headers

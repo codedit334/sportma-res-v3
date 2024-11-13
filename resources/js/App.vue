@@ -16,12 +16,18 @@
 import Sidebar from "./components/Sidebar.vue";
 import Navbar from "./components/Navbar.vue";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 const store = useStore();
 const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
 
+onMounted(() => {
+    if (isAuthenticated.value) {
+        store.dispatch("auth/fetchUserProfile");
+    }
+});
 </script>
+
 
 <style lang="scss">
 :root {

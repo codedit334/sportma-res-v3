@@ -67,8 +67,8 @@ export default {
                 console.log(companyId);
                 const response = await axios.get(`/api/sports/${companyId}`);
                 if (response.data) {
-                    console.log(response.data);
-                    commit("SET_SPLIT_TYPES", response.data.configurations);
+                    console.log("Sports config",response.data);
+                    commit("SET_SPLIT_TYPES", response.data);
                 }
             } catch (error) {
                 console.error("Error fetching calendar config", error);
