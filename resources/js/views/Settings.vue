@@ -31,7 +31,7 @@
                         <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                     &nbsp;
-                    <v-btn icon @click="removeSplitType(index)">
+                    <v-btn icon @click="removeSplitType(item.id)">
                         <v-icon>mdi-delete</v-icon>
                     </v-btn>
                 </template>
@@ -396,7 +396,7 @@ const removePriceRange = (index) => {
 };
 
 const removeSplitType = (index) => {
-    store.commit("calendarConfig/REMOVE_SPLIT_TYPE", index);
+    store.dispatch("calendarConfig/removeSplitType", { id: index, companyId: user.value.company_id });
 };
 
 const closeDialog = () => {

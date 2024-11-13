@@ -58,7 +58,7 @@ export default {
             }
         },
         REMOVE_SPLIT_TYPE(state, index) {
-            state.splitTypes.splice(index, 1); // No localStorage update
+            // state.splitTypes.splice(index, 1); // No localStorage update
         },
     },
     actions: {
@@ -109,9 +109,9 @@ export default {
                 console.error("Error updating split type", error);
             }
         },
-        async removeSplitType({ dispatch }, { companyId, splitTypeId }) {
+        async removeSplitType({ dispatch }, {id, companyId }) {
             try {
-                await axios.delete(`/api/calendar-configs/${companyId}/split-types/${splitTypeId}`);
+                await axios.delete(`/api/sports/${id}`);
                 dispatch("fetchCalendarConfig", companyId); // Refresh data from backend after deletion
             } catch (error) {
                 console.error("Error removing split type", error);
