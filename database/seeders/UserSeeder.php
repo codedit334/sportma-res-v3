@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
                 'role' => 'admin',  // Assuming you have a role attribute
                 'is_admin' => true, // Assuming you have an is_admin attribute
                 'name' => 'Admin User',  // Optionally, you can set specific details
-                'email' => 'admin@' . $company->name . '.com',  // Customize email per company
+                'email' => 'admin@' . str_replace(' ', '', $company->name) . '.com',
                 'password' => bcrypt('password'),  // Set a default password for admins
             ]);
         });

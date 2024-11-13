@@ -21,7 +21,7 @@ class TerrainFactory extends Factory
     {
         return [
             'label' => $this->faker->word,
-            'terrainID' => $this->faker->randomNumber(8),
+            'prices' => [220],
             'sport_id' => null, // Set in seeder
         ];
     }

@@ -118,6 +118,7 @@ export default {
             dateMenu: false,
         };
     },
+    components: { VDateInput },
     computed: {
         headers() {
             return [
