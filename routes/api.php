@@ -55,6 +55,14 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::put('/sports/{id}', [SportController::class, 'update']);
     Route::delete('/sports/{id}', [SportController::class, 'destroy']);
 
+    Route::prefix('reservations')->group(function () {
+        Route::get('/', [ReservationController::class, 'index']); // Get all reservations
+        Route::get('{id}', [ReservationController::class, 'show']); // Get a specific reservation
+        Route::post('/', [ReservationController::class, 'store']); // Create a new reservation
+        Route::put('{id}', [ReservationController::class, 'update']); // Update a reservation
+        Route::delete('{id}', [ReservationController::class, 'destroy']); // Delete a reservation
+    });
+
     Route::get('/calendar-configs/{companyId}', [CalendarConfigController::class, 'show']);
     Route::post('/calendar-configs', [CalendarConfigController::class, 'store']);
     Route::put('/calendar-configs/{companyId}', [CalendarConfigController::class, 'update']);

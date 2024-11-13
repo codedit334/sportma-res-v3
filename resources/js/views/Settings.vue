@@ -338,16 +338,11 @@ const saveSplitType = async () => {
 const updateSplitType = () => {
     if (editIndex.value !== null) {
         const split = splitTypes.value.sports[editIndex.value];
-        console.log('id',split.id);
-        console.log(newSplitType.value);
-        // console.log(split.terrains);
         newTerrains.value = [
             {
             label: newTerrain.value,
             prices: [...newPrices.value],
         }];
-        console.log(newTerrains.value);
-
 
         store.dispatch("calendarConfig/updateSplitType", {
             id: split.id,
@@ -357,15 +352,6 @@ const updateSplitType = () => {
         });
         resetForm();
         dialog.value = false;
-        
-
-        // store.commit("calendarConfig/UPDATE_SPLIT_TYPE", {
-        //     index: editIndex.value,
-        //     splitType: newSplitType.value,
-        //     terrain: newTerrain.value,
-        //     terrainID: newTerrainID.value,
-        //     prices: [...newPrices.value],
-        // });
     }
 };
 
