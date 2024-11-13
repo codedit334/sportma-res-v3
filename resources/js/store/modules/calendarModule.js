@@ -37,8 +37,9 @@ const calendarModule = {
     // Fetch events from the API
     async fetchEvents({ commit }) {
       try {
+        console.log("Fetching events...");
         const response = await axios.get('/api/reservations');  // Update with correct API endpoint
-        commit('SET_EVENTS', response.data.reservations);
+        commit('SET_EVENTS', response.data);
       } catch (error) {
         console.error('Error fetching events:', error);
       }

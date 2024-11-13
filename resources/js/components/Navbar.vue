@@ -41,15 +41,7 @@ onMounted(() => {
 });
 
 const user = computed(() => store.getters["auth/user"]) ;
-console.log("user new", user.value);
 
-
-watch(
-    () => user.value,
-    (newValue) => {
-        console.log("User updated:", newValue);
-    }
-);
 
 const logout = async () => {
     try {
