@@ -6,7 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CalendarConfigController;
 use App\Http\Controllers\SportController;
-
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
