@@ -277,6 +277,7 @@ export default {
         ...mapActions("auth", ["fetchUserProfile"]),
         ...mapActions("calendarConfig", ["fetchCalendarConfig"]),
         ...mapActions("calendar", ["fetchEvents"]),
+        ...mapActions("calendar", ["addEvent"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -447,6 +448,42 @@ export default {
 
             // Now add the adjusted event to the calendar
             this.updatedEvents.push(newEvent);
+            newEvent.user_id = this.user.id;
+
+            // Using regex to match the number
+            const match = newEvent.split.match(/\d+/);
+
+            // The number will be in match[0]
+            const number = match ? match[0] : null;
+
+            // The number will be in $matches[0]
+            newEvent.terrain_id = parseInt(number);
+
+            // Original ISO 8601 format
+            const startDate = newEvent.start;
+            const endDate = newEvent.end;
+
+            // Convert to MySQL-friendly format (YYYY-MM-DD HH:MM:SS)
+            const formatDate = (date) => {
+                const d = new Date(date);
+                return d.toISOString().slice(0, 19).replace("T", " ");
+            };
+
+            const formattedStartDate = formatDate(startDate);
+            const formattedEndDate = formatDate(endDate);
+
+            newEvent.start = formattedStartDate;
+            newEvent.end = formattedEndDate;
+
+            console.log("newevent.start", newEvent.start);
+            // Use Object.assign() to add the start and end properties
+            // Object.assign(newEvent, {
+            //     start: formattedStartDate,
+            //     end: formattedEndDate,
+            // });
+            console.log("newevent", newEvent);
+
+            this.addEvent(newEvent);
             this.SET_EVENTS(this.updatedEvents);
         },
 
@@ -561,11 +598,20 @@ export default {
             // Reset splitDays
             this.splitDays = [];
 
+            console.log("konan", selectedSplitsTypes);
+
             // If matching split types are found, update split properties and merge terrains
             if (selectedSplitsTypes.length) {
                 // Set timeStep and timeCellHeight based on the first matching split type
-                this.timeStep = selectedSplitsTypes[0].timeStep;
-                this.timeCellHeight = selectedSplitsTypes[0].timeCellHeight;
+                if (selectedSplitsTypes[0].type.toLowerCase() === "padel") {
+                    {
+                        this.timeStep = 30;
+                        this.timeCellHeight = 50;
+                    }
+                } else {
+                    this.timeStep = 60;
+                    this.timeCellHeight = 100;
+                }
 
                 // Combine terrains from all matching split types
                 this.splitDays = selectedSplitsTypes.flatMap(
@@ -573,7 +619,7 @@ export default {
                         splitType.terrains.map((terrain, tIndex) => ({
                             // type: splitType.type,
                             terrainID: terrain.terrainID,
-                            id: splitType.type + " " + terrain.terrainID,
+                            id: splitType.type + " " + terrain.id,
                             label: terrain.label,
                             class:
                                 (index + tIndex) % 2 === 0 ? "white" : "grey", // Alternating classes for styling
@@ -626,9 +672,7 @@ export default {
                     // Loop through each splitType and stop once a matching terrain is found
                     for (const splitType of matchingSplitTypes) {
                         matchingTerrain = splitType.terrains.find((terrain) =>
-                            event.split
-                                .toLowerCase()
-                                .includes(terrain.terrainID.toLowerCase())
+                            event.split.toLowerCase().includes(terrain.id)
                         );
 
                         // Exit the loop if a matching terrain is found
@@ -694,13 +738,14 @@ export default {
                         duration: duration,
                         editable: editable,
                         price: price,
-                        statut: "En-cours",
+                        status: "En-cours",
                         category: splitType.type,
                         terrain: matchingTerrain.label,
                         titleEditable: false,
                         deletable: false,
                     });
 
+                    console.log(this.updatedEvents);
                     this.SET_EVENTS(this.updatedEvents);
                 }
             }

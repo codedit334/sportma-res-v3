@@ -48,7 +48,7 @@ const calendarModule = {
     async addEvent({ commit }, eventData) {
       try {
         const response = await axios.post('/api/reservations', eventData); // Update with correct API endpoint
-        commit('ADD_EVENT', response.data.reservation);
+        // commit('ADD_EVENT', response.data.reservation);
       } catch (error) {
         console.error('Error adding event:', error);
       }

@@ -50,10 +50,10 @@ class ReservationController extends Controller
             'price' => 'required|integer',
             'category' => 'required|string|max:255',
             'terrain' => 'required|string|max:255',
-            'start' => 'required|date',
-            'end' => 'required|date',
+            // 'start' => 'required|date',
+            // 'end' => 'required|date',
             'content' => 'nullable|string',
-            'status' => 'required|string|in:confirmed,pending,canceled',
+            'status' => 'required|string',
         ]);
 
         // Create the reservation
