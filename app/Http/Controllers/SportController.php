@@ -19,7 +19,7 @@ class SportController extends Controller
         return response()->json(['sports' => $sports], 200);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id)
     {
         $validatedData = $request->validate([
             'type' => 'required|string|max:255',
@@ -27,31 +27,37 @@ class SportController extends Controller
             'terrains.*.label' => 'required|string|max:255',
             'terrains.*.prices' => 'nullable|array',
         ]);
-
+    
         // Find the sport by ID
         $sport = Sport::findOrFail($id);
         $sport->update([
             'type' => $validatedData['type'],
         ]);
-
+    
         // Update or create terrains
         foreach ($validatedData['terrains'] as $terrainData) {
-            $terrain = Terrain::updateOrCreate(
+            Terrain::updateOrCreate(
                 [
                     'sport_id' => $sport->id,
-                    'label' => $terrainData['label'],
                 ],
                 [
-                    'prices' => $terrainData['prices'],
+                    'label' => $terrainData['label'],  // This assumes 'label' uniquely identifies the terrain per sport
+                    'prices' => $terrainData['prices'] ?? null,  // Ensure null if prices are not provided
                 ]
             );
         }
-
+    
+        // Preload terrains to avoid lazy-loading issues
+        $sport->load('terrains');
+    
         return response()->json([
             'message' => 'Sport and terrains updated successfully',
-            'sport' => $sport->load('terrains'),
+            'sport' => $sport,
         ]);
+        // return response()->json(['sport' => "sport->load(terrains)"], 201);
+
     }
+    
     
     public function store(Request $request)
     {
