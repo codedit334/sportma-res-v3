@@ -625,6 +625,7 @@ export default {
                                 (index + tIndex) % 2 === 0 ? "white" : "grey", // Alternating classes for styling
                         }))
                 );
+                console.log("splitDays", this.splitDays);
             }
         },
 
@@ -644,7 +645,9 @@ export default {
             // if (event.hasOwnProperty("split")) {
             // Check if event is overlapping events in the same split
             if (!this.checkForCreationOverlapping(event)) {
+                console.log("event", event);
                 if (event.split) {
+
                     let eventClass = "";
                     let clickable = false;
                     let editable = true;
@@ -790,7 +793,7 @@ export default {
             e.stopPropagation();
             if (event.clickable === true) {
                 this.selectedEvent = event;
-                this.selectedStatus = event.statut;
+                this.selectedStatus = event.status;
                 this.selectedEventTitle = event.title;
                 // Update the class relative to the selected status
                 if (this.selectedStatus === "Annulé") {

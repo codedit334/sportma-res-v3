@@ -4,6 +4,8 @@ const calendarModule = {
   namespaced: true,
   state: () => ({
     events: [],
+    unsavedEvents: [], // Events changed or added but not yet saved to the backend
+    pendingUpdates: []  // Temporary storage for modified events
   }),
   getters: {
     // Getter for events
@@ -32,6 +34,25 @@ const calendarModule = {
         state.events.splice(index, 1, updatedEvent);
       }
     },
+    ADD_TO_UNSAVED_EVENTS(state, event) {
+      state.unsavedEvents.push(event);
+    },
+    CLEAR_UNSAVED_EVENTS(state) {
+      state.unsavedEvents = [];
+    },
+    ADD_PENDING_UPDATE(state, event) {
+      // Avoid duplicates by checking if the event is already in pendingUpdates
+      const existingIndex = state.pendingUpdates.findIndex(e => e.id === event.id);
+      if (existingIndex === -1) {
+        state.pendingUpdates.push(event);
+      } else {
+        // Update the existing pending event
+        state.pendingUpdates[existingIndex] = event;
+      }
+    },
+    CLEAR_PENDING_UPDATES(state) {
+      state.pendingUpdates = [];
+    }
   },
   actions: {
     // Fetch events from the API
@@ -47,10 +68,21 @@ const calendarModule = {
     // Add a new event through the API
     async addEvent({ commit }, eventData) {
       try {
-        const response = await axios.post('/api/reservations', eventData); // Update with correct API endpoint
-        // commit('ADD_EVENT', response.data.reservation);
+        // Add to unsaved events instead of posting immediately
+        commit('ADD_TO_UNSAVED_EVENTS', eventData);
       } catch (error) {
-        console.error('Error adding event:', error);
+        console.error('Error adding event to unsaved list:', error);
+      }
+    },
+    async saveAllEvents({ state, commit }) {
+      try {
+        const response = await axios.post('/api/reservations/batch', state.unsavedEvents); // Update with correct endpoint
+        // Clear unsaved events after successful batch save
+        commit('CLEAR_UNSAVED_EVENTS');
+        // Optionally update events in state if backend responds with updated data
+        commit('SET_EVENTS', response.data); // If backend returns the saved events
+      } catch (error) {
+        console.error('Error saving events:', error);
       }
     },
     // Update an event through the API
@@ -60,6 +92,28 @@ const calendarModule = {
         commit('UPDATE_EVENT', response.data.reservation);
       } catch (error) {
         console.error('Error updating event:', error);
+      }
+    },
+    addPendingUpdate({ commit }, event) {
+      commit('ADD_PENDING_UPDATE', event);
+    },
+  
+    // Batch update action
+    async batchUpdateEvents({ commit, state }) {
+      if (state.pendingUpdates.length === 0) return;
+  
+      try {
+        // Send the array of pending updates to the backend
+        const response = await axios.put('/api/reservations/batch-update', { events: state.pendingUpdates });
+  
+        // Optionally update Vuex state with confirmed event data from backend if needed
+        // commit('SET_EVENTS', response.data.events);
+  
+        // Clear pending updates after successful batch update
+        commit('CLEAR_PENDING_UPDATES');
+      } catch (error) {
+        console.error('Error in batch updating events:', error);
+        // Optional: handle error, e.g., retry logic or display an error message
       }
     },
     // Delete an event through the API

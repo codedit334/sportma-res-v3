@@ -64,6 +64,15 @@ class ReservationController extends Controller
         return response()->json($reservation, 201); // Return created reservation
     }
 
+    public function batchStore(Request $request)
+{
+    $reservations = $request->input('reservations'); // Assuming the data is sent as an array of events
+    foreach ($reservations as $reservationData) {
+        Reservation::create($reservationData);
+    }
+    return response()->json(['message' => 'Events saved successfully'], 200);
+}
+
     // Update a reservation
     public function update(Request $request, $id)
     {
@@ -92,6 +101,20 @@ class ReservationController extends Controller
 
         return response()->json($reservation, 200); // Return updated reservation
     }
+    public function batchUpdate(Request $request)
+{
+    $events = $request->input('events');
+
+    foreach ($events as $eventData) {
+        Reservation::where('id', $eventData['id'])->update([
+            'start' => $eventData['start'],
+            'end' => $eventData['end'],
+            // Add other fields to update as needed
+        ]);
+    }
+
+    return response()->json(['message' => 'Batch update successful']);
+}
 
     // Delete a reservation
     public function destroy($id)

@@ -29,7 +29,7 @@ class ReservationSeeder extends Seeder
                     'terrain_id' => $terrain->id,
                     'title' => 'Sample Reservation',
                     'class' => 'yellow-event',
-                    'split' => "{$terrain->id}",
+                    'split' => "{$terrain->sport->type} {$terrain->id}",
                     'clickable' => true,
                     'duration' => 60,
                     'editable' => true,
