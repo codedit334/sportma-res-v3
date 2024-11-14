@@ -100,10 +100,10 @@
                         <span>{{ event.start.formatTime("HH:mm") }} - </span>
                         <span>{{ event.end.formatTime("HH:mm") }}</span>
                     </div>
-                    <div
+                    <!-- <div
                         class="vuecal__event-content text-top-left"
                         v-html="event.content"
-                    />
+                    /> -->
                 </div>
             </template>
         </vue-cal>
@@ -362,15 +362,12 @@ export default {
             this.dropEvent(event);
         },
         dropEvent(newEvent) {
-            console.log("Dropping");
 
             // Check for overlapping only if event.split and newEvent.newSplit are the same
             const isOverlap = this.events.some((event) => {
                 // Exclude the newEvent by comparing unique identifiers
-                console.log(event.id, newEvent.event.id);
                 if (event.id !== newEvent.event.id) {
                     // Check for overlapping only if the split values match
-                    console.log(event.split, newEvent.event.split);
                     if (event.split === newEvent.event.split) {
                         return this.isOverlapping(newEvent, event);
                     } else return false;
@@ -381,7 +378,6 @@ export default {
                 alert(
                     "This event overlaps with an existing event in the same split. Please choose a different time."
                 );
-                console.log("ISOVERLAP")
                 this.addEventToEvents(newEvent);
 
                 return;
@@ -409,7 +405,6 @@ export default {
             // this.addPendingEvent(newEvent);
 
             // this.SET_EVENTS(this.updatedEvents);
-            console.log("Counnt")
             this.storeDeleteEvent(newEvent.event.id);
             newEvent.event.start = this.formatDateAsString(newEvent.event.start);
             newEvent.event.end = this.formatDateAsString(newEvent.event.end);
@@ -433,7 +428,6 @@ export default {
             const newEvent = { ...eventObj.originalEvent };
 
             if (this.eventAction === "drag") {
-                console.log("dragging");
                 newEvent.start = new Date(newEvent.start);
                 newEvent.end = new Date(newEvent.end);
                 // Format the start and end as 'YYYY-MM-DD HH:mm:ss'
@@ -445,7 +439,6 @@ export default {
                 this.ADD_EVENT(newEvent);
                 this.addEvent(newEvent);
                 this.saveAllEvents();
-                console.log("event added")
                 this.eventAction = "";
                 return;
             }
@@ -467,7 +460,6 @@ export default {
             // this.SET_EVENTS(this.updatedEvents);
 
             // Rework
-            console.log("SUS", newEvent);
             this.ADD_EVENT(newEvent);
             this.addEvent(newEvent);
             this.saveAllEvents();
@@ -494,7 +486,6 @@ export default {
                     newEvent.end = this.snapToNearest30(newEvent.end);
                 }
             }
-            console.log("newEvent.start", newEvent.start);
 
             // Now add the adjusted event to the calendar
             // this.updatedEvents.push(newEvent);
@@ -537,7 +528,6 @@ export default {
                 d.setHours(d.getHours() + 1);
             }
 
-            console.log("hadi",d);
 
             d.setSeconds(0, 0); // Reset seconds and milliseconds
             return d;
@@ -599,34 +589,16 @@ export default {
             // } 
             //REWORK
 
-            console.log("this.selectedEvent.content", this.selectedEvent.content);
             
             this.selectedEvent.start= this.formatDateAsString(this.selectedEvent.start);
             this.selectedEvent.end= this.formatDateAsString(this.selectedEvent.end);
-            console.log("this.selectedEvent.start", this.selectedEvent.start);
             this.updateEvent(this.selectedEvent);
             // Close the dialog
             this.close();
         },
 
         deleteEvent() {
-            // Find the index of the event with the same id
-            // const eventIndex = this.updatedEvents.findIndex(
-            //     (event) => event.id === this.selectedEvent.id
-            // );
-
-            // if (eventIndex !== -1) {
-            //     // Remove the event from the array
-            //     this.updatedEvents.splice(eventIndex, 1);
-
-            //     this.SET_EVENTS(this.updatedEvents);
-            // } else {
-            //     console.log("Event not found, could not delete.");
-            // }
-
-            // this.SET_EVENTS(this.updatedEvents);
-            // Rework
-
+            // this.REMOVE_EVENT(this.selectedEvent.id);
             this.storeDeleteEvent(this.selectedEvent.id);
 
             // Close the dialog
@@ -647,7 +619,6 @@ export default {
             // Reset splitDays
             this.splitDays = [];
 
-            console.log("konan", selectedSplitsTypes);
 
             // If matching split types are found, update split properties and merge terrains
             if (selectedSplitsTypes.length) {
@@ -674,7 +645,6 @@ export default {
                                 (index + tIndex) % 2 === 0 ? "white" : "grey", // Alternating classes for styling
                         }))
                 );
-                console.log("splitDays", this.splitDays);
             }
         },
 
@@ -778,7 +748,6 @@ export default {
                         duration = Math.floor((latestEnd - newDate) / 60000); // Duration in minutes
                     }
 
-                    console.log("Out1");
 
                     this.$refs.vuecal2.createEvent(event.date, duration, {
                         title: `Nouvelle Reservation`,
@@ -820,8 +789,6 @@ export default {
 
                     // this.addEvent(newEvent);
                     // this.saveAllEvents();
-                    console.log("Out");
-                    // console.log(this.updatedEvents);
                     // this.SET_EVENTS(this.updatedEvents);
                 }
             }
@@ -865,7 +832,6 @@ export default {
         onEventClick(event, e) {
             e.stopPropagation();
             if (event.clickable === 1) {
-                console.log("in event click");
                 this.selectedEvent = event;
                 this.selectedStatus = event.status;
                 this.selectedEventTitle = event.title;

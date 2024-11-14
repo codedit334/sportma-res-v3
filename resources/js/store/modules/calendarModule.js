@@ -41,7 +41,6 @@ const calendarModule = {
         },
         // Remove event mutation
         REMOVE_EVENT(state, eventId) {
-          console.log("Removing event with ID:", eventId);
             state.events = state.events.filter((event) => event.id !== eventId);
         },
         // Update event mutation
@@ -79,10 +78,8 @@ const calendarModule = {
         // Fetch events from the API
         async fetchEvents({ state, commit }) {
             try {
-                console.log("Fetching events...");
                 const response = await axios.get("/api/reservations"); // Update with correct API endpoint
                 commit("SET_EVENTS", response.data);
-                console.log(state.events)
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
@@ -98,13 +95,11 @@ const calendarModule = {
         },
         async saveAllEvents({ state, commit, dispatch }) {
             try {
-                console.log("UNSAVED", state.unsavedEvents);
                 const response = await axios.post("/api/reservations/batch", {
                     reservations: state.unsavedEvents,
                 }); // Update with correct endpoint
                 // Clear unsaved events after successful batch save
                 commit("CLEAR_UNSAVED_EVENTS");
-                console.log(response.data);
                 dispatch("fetchEvents");
                 // Optionally update events in state if backend responds with updated data
                 // commit("SET_EVENTS", response.data.reservations); // If backend returns the saved events
@@ -153,7 +148,6 @@ const calendarModule = {
         },
         // Delete an event through the API
         async storeDeleteEvent({ commit }, eventId) {
-          console.log("DELETE")
             try {
               commit("REMOVE_EVENT", eventId);
                 await axios.delete(`/api/reservations/${eventId}`); // Update with correct API endpoint

@@ -278,7 +278,6 @@ export default {
         const store = useStore();
         store.dispatch("calendar/fetchEvents").then(() => {
             this.events = store.state.calendar.events;
-            console.log(this.events); // Logs events after fetching
         });
     },
 };

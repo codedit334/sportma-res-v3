@@ -184,7 +184,6 @@ export default {
                         headers: { "Content-Type": "multipart/form-data" },
                     }
                 );
-                console.log("DATA", response.data);
                 this.$store.dispatch("auth/fetchUserProfile");
                 this.editModal = false;
                 this.changePassword = false;
@@ -195,7 +194,6 @@ export default {
     },
     mounted() {
         this.$store.dispatch("auth/fetchUserProfile");
-        console.log("Default user image:", defaultUser);
     },
 };
 </script>

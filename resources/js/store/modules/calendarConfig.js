@@ -64,11 +64,8 @@ export default {
     actions: {
         async fetchCalendarConfig({ commit }, companyId) {
             try {
-                console.log(companyId);
-                console.log("III")
                 const response = await axios.get(`/api/sports/${companyId}`);
                 if (response.data) {
-                    console.log("Sports config",response.data);
                     commit("SET_SPLIT_TYPES", response.data);
                 }
             } catch (error) {

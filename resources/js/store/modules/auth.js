@@ -35,7 +35,6 @@ const mutations = {
         localStorage.setItem("refreshToken", refreshToken);
     },
     SET_TOKEN_EXPIRATION(state, expiration) {
-        console.log("Token expiration Set:", expiration);
         state.tokenExpiration = expiration;
         localStorage.setItem("tokenExpiration", JSON.stringify(expiration));
     },

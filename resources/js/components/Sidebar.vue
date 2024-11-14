@@ -66,7 +66,6 @@ const store = useStore();
 const user = computed(() => store.getters["auth/user"]);
 // get isAdmin from store
 const isAdmin = computed(() => store.getters["auth/isAdmin"]);
-console.log('isAdmin:', isAdmin.value);
 
 // Helper function to check if the user has a specific permission
 const hasPermission = (permission) => {

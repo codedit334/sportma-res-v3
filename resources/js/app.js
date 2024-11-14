@@ -43,7 +43,6 @@ setInterval(() => {
     const tokenExpiration = store.getters["auth/tokenExpiration"];
     const timeToExpire = tokenExpiration - Date.now();
 
-    console.log("Time to token expiration:", timeToExpire);
 
     // Refresh the token 5 minutes before it expires
     if (timeToExpire < 300000 && timeToExpire > 0) {
