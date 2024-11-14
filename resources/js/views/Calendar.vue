@@ -281,6 +281,7 @@ export default {
         ...mapActions("calendar", ["saveAllEvents"]),
         ...mapActions("calendar", ["storeDeleteEvent"]),
         ...mapActions("calendar", ["updateEvent"]),
+        ...mapActions("calendar", ["storeDeleteEvent"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -615,20 +616,23 @@ export default {
 
         deleteEvent() {
             // Find the index of the event with the same id
-            const eventIndex = this.updatedEvents.findIndex(
-                (event) => event.id === this.selectedEvent.id
-            );
+            // const eventIndex = this.updatedEvents.findIndex(
+            //     (event) => event.id === this.selectedEvent.id
+            // );
 
-            if (eventIndex !== -1) {
-                // Remove the event from the array
-                this.updatedEvents.splice(eventIndex, 1);
+            // if (eventIndex !== -1) {
+            //     // Remove the event from the array
+            //     this.updatedEvents.splice(eventIndex, 1);
 
-                this.SET_EVENTS(this.updatedEvents);
-            } else {
-                console.log("Event not found, could not delete.");
-            }
+            //     this.SET_EVENTS(this.updatedEvents);
+            // } else {
+            //     console.log("Event not found, could not delete.");
+            // }
 
-            this.SET_EVENTS(this.updatedEvents);
+            // this.SET_EVENTS(this.updatedEvents);
+            // Rework
+
+            this.storeDeleteEvent(this.selectedEvent.id);
 
             // Close the dialog
             this.close();
