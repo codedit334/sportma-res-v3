@@ -76,11 +76,13 @@ const calendarModule = {
     },
     async saveAllEvents({ state, commit }) {
       try {
-        const response = await axios.post('/api/reservations/batch', state.unsavedEvents); // Update with correct endpoint
+        console.log("UNSAVED",state.unsavedEvents)
+        const response = await axios.post('/api/reservations/batch', {reservations: state.unsavedEvents}); // Update with correct endpoint
         // Clear unsaved events after successful batch save
         commit('CLEAR_UNSAVED_EVENTS');
+        console.log(response.data)
         // Optionally update events in state if backend responds with updated data
-        commit('SET_EVENTS', response.data); // If backend returns the saved events
+        commit('SET_EVENTS', response.data.reservations); // If backend returns the saved events
       } catch (error) {
         console.error('Error saving events:', error);
       }

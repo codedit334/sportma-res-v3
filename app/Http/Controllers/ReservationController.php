@@ -70,7 +70,16 @@ class ReservationController extends Controller
     foreach ($reservations as $reservationData) {
         Reservation::create($reservationData);
     }
-    return response()->json(['message' => 'Events saved successfully'], 200);
+    
+    // return all reservations with the same company_id as auth user
+    $companyId = auth()->user()->company_id;
+    $reservations = Reservation::with(['user', 'terrain'])
+        ->whereHas('user', function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })
+        ->get();
+    
+    return response()->json(['message' => 'Events saved successfully', 'reservations' => $reservations], 201); // Return created reservation'], 200);
 }
 
     // Update a reservation

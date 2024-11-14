@@ -278,6 +278,7 @@ export default {
         ...mapActions("calendarConfig", ["fetchCalendarConfig"]),
         ...mapActions("calendar", ["fetchEvents"]),
         ...mapActions("calendar", ["addEvent"]),
+        ...mapActions("calendar", ["saveAllEvents"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -484,7 +485,10 @@ export default {
             console.log("newevent", newEvent);
 
             this.addEvent(newEvent);
-            this.SET_EVENTS(this.updatedEvents);
+            console.log("Wtf")
+            this.saveAllEvents();
+            console.log("Wtf2")
+            // this.SET_EVENTS(this.updatedEvents);
         },
 
         snapToNearest1h(date) {
@@ -645,7 +649,6 @@ export default {
             // if (event.hasOwnProperty("split")) {
             // Check if event is overlapping events in the same split
             if (!this.checkForCreationOverlapping(event)) {
-                console.log("event", event);
                 if (event.split) {
 
                     let eventClass = "";
@@ -731,6 +734,9 @@ export default {
                         duration = Math.floor((latestEnd - newDate) / 60000); // Duration in minutes
                     }
 
+                    console.log("Out1")
+
+
                     this.$refs.vuecal2.createEvent(event.date, duration, {
                         id: uuidv4(),
                         title: `Nouvelle Reservation`,
@@ -747,9 +753,10 @@ export default {
                         titleEditable: false,
                         deletable: false,
                     });
-
-                    console.log(this.updatedEvents);
-                    this.SET_EVENTS(this.updatedEvents);
+                    
+                    console.log("Out")
+                    // console.log(this.updatedEvents);
+                    // this.SET_EVENTS(this.updatedEvents);
                 }
             }
             // }

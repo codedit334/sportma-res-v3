@@ -60,6 +60,7 @@ Route::middleware(['jwt.auth'])->group(function () {
         Route::put('/reservations/{id}', [ReservationController::class, 'update']); // Update a reservation
         Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']); // Delete a reservation
         Route::post('/reservations', [ReservationController::class, 'store']); // Create a new reservation
+        Route::post('/reservations/batch', [ReservationController::class, 'batchStore']);
 
     Route::get('/calendar-configs/{companyId}', [CalendarConfigController::class, 'show']);
     Route::post('/calendar-configs', [CalendarConfigController::class, 'store']);
