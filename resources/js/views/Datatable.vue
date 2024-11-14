@@ -134,7 +134,7 @@ export default {
                 id: event.id,
                 nom: event.title,
                 categorie: event.category,
-                terrain: event.terrain.label,
+                terrain: event.terrain,
                 prix: event.price,
                 statut: event.status,
                 date: new Date(event.start), // Ensure date is in Date format
