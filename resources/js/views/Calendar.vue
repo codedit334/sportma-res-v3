@@ -279,6 +279,7 @@ export default {
         ...mapActions("calendar", ["fetchEvents"]),
         ...mapActions("calendar", ["addEvent"]),
         ...mapActions("calendar", ["saveAllEvents"]),
+        ...mapActions("calendar", ["storeDeleteEvent"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -358,6 +359,7 @@ export default {
             this.dropEvent(event);
         },
         dropEvent(newEvent) {
+            console.log("Dropping")
             // Check for overlapping only if event.split and newEvent.newSplit are the same
             const isOverlap = this.updatedEvents.some((event) => {
                 // Exclude the newEvent by comparing unique identifiers
@@ -374,41 +376,49 @@ export default {
                     "This event overlaps with an existing event in the same split. Please choose a different time."
                 );
                 this.addEventToEvents(newEvent);
+
                 return;
             }
             // Replace the event in events array with newEvent.event if they have the same id
-            this.updatedEvents = this.updatedEvents.map((event) => {
-                if (event.id === newEvent.event.id) {
-                    // Parse the start and end times as Date objects
-                    const startTime = new Date(newEvent.event.start);
-                    const endTime = new Date(newEvent.event.end);
+            // this.updatedEvents = this.updatedEvents.map((event) => {
+            //     if (event.id === newEvent.event.id) {
+            //         // Parse the start and end times as Date objects
+            //         const startTime = new Date(newEvent.event.start);
+            //         const endTime = new Date(newEvent.event.end);
 
-                    // Calculate the difference in minutes
-                    const durationInMinutes =
-                        (endTime - startTime) / (1000 * 60);
+            //         // Calculate the difference in minutes
+            //         const durationInMinutes =
+            //             (endTime - startTime) / (1000 * 60);
 
-                    // Update the duration property
-                    newEvent.event.duration = durationInMinutes;
+            //         // Update the duration property
+            //         newEvent.event.duration = durationInMinutes;
 
-                    return newEvent.event;
-                } else {
-                    return event;
-                }
-            });
+            //         return newEvent.event;
+            //     } else {
+            //         return event;
+            //     }
+            // });
+
+
+            this.addPendingEvent(newEvent);
 
             this.SET_EVENTS(this.updatedEvents);
         },
 
         addEventToEvents(eventObj) {
             // Delete the event with the same id as eventObj.event.id from the events array
-            this.updatedEvents = this.updatedEvents.filter(
-                (event) => event.id !== eventObj.event.id
-            );
+            // this.updatedEvents = this.updatedEvents.filter(
+            //     (event) => event.id !== eventObj.event.id
+            // );
+
+            // Rework
+            this.storeDeleteEvent(eventObj.event.id);
 
             // Clone the event object to avoid modifying the original
             const newEvent = { ...eventObj.originalEvent };
 
             if (this.eventAction === "drag") {
+                console.log("dragging")
                 newEvent.start = new Date(newEvent.start);
                 newEvent.end = new Date(newEvent.end);
                 this.updatedEvents.push(newEvent);
@@ -426,9 +436,13 @@ export default {
             ); // 60000 ms in a minute
 
             // Add the new event to the events array
-            this.updatedEvents.push(newEvent);
+            // this.updatedEvents.push(newEvent); 
+            // this.SET_EVENTS(this.updatedEvents);
 
-            this.SET_EVENTS(this.updatedEvents);
+            // Rework
+            console.log("SUS", newEvent);
+            this.addEvent(newEvent);
+            this.saveAllEvents();
         },
         onEventCreate(newEvent) {
             if (newEvent.split) {
