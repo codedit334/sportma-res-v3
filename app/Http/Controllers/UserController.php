@@ -37,8 +37,12 @@ class UserController extends Controller
             'permissions' => 'nullable|array',
             'profile_picture' => 'nullable|string',
         ]);
+        
+        // Get auth user's company_id
+        $company_id = auth()->user()->company_id;
 
         $user = User::create([
+            'company_id' => $company_id,
             'name' => $request->full_name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -50,7 +54,6 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    // app/Http/Controllers/UserController.php
 
 
     public function update(Request $request, $id)
