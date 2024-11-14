@@ -487,17 +487,14 @@ export default {
                 if (newEvent.split.toLowerCase().includes("football")) {
                     // Adjust start and end times to nearest 30-minute interval
                     newEvent.start = this.snapToNearest1h(newEvent.start);
-
-                    // make newEvent.end adds duration to newEvent.start
-                    // newEvent.end = new Date(
-                    //   newEvent.start.getTime() + newEvent.duration * 60000
-                    // )
                     newEvent.end = this.snapToNearest1h(newEvent.end);
+
                 } else if (newEvent.split.toLowerCase().includes("padel")) {
                     newEvent.start = this.snapToNearest30(newEvent.start);
                     newEvent.end = this.snapToNearest30(newEvent.end);
                 }
             }
+            console.log("newEvent.start", newEvent.start);
 
             // Now add the adjusted event to the calendar
             // this.updatedEvents.push(newEvent);
@@ -516,31 +513,15 @@ export default {
             const startDate = newEvent.start;
             const endDate = newEvent.end;
 
-            // Convert to MySQL-friendly format (YYYY-MM-DD HH:MM:SS)
-            const formatDate = (date) => {
-                const d = new Date(date);
-                return d.toISOString().slice(0, 19).replace("T", " ");
-            };
 
-            const formattedStartDate = formatDate(startDate);
-            const formattedEndDate = formatDate(endDate);
+            const formattedStartDate = this.formatDateAsString(startDate);
+            const formattedEndDate = this.formatDateAsString(endDate);
 
             newEvent.start = formattedStartDate;
             newEvent.end = formattedEndDate;
 
-            console.log("newevent.start", newEvent.start);
-            // Use Object.assign() to add the start and end properties
-            // Object.assign(newEvent, {
-            //     start: formattedStartDate,
-            //     end: formattedEndDate,
-            // });
-            console.log("newevent", newEvent);
-
             this.addEvent(newEvent);
-            console.log("Wtf");
             this.saveAllEvents();
-            console.log("Wtf2");
-            // this.SET_EVENTS(this.updatedEvents);
         },
 
         snapToNearest1h(date) {
@@ -555,6 +536,8 @@ export default {
                 d.setMinutes(0);
                 d.setHours(d.getHours() + 1);
             }
+
+            console.log("hadi",d);
 
             d.setSeconds(0, 0); // Reset seconds and milliseconds
             return d;
