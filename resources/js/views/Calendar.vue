@@ -165,7 +165,7 @@
                 <!-- Remarks Text Area for event.notes -->
                 <v-textarea
                     label="Remarques"
-                    v-model="selectedEvent.notes"
+                    v-model="selectedEvent.content"
                     rows="3"
                     outlined
                     style="margin-top: 20px"
@@ -442,7 +442,6 @@ export default {
             newEvent.start = new Date(eventObj.oldDate);
 
             // Calculate the end by adding the duration (in minutes) to the start
-            console.log("Maybe here");
             newEvent.end = new Date(
                 newEvent.start.getTime() + newEvent.duration * 60000
             ); // 60000 ms in a minute
@@ -604,9 +603,11 @@ export default {
             // } 
             //REWORK
 
-            // HNA
+            console.log("this.selectedEvent.content", this.selectedEvent.content);
+            
             this.selectedEvent.start= this.formatDateAsString(this.selectedEvent.start);
             this.selectedEvent.end= this.formatDateAsString(this.selectedEvent.end);
+            console.log("this.selectedEvent.start", this.selectedEvent.start);
             this.updateEvent(this.selectedEvent);
             // Close the dialog
             this.close();
