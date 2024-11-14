@@ -258,9 +258,6 @@ export default {
             await this.fetchEvents();
 
             this.updatedEvents = [...this.events];
-            console.log("Chouf hna",this.events)
-            console.log("O hna",this.updatedEvents)
-            console.log("Reservations:", this.updatedEvents);
 
             if (this.sports.length && !this.selectedSport) {
                 this.selectedSport = this.sports[0];
@@ -283,6 +280,7 @@ export default {
         ...mapActions("calendar", ["addEvent"]),
         ...mapActions("calendar", ["saveAllEvents"]),
         ...mapActions("calendar", ["storeDeleteEvent"]),
+        ...mapActions("calendar", ["updateEvent"]),
 
         logEvents(event, data) {
             console.log(event, data);
@@ -444,6 +442,7 @@ export default {
             newEvent.start = new Date(eventObj.oldDate);
 
             // Calculate the end by adding the duration (in minutes) to the start
+            console.log("Maybe here");
             newEvent.end = new Date(
                 newEvent.start.getTime() + newEvent.duration * 60000
             ); // 60000 ms in a minute
@@ -586,24 +585,29 @@ export default {
             this.dialog = false;
         },
         confirm() {
-            this.selectedEvent.statut = this.selectedStatus;
+            this.selectedEvent.status = this.selectedStatus;
             this.selectedEvent.class = this.selectedEventClass;
             this.selectedEvent.title = this.selectedEventTitle;
             // Find and replace the event with the same id
-            const eventIndex = this.updatedEvents.findIndex(
-                (event) => event.id === this.selectedEvent.id
-            );
+            // const eventIndex = this.updatedEvents.findIndex(
+            //     (event) => event.id === this.selectedEvent.id
+            // );
 
-            if (eventIndex !== -1) {
-                // Replace the old event with the updated selectedEvent
-                this.updatedEvents[eventIndex] = { ...this.selectedEvent }; // Spread syntax to replace the object
+            // if (eventIndex !== -1) {
+            //     // Replace the old event with the updated selectedEvent
+            //     this.updatedEvents[eventIndex] = { ...this.selectedEvent }; // Spread syntax to replace the object
 
-                this.SET_EVENTS(this.updatedEvents);
-            } else {
-                this.updatedEvents.push(this.selectedEvent);
-                this.SET_EVENTS(this.updatedEvents);
-            }
+            //     this.SET_EVENTS(this.updatedEvents);
+            // } else {
+            //     this.updatedEvents.push(this.selectedEvent);
+            //     this.SET_EVENTS(this.updatedEvents);
+            // } 
+            //REWORK
 
+            // HNA
+            this.selectedEvent.start= this.formatDateAsString(this.selectedEvent.start);
+            this.selectedEvent.end= this.formatDateAsString(this.selectedEvent.end);
+            this.updateEvent(this.selectedEvent);
             // Close the dialog
             this.close();
         },
@@ -860,7 +864,8 @@ export default {
         },
         onEventClick(event, e) {
             e.stopPropagation();
-            if (event.clickable === true) {
+            if (event.clickable === 1) {
+                console.log("in event click");
                 this.selectedEvent = event;
                 this.selectedStatus = event.status;
                 this.selectedEventTitle = event.title;

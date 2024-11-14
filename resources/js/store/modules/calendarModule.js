@@ -114,13 +114,15 @@ const calendarModule = {
             }
         },
         // Update an event through the API
-        async updateEvent({ commit }, eventData) {
+        async updateEvent({ commitx, dispatch }, eventData) {
             try {
                 const response = await axios.put(
                     `/api/reservations/${eventData.id}`,
                     eventData
                 ); // Update with correct API endpoint
-                commit("UPDATE_EVENT", response.data.reservation);
+                // commit("UPDATE_EVENT", response.data.reservation);
+                // commit("UPDATE_EVENT", eventData);
+                dispatch("fetchEvents");
             } catch (error) {
                 console.error("Error updating event:", error);
             }

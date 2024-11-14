@@ -163,7 +163,7 @@ class ReservationController extends Controller
             'start' => 'required|date',
             'end' => 'required|date',
             'content' => 'nullable|string',
-            'status' => 'required|string|in:confirmed,pending,canceled',
+            'status' => 'required|string|max:255',
         ]);
 
         // Find the reservation to update
