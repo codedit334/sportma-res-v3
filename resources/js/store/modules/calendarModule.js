@@ -105,10 +105,9 @@ const calendarModule = {
                 // Clear unsaved events after successful batch save
                 commit("CLEAR_UNSAVED_EVENTS");
                 console.log(response.data);
+                dispatch("fetchEvents");
                 // Optionally update events in state if backend responds with updated data
                 // commit("SET_EVENTS", response.data.reservations); // If backend returns the saved events
-                dispatch("fetchEvents");
-                // console.log(state.events)
             } catch (error) {
                 console.error("Error saving events:", error);
             }
@@ -156,8 +155,8 @@ const calendarModule = {
         async storeDeleteEvent({ commit }, eventId) {
           console.log("DELETE")
             try {
+              commit("REMOVE_EVENT", eventId);
                 await axios.delete(`/api/reservations/${eventId}`); // Update with correct API endpoint
-                commit("REMOVE_EVENT", eventId);
             } catch (error) {
                 console.error("Error deleting event:", error);
             }

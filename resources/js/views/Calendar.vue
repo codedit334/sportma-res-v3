@@ -272,6 +272,7 @@ export default {
     methods: {
         // Mapping mutations to modify the events
         ...mapMutations("calendar", ["SET_EVENTS"]),
+        ...mapMutations("calendar", ["ADD_EVENT"]),
         ...mapMutations("calendar", ["REMOVE_EVENT"]),
         // Map actions using mapActions
         ...mapActions("auth", ["fetchUserProfile"]),
@@ -290,7 +291,7 @@ export default {
             this.currentView = view.view;
         },
         stopDeleteEvent(event) {
-            if (!event.clickable) {
+            if (!event.clickable === 1) {
                 alert("Cet event ne peut pas être supprimé");
                 this.updatedEvents.push(event);
                 this.SET_EVENTS(this.updatedEvents);
@@ -408,6 +409,14 @@ export default {
             // this.addPendingEvent(newEvent);
 
             // this.SET_EVENTS(this.updatedEvents);
+            console.log("Counnt")
+            this.storeDeleteEvent(newEvent.event.id);
+            newEvent.event.start = this.formatDateAsString(newEvent.event.start);
+            newEvent.event.end = this.formatDateAsString(newEvent.event.end);
+            // newEvent.event.id = newEvent.event.id+1;
+            this.ADD_EVENT(newEvent.event);
+            this.addEvent(newEvent.event);
+            this.saveAllEvents();
         },
 
         addEventToEvents(eventObj) {
@@ -435,6 +444,7 @@ export default {
                 // this.SET_EVENTS(this.updatedEvents); rework
                 this.addEvent(newEvent);
                 this.saveAllEvents();
+                console.log("event added")
                 this.eventAction = "";
                 return;
             }
