@@ -442,6 +442,7 @@ export default {
 
                 // this.updatedEvents.push(newEvent);
                 // this.SET_EVENTS(this.updatedEvents); rework
+                this.ADD_EVENT(newEvent);
                 this.addEvent(newEvent);
                 this.saveAllEvents();
                 console.log("event added")
@@ -467,6 +468,7 @@ export default {
 
             // Rework
             console.log("SUS", newEvent);
+            this.ADD_EVENT(newEvent);
             this.addEvent(newEvent);
             this.saveAllEvents();
 
