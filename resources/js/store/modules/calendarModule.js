@@ -41,6 +41,7 @@ const calendarModule = {
         },
         // Remove event mutation
         REMOVE_EVENT(state, eventId) {
+          console.log("Removing event with ID:", eventId);
             state.events = state.events.filter((event) => event.id !== eventId);
         },
         // Update event mutation

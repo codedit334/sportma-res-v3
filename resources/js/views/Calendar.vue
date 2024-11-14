@@ -273,6 +273,7 @@ export default {
     methods: {
         // Mapping mutations to modify the events
         ...mapMutations("calendar", ["SET_EVENTS"]),
+        ...mapMutations("calendar", ["REMOVE_EVENT"]),
         // Map actions using mapActions
         ...mapActions("auth", ["fetchUserProfile"]),
         ...mapActions("calendarConfig", ["fetchCalendarConfig"]),
@@ -359,7 +360,7 @@ export default {
             this.dropEvent(event);
         },
         dropEvent(newEvent) {
-            console.log("Dropping")
+            console.log("Dropping");
             // Check for overlapping only if event.split and newEvent.newSplit are the same
             const isOverlap = this.updatedEvents.some((event) => {
                 // Exclude the newEvent by comparing unique identifiers
@@ -399,7 +400,6 @@ export default {
             //     }
             // });
 
-
             this.addPendingEvent(newEvent);
 
             this.SET_EVENTS(this.updatedEvents);
@@ -412,13 +412,14 @@ export default {
             // );
 
             // Rework
+            this.REMOVE_EVENT(eventObj.event.id);
             this.storeDeleteEvent(eventObj.event.id);
 
             // Clone the event object to avoid modifying the original
             const newEvent = { ...eventObj.originalEvent };
 
             if (this.eventAction === "drag") {
-                console.log("dragging")
+                console.log("dragging");
                 newEvent.start = new Date(newEvent.start);
                 newEvent.end = new Date(newEvent.end);
                 this.updatedEvents.push(newEvent);
@@ -435,14 +436,28 @@ export default {
                 newEvent.start.getTime() + newEvent.duration * 60000
             ); // 60000 ms in a minute
 
+            // Format the start and end as 'YYYY-MM-DD HH:mm:ss'
+            newEvent.start = formatDate(newEvent.start);
+            newEvent.end = formatDate(newEvent.end);
+
             // Add the new event to the events array
-            // this.updatedEvents.push(newEvent); 
+            // this.updatedEvents.push(newEvent);
             // this.SET_EVENTS(this.updatedEvents);
 
             // Rework
             console.log("SUS", newEvent);
             this.addEvent(newEvent);
             this.saveAllEvents();
+
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = ("0" + (date.getMonth() + 1)).slice(-2); // Month is 0-indexed
+                const day = ("0" + date.getDate()).slice(-2);
+                const hours = ("0" + date.getHours()).slice(-2);
+                const minutes = ("0" + date.getMinutes()).slice(-2);
+                const seconds = ("0" + date.getSeconds()).slice(-2);
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            }
         },
         onEventCreate(newEvent) {
             if (newEvent.split) {
@@ -499,9 +514,9 @@ export default {
             console.log("newevent", newEvent);
 
             this.addEvent(newEvent);
-            console.log("Wtf")
+            console.log("Wtf");
             this.saveAllEvents();
-            console.log("Wtf2")
+            console.log("Wtf2");
             // this.SET_EVENTS(this.updatedEvents);
         },
 
@@ -664,7 +679,6 @@ export default {
             // Check if event is overlapping events in the same split
             if (!this.checkForCreationOverlapping(event)) {
                 if (event.split) {
-
                     let eventClass = "";
                     let clickable = false;
                     let editable = true;
@@ -748,8 +762,7 @@ export default {
                         duration = Math.floor((latestEnd - newDate) / 60000); // Duration in minutes
                     }
 
-                    console.log("Out1")
-
+                    console.log("Out1");
 
                     this.$refs.vuecal2.createEvent(event.date, duration, {
                         id: uuidv4(),
@@ -767,8 +780,8 @@ export default {
                         titleEditable: false,
                         deletable: false,
                     });
-                    
-                    console.log("Out")
+
+                    console.log("Out");
                     // console.log(this.updatedEvents);
                     // this.SET_EVENTS(this.updatedEvents);
                 }
