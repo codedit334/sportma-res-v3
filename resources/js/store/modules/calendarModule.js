@@ -77,11 +77,12 @@ const calendarModule = {
     },
     actions: {
         // Fetch events from the API
-        async fetchEvents({ commit }) {
+        async fetchEvents({ state, commit }) {
             try {
                 console.log("Fetching events...");
                 const response = await axios.get("/api/reservations"); // Update with correct API endpoint
                 commit("SET_EVENTS", response.data);
+                console.log(state.events)
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
@@ -95,11 +96,9 @@ const calendarModule = {
                 console.error("Error adding event to unsaved list:", error);
             }
         },
-        async saveAllEvents({ state, commit }) {
+        async saveAllEvents({ state, commit, dispatch }) {
             try {
                 console.log("UNSAVED", state.unsavedEvents);
-                // state.unsavedEvents[0].start = new Date("2024-11-14 06:00:00");
-                // state.unsavedEvents[0].end = new Date("2024-11-14 07:00:00");
                 const response = await axios.post("/api/reservations/batch", {
                     reservations: state.unsavedEvents,
                 }); // Update with correct endpoint
@@ -107,7 +106,9 @@ const calendarModule = {
                 commit("CLEAR_UNSAVED_EVENTS");
                 console.log(response.data);
                 // Optionally update events in state if backend responds with updated data
-                commit("SET_EVENTS", response.data.reservations); // If backend returns the saved events
+                // commit("SET_EVENTS", response.data.reservations); // If backend returns the saved events
+                dispatch("fetchEvents");
+                // console.log(state.events)
             } catch (error) {
                 console.error("Error saving events:", error);
             }

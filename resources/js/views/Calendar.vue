@@ -258,6 +258,8 @@ export default {
             await this.fetchEvents();
 
             this.updatedEvents = [...this.events];
+            console.log("Chouf hna",this.events)
+            console.log("O hna",this.updatedEvents)
             console.log("Reservations:", this.updatedEvents);
 
             if (this.sports.length && !this.selectedSport) {
@@ -330,7 +332,7 @@ export default {
             return isOverlap;
         },
         isOverlapping(newEvent) {
-            return this.updatedEvents.some((event) => {
+            return this.events.some((event) => {
                 // Exclude the newEvent itself by comparing IDs (or other unique properties)
                 if (event.id === newEvent.event.id) {
                     return false; // Skip the current newEvent in the comparison
@@ -361,11 +363,14 @@ export default {
         },
         dropEvent(newEvent) {
             console.log("Dropping");
+
             // Check for overlapping only if event.split and newEvent.newSplit are the same
-            const isOverlap = this.updatedEvents.some((event) => {
+            const isOverlap = this.events.some((event) => {
                 // Exclude the newEvent by comparing unique identifiers
+                console.log(event.id, newEvent.event.id);
                 if (event.id !== newEvent.event.id) {
                     // Check for overlapping only if the split values match
+                    console.log(event.split, newEvent.event.split);
                     if (event.split === newEvent.event.split) {
                         return this.isOverlapping(newEvent, event);
                     } else return false;
@@ -376,6 +381,7 @@ export default {
                 alert(
                     "This event overlaps with an existing event in the same split. Please choose a different time."
                 );
+                console.log("ISOVERLAP")
                 this.addEventToEvents(newEvent);
 
                 return;
@@ -400,9 +406,9 @@ export default {
             //     }
             // });
 
-            this.addPendingEvent(newEvent);
+            // this.addPendingEvent(newEvent);
 
-            this.SET_EVENTS(this.updatedEvents);
+            // this.SET_EVENTS(this.updatedEvents);
         },
 
         addEventToEvents(eventObj) {
@@ -422,8 +428,14 @@ export default {
                 console.log("dragging");
                 newEvent.start = new Date(newEvent.start);
                 newEvent.end = new Date(newEvent.end);
-                this.updatedEvents.push(newEvent);
-                this.SET_EVENTS(this.updatedEvents);
+                // Format the start and end as 'YYYY-MM-DD HH:mm:ss'
+                newEvent.start = formatDate(newEvent.start);
+                newEvent.end = formatDate(newEvent.end);
+
+                // this.updatedEvents.push(newEvent);
+                // this.SET_EVENTS(this.updatedEvents); rework
+                this.addEvent(newEvent);
+                this.saveAllEvents();
                 this.eventAction = "";
                 return;
             }
@@ -477,7 +489,7 @@ export default {
             }
 
             // Now add the adjusted event to the calendar
-            this.updatedEvents.push(newEvent);
+            // this.updatedEvents.push(newEvent);
             newEvent.user_id = this.user.id;
 
             // Using regex to match the number
@@ -765,7 +777,6 @@ export default {
                     console.log("Out1");
 
                     this.$refs.vuecal2.createEvent(event.date, duration, {
-                        id: uuidv4(),
                         title: `Nouvelle Reservation`,
                         class: eventClass,
                         content: eventContent,
@@ -780,7 +791,31 @@ export default {
                         titleEditable: false,
                         deletable: false,
                     });
+                    
+                    // make end event.date + duration
+                    // const endDate = new Date(newDate.getTime() + duration * 60000);
+                    // const newEvent = {
+                    //     user_id: this.user.id,
+                    //     terrain_id: matchingTerrain.id,
+                    //     start: this.formatDateAsString(event.date),
+                    //     end: this.formatDateAsString(endDate),
+                    //     title: `Nouvelle Reservation`,
+                    //     class: eventClass,
+                    //     content: eventContent,
+                    //     split: event.split,
+                    //     clickable: clickable,
+                    //     duration: duration,
+                    //     editable: editable,
+                    //     price: price,
+                    //     status: "En-cours",
+                    //     category: splitType.type,
+                    //     terrain: matchingTerrain.label,
+                    //     titleEditable: false,
+                    //     deletable: false,
+                    // };
 
+                    // this.addEvent(newEvent);
+                    // this.saveAllEvents();
                     console.log("Out");
                     // console.log(this.updatedEvents);
                     // this.SET_EVENTS(this.updatedEvents);
@@ -856,6 +891,15 @@ export default {
                 });
             }
         },
+        formatDateAsString(date) {
+                const year = date.getFullYear();
+                const month = ("0" + (date.getMonth() + 1)).slice(-2); // Month is 0-indexed
+                const day = ("0" + date.getDate()).slice(-2);
+                const hours = ("0" + date.getHours()).slice(-2);
+                const minutes = ("0" + date.getMinutes()).slice(-2);
+                const seconds = ("0" + date.getSeconds()).slice(-2);
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            },
     },
 };
 </script>
