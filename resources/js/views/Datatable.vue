@@ -225,8 +225,6 @@ export default {
                 logoRightUrl
             );
 
-            console.log("HERE", logoLeftBase64);
-
             const logoWidth = 15;
             const logoHeight = 15;
 
