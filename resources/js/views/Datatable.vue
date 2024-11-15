@@ -92,8 +92,6 @@
     </v-card>
 </template>
 
-
-
 <script>
 import { useStore } from "vuex";
 import jsPDF from "jspdf";
@@ -188,6 +186,9 @@ export default {
                 });
             });
         },
+        user() {
+            return this.$store.state.auth.user; // Correctly access user data from the store
+        },
     },
     methods: {
         uniqueValues(key) {
@@ -204,7 +205,7 @@ export default {
                 0
             );
         },
-        exportToPDF() {
+        async exportToPDF() {
             const doc = new jsPDF();
             const columns = this.headers.map((header) => header.title);
             const rows = this.filteredReservations.map((row) => [
@@ -216,28 +217,33 @@ export default {
             ]);
 
             // Add logos to the top
-            const logoLeft =
-                "https://sportma.ma/assets/sportmaApp-ERXWPjF0.jpeg";
-            const logoRight =
-                "https://images.pexels.com/photos/2453205/pexels-photo-2453205.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
+            let logoLeftUrl = "/storage/profile_pictures/sportmalogo.jpeg";
+            let logoRightUrl = "/storage/" + this.user.profile_picture;
+            // Await the conversion of both images
+            const logoLeftBase64 = await this.convertImageToBase64(logoLeftUrl);
+            const logoRightBase64 = await this.convertImageToBase64(
+                logoRightUrl
+            );
+
+            console.log("HERE", logoLeftBase64);
+
             const logoWidth = 15;
             const logoHeight = 15;
 
             // Set y-coordinate to position logos at the top of the page
             const topYPosition = 10; // 10 units from the top
-
             // Add the logos to the PDF
             doc.addImage(
-                logoLeft,
-                "JPEG",
+                logoLeftBase64,
+                this.getImageFormat(logoLeftBase64),
                 10,
                 topYPosition,
                 logoWidth,
                 logoHeight
             );
             doc.addImage(
-                logoRight,
-                "JPEG",
+                logoRightBase64,
+                this.getImageFormat(logoRightBase64),
                 doc.internal.pageSize.width - logoWidth - 10,
                 topYPosition,
                 logoWidth,
@@ -251,7 +257,7 @@ export default {
                 ? `Date: ${new Date(
                       this.selectedFilters.dateRange[0]
                   ).toLocaleDateString()}`
-                : "No date selected";
+                : "";
 
             const dateTextHeight = 10; // Height to ensure there's space for the date text
             doc.text(dateText, 10, topYPosition + logoHeight + dateTextHeight);
@@ -265,7 +271,7 @@ export default {
 
             const totalPrice = this.calculateTotalPrice();
             doc.autoTable({
-                body: [["", "", "", "Total Price (DH)", totalPrice]],
+                body: [["", "", "", "Prix Total (DH)", totalPrice]],
                 startY: doc.lastAutoTable.finalY + 10,
                 theme: "plain",
                 styles: { fontStyle: "bold" },
@@ -273,14 +279,52 @@ export default {
 
             doc.save("reservations.pdf");
         },
+        async convertImageToBase64(imageUrl) {
+            try {
+                // Fetch the image as a Blob
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+
+                // Wrap the FileReader operations in a Promise
+                const base64String = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+
+                    reader.onloadend = () => {
+                        resolve(reader.result); // Resolve with the base64 string
+                    };
+
+                    reader.onerror = (error) => {
+                        reject(error); // Reject if there's an error
+                    };
+
+                    reader.readAsDataURL(blob); // Pass the Blob to FileReader
+                });
+
+                return base64String; // Return the base64 string
+            } catch (error) {
+                console.error("Error fetching or converting image:", error);
+                throw error; // Rethrow the error if needed
+            }
+        },
+
+        getImageFormat(base64String) {
+            // Extract the image format from the Base64 string prefix
+            if (base64String.startsWith("data:image/jpeg")) {
+                return "JPEG";
+            } else if (base64String.startsWith("data:image/png")) {
+                return "PNG";
+            } else if (base64String.startsWith("data:image/webp")) {
+                return "WEBP";
+            } else {
+                console.warn("Unknown image format, defaulting to JPEG");
+                return "JPEG"; // Default to JPEG if format is unknown
+            }
+        },
     },
     mounted() {
-        const store = useStore();
-        store.dispatch("calendar/fetchEvents").then(() => {
-            this.events = store.state.calendar.events;
+        this.$store.dispatch("calendar/fetchEvents").then(() => {
+            this.events = this.$store.state.calendar.events;
         });
     },
 };
 </script>
-
-<style scoped></style>
