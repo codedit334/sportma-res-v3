@@ -17,3 +17,8 @@ use App\Http\Controllers\UserController;
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
+
+Route::get('/test-log', function() {
+    Log::error('This is a test log message.');
+    return 'Check the logs for the test message.';
+});
