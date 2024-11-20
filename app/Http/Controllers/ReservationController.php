@@ -51,98 +51,115 @@ class ReservationController extends Controller
             'price' => 'required|integer',
             'category' => 'required|string|max:255',
             'terrain' => 'required|string|max:255',
-            // 'start' => 'required|date',
-            // 'end' => 'required|date',
+            'start' => 'required|date', // Ensure start is provided and valid
+            'end' => 'nullable|date',  // Optional end date
             'content' => 'nullable|string',
             'status' => 'required|string',
         ]);
-
+    
+        // Check if an event with the same start already exists
+        $existingEvent = Reservation::where('start', $validated['start'])->first();
+    
+        if ($existingEvent) {
+            return response()->json([
+                'message' => 'An event with the same start time already exists.',
+            ], 422); // Return a validation error response
+        }
+    
         // Create the reservation
-        // $reservation = Reservation::create($validated);
-        $reservation = Reservation::create($request -> all());
-
-        // return response()->json($reservation, 201); // Return created reservation
-        return response()->json($reservation, 201); // Return created reservation
+        $reservation = Reservation::create($validated);
+    
+        // Return created reservation
+        return response()->json($reservation, 201);
     }
+    
 
     public function batchStore(Request $request)
-{
-
-    // Define validation rules
-    $validator = Validator::make($request->all(), [
-        'reservations' => 'required|array', // Make sure the reservations are an array
-        'reservations.*.user_id' => 'required|exists:users,id', // User must exist
-        'reservations.*.terrain_id' => 'required|exists:terrains,id', // Terrain must exist
-        'reservations.*.title' => 'required|string|max:255',
-        'reservations.*.class' => 'required|string|max:255',
-        'reservations.*.split' => 'required|string|max:255',
-        'reservations.*.clickable' => 'required|boolean',
-        'reservations.*.duration' => 'required|integer|min:1',
-        'reservations.*.editable' => 'required|boolean',
-        'reservations.*.price' => 'required|integer|min:0',
-        'reservations.*.category' => 'required|string|max:255',
-        'reservations.*.terrain' => 'required|string|max:255',
-        'reservations.*.start' => 'required|date',
-        'reservations.*.end' => 'required|date|after_or_equal:reservations.*.start',
-        'reservations.*.status' => 'required|string|max:255',
-    ]);
-
-    // Check if validation fails
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 400);
-    }
-
-    // Loop through the reservations and store them
-    try {
-        $reservations = $request->input('reservations');
-        foreach ($reservations as $reservationData) {
-            // Ensure the data is in the correct format (array of key-value pairs)
-            Reservation::create([
-                'user_id' => $reservationData['user_id'],
-                'terrain_id' => $reservationData['terrain_id'],
-                'title' => $reservationData['title'],
-                'class' => $reservationData['class'],
-                'split' => $reservationData['split'],
-                'clickable' => $reservationData['clickable'],
-                'duration' => $reservationData['duration'],
-                'editable' => $reservationData['editable'],
-                'price' => $reservationData['price'],
-                'category' => $reservationData['category'],
-                'terrain' => $reservationData['terrain'],
-                'start' => $reservationData['start'],
-                'end' => $reservationData['end'],
-                'content' => $reservationData['content'],
-                'status' => $reservationData['status'],
-            ]);
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'reservations' => 'required|array', // Ensure reservations are an array
+            'reservations.*.user_id' => 'required|exists:users,id', // User must exist
+            'reservations.*.terrain_id' => 'required|exists:terrains,id', // Terrain must exist
+            'reservations.*.title' => 'required|string|max:255',
+            'reservations.*.class' => 'required|string|max:255',
+            'reservations.*.split' => 'required|string|max:255',
+            'reservations.*.clickable' => 'required|boolean',
+            'reservations.*.duration' => 'required|integer|min:1',
+            'reservations.*.editable' => 'required|boolean',
+            'reservations.*.price' => 'required|integer|min:0',
+            'reservations.*.category' => 'required|string|max:255',
+            'reservations.*.terrain' => 'required|string|max:255',
+            'reservations.*.start' => 'required|date',
+            'reservations.*.end' => 'required|date|after_or_equal:reservations.*.start',
+            'reservations.*.status' => 'required|string|max:255',
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
         }
-
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Reservations saved successfully',
-        // ], 200);
-    } catch (\Exception $e) {
-        // Catch any exceptions and return an error response
+    
+        $reservations = $request->input('reservations');
+        $savedReservations = [];
+    
+        // Loop through the reservations and store them
+        try {
+            foreach ($reservations as $reservationData) {
+                // Check for an existing event with the same start time
+                $existingEvent = Reservation::where('start', $reservationData['start'])->first();
+    
+                if ($existingEvent) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "An event with the start time '{$reservationData['start']}' already exists.",
+                    ], 422);
+                }
+    
+                // Create the reservation if no conflict exists
+                $savedReservations[] = Reservation::create([
+                    'user_id' => $reservationData['user_id'],
+                    'terrain_id' => $reservationData['terrain_id'],
+                    'title' => $reservationData['title'],
+                    'class' => $reservationData['class'],
+                    'split' => $reservationData['split'],
+                    'clickable' => $reservationData['clickable'],
+                    'duration' => $reservationData['duration'],
+                    'editable' => $reservationData['editable'],
+                    'price' => $reservationData['price'],
+                    'category' => $reservationData['category'],
+                    'terrain' => $reservationData['terrain'],
+                    'start' => $reservationData['start'],
+                    'end' => $reservationData['end'],
+                    'content' => $reservationData['content'] ?? null,
+                    'status' => $reservationData['status'],
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Catch any exceptions and return an error response
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while saving reservations',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    
+        // Return all reservations belonging to the same company as the authenticated user
+        $companyId = auth()->user()->company_id;
+        $reservations = Reservation::whereHas('user', function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })->get();
+    
         return response()->json([
-            'success' => false,
-            'message' => 'An error occurred while saving reservations',
-            'error' => $e->getMessage(),
-        ], 500);
+            'message' => 'Reservations saved successfully',
+            'reservations' => $reservations,
+        ], 201);
     }
-
     
-    // return all reservations with the same company_id as auth user
-    $companyId = auth()->user()->company_id;
-    $reservations = Reservation::whereHas('user', function ($query) use ($companyId) {
-        $query->where('company_id', $companyId);
-    })
-    ->get();
-    
-    return response()->json(['message' => 'Events saved successfully', 'reservations' => $reservations], 201); // Return created reservation'], 200);
-}
 
     // Update a reservation
     public function update(Request $request, $id)
