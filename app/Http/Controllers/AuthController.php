@@ -28,18 +28,22 @@ class AuthController extends Controller
 
         // Get the token expiration time (TTL) in seconds
         $expiresIn = config('jwt.ttl') * 60;  // Converting TTL from minutes to seconds
-
+        
+        $company = $user->company; 
+        
         // Prepare the response data
         $responseData = [
             'token' => $token,
             'refreshToken' => $refreshToken,  // Add refresh token
             'name' => $user->name, 
             'role' => $user->role, 
-            'isAdmin' => $user->is_admin,
+            'is_admin' => $user->is_admin,
             'email' => $user->email,
+            'company_id' => $user->company_id,
             'profile_picture' => $user->profile_picture,
             'permissions' => json_decode($user->permissions), 
             'expiresIn' => $expiresIn,  // Add expiresIn
+            'company' => $company
         ];
 
     } catch (JWTException $e) {

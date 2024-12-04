@@ -96,6 +96,54 @@ class SportController extends Controller
 
         return response()->json(['sport' => $sport->load('terrains')], 201);
     }
+    
+    public function storeArray(Request $request)
+{
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'items' => 'required|array', // Accept an array of items
+        'items.*.type' => 'required|string|max:255',
+        'items.*.company_id' => 'required|exists:companies,id',
+        'items.*.terrains' => 'required|array',
+        'items.*.terrains.*.label' => 'required|string|max:255',
+        'items.*.terrains.*.address' => 'nullable|string|max:255',
+        'items.*.terrains.*.sportma' => 'required|boolean',
+        'items.*.terrains.*.sportma_terrain_id' => 'required|integer',
+        'items.*.terrains.*.prices' => 'nullable|array',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Process each item
+    $createdSports = collect($request->input('items'))->map(function ($itemData) {
+        // Create the sport
+        $sport = Sport::create([
+            'type' => $itemData['type'],
+            'company_id' => $itemData['company_id'],
+        ]);
+
+        // Create associated terrains
+        $terrains = collect($itemData['terrains'])->map(function ($terrainData) use ($sport) {
+            return new Terrain([
+                'label' => $terrainData['label'],
+                'address' => $terrainData['address'],
+                'sportma' => $terrainData['sportma'],
+                'sportma_terrain_id' => $terrainData['sportma_terrain_id'],
+                'prices' => $terrainData['prices'] ?? [],
+                'sport_id' => $sport->id,
+            ]);
+        });
+
+        $sport->terrains()->saveMany($terrains);
+
+        return $sport->load('terrains');
+    });
+
+    return response()->json(['sports' => $createdSports], 201);
+}
+
     public function destroy(int $id)
 {
     // Find the sport by ID

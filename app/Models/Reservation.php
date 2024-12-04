@@ -25,7 +25,15 @@ class Reservation extends Model
         'end',
         'content',
         'status',
+        'sportma',
+        'sportma_reservation_id',
+        'titleEditable', // New field
+        'deletable',     // New field
+        'draggable',     // New field
+        'resizable',     // New field
+        'calendar_reservation_uuid',
     ];
+    
     
 
     public function user()

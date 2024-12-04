@@ -15,13 +15,15 @@ class UserController extends Controller
     
         // Retrieve users with the same company_id as the authenticated user and where is_admin is false
         $users = User::where('company_id', $authUser->company_id)
-                     ->where('is_admin', false)
-                     ->get()
-                     ->map(function ($user) {
-                         // Decode permissions from JSON to array
-                         $user->permissions = json_decode($user->permissions, true);
-                         return $user;
-                     });
+        ->where('is_admin', false)
+        ->where('is_superuser', false) // Add this condition
+        ->get()
+        ->map(function ($user) {
+            // Decode permissions from JSON to array
+            $user->permissions = json_decode($user->permissions, true);
+            return $user;
+        });
+
     
         return response()->json($users);
     }
@@ -36,6 +38,7 @@ class UserController extends Controller
             'role' => 'required|string',
             'permissions' => 'nullable|array',
             'profile_picture' => 'nullable|string',
+            'is_superuser' => 'nullable|boolean',
         ]);
         
         // Get auth user's company_id
@@ -49,6 +52,7 @@ class UserController extends Controller
             'role' => $request->role,
             'permissions' => json_encode($request->permissions), // Convert to JSON
             'profile_picture' => $request->profile_picture,
+            'is_superuser' => $request->is_superuser,
         ]);
         
         return response()->json($user, 201);
