@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Response;
+
 
 class SuperAdminController extends Controller
 {
@@ -22,7 +24,7 @@ class SuperAdminController extends Controller
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|email|unique:users,email',
             'user_password' => 'required|string|min:8|confirmed',
-            'sportma_id' => 'required|integer',
+            'sportma_id' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +46,7 @@ class SuperAdminController extends Controller
             'phone' => $request->company_phone, // Nullable field
             'bio' => $request->company_bio, // Nullable field
             'logo' => $logoPath, // Store logo file path
-            'sportma_id' => $request->sportma_id, // Assuming the sportma_id is coming from the request
+            'sportma_id' => $request->sportma_id || null, // Assuming the sportma_id is coming from the request
         ]);
 
         // Step 2: Create the user associated with the new company
@@ -83,5 +85,27 @@ class SuperAdminController extends Controller
 
     return response()->json($users);
 }
+
+public function destroy($id)
+    {
+        try {
+            // Find the user by ID
+            $partner = Company::findOrFail($id);
+            
+            // Delete the user
+            $partner->delete();
+
+            // Return a success response
+            return response()->json([
+                'message' => 'Partner deleted successfully.'
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Handle any errors
+            return response()->json([
+                'error' => 'User deletion failed.',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
