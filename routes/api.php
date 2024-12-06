@@ -118,6 +118,40 @@ Route::post('/user/profile/update', function (\Illuminate\Http\Request $request)
 })->middleware('jwt.auth');
 
 
+Route::post('/company/update/logo', function (Request $request) {
+    $user = auth()->user();
+
+    // Ensure the user has a company
+    if (!$user->company) {
+        return response()->json(['error' => 'User does not belong to a company.'], 403);
+    }
+
+    // Validate the incoming request
+    $validated = $request->validate([
+        'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    // Store the new logo
+    if ($request->hasFile('logo')) {
+        // Delete the old logo if it exists
+        if ($user->company->logo && Storage::disk('public')->exists($user->company->logo)) {
+            Storage::disk('public')->delete($user->company->logo);
+        }
+
+        // Save the new logo
+        $path = $request->file('logo')->store('logos', 'public');
+        $user->company->logo = $path;
+        $user->company->save();
+    }
+
+    return response()->json([
+        'message' => 'Company logo updated successfully!',
+        'company' => $user->company,
+    ]);
+})->middleware('jwt.auth');
+
+
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::post('refresh', [AuthController::class, 'refresh']);

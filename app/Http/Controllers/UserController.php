@@ -52,7 +52,7 @@ class UserController extends Controller
             'role' => $request->role,
             'permissions' => json_encode($request->permissions), // Convert to JSON
             'profile_picture' => $request->profile_picture,
-            'is_superuser' => $request->is_superuser,
+            'is_superuser' => false,
         ]);
         
         return response()->json($user, 201);
