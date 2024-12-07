@@ -82,6 +82,87 @@ class SuperAdminController extends Controller
             'user' => $user,
         ]);
     }
+
+    public function updateCompanyAndUser(Request $request)
+{
+    // Validate incoming request
+    $validator = Validator::make($request->all(), [
+        'company_id' => 'required|exists:companies,id', // Ensure company exists
+        'user_id' => 'required|exists:users,id',       // Ensure user exists
+        'company_name' => 'required|string|max:255',
+        'company_email' => 'required|email|unique:companies,email,' . $request->company_id,
+        'company_phone' => 'nullable|string|max:20',
+        'company_bio' => 'nullable|string',
+        'logo_url' => 'nullable|url', // Add validation for external logo URL
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'user_name' => 'required|string|max:255',
+        'user_email' => 'required|email|unique:users,email,' . $request->user_id,
+        'user_password' => 'nullable|string|min:8|confirmed', // Password is optional for updates
+        'sportma_id' => 'nullable|integer',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // Fetch the existing company and user
+    $company = Company::find($request->company_id);
+    $user = User::find($request->user_id);
+
+    // Handle Logo upload or external URL
+    $logoPath = $company->logo; // Keep the current logo by default
+
+    if ($request->hasFile('logo')) {
+        // Upload new logo from the file
+        $logoPath = $request->file('logo')->store('logos', 'public');
+    } elseif ($request->filled('logo_url')) {
+        // Download and store the new logo from URL
+        try {
+            $imageContents = file_get_contents($request->logo_url);
+            $fileName = 'logos/' . uniqid() . '.jpg'; // Generate a unique file name
+            Storage::disk('public')->put($fileName, $imageContents);
+            $logoPath = $fileName;
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to download logo from the provided URL.',
+            ], 400);
+        }
+    }
+
+    // Step 1: Update the company
+    $company->update([
+        'name' => $request->company_name,
+        'email' => $request->company_email,
+        'phone' => $request->company_phone,
+        'bio' => $request->company_bio,
+        'logo' => $logoPath,
+        'sportma_id' => $request->sportma_id ?? $company->sportma_id, // Keep the current sportma_id if not provided
+    ]);
+
+    // Step 2: Update the user associated with the company
+    $userData = [
+        'name' => $request->user_name,
+        'email' => $request->user_email,
+        'company_id' => $company->id,
+    ];
+
+    if ($request->filled('user_password')) {
+        $userData['password'] = Hash::make($request->user_password); // Update password if provided
+    }
+
+    $user->update($userData);
+
+    // return user with company
+    $user->load('company');
+    
+    return response()->json([
+        'message' => 'Company and User updated successfully!',
+        'user' => $user,
+    ]);
+}
+
     
     public function index()
 {
@@ -94,9 +175,10 @@ class SuperAdminController extends Controller
         ], 403);
     }
 
-    // Fetch all users except those with is_superadmin = 1
+    // Fetch all users except those with is_superadmin = 1 with comany
     $users = User::where('is_superuser', '!=', 1)
              ->where('is_admin', 1)
+             ->with('company')
              ->get();
 
     return response()->json($users);

@@ -69,6 +69,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::put('/calendar-configs/{companyId}', [CalendarConfigController::class, 'update']);
     
     Route::post('/partner', [SuperAdminController::class, 'createCompanyAndUser']);
+    Route::put('/partner', [SuperAdminController::class, 'updateCompanyAndUser']);
     Route::delete('/partner/{id}', [SuperAdminController::class, 'destroy']);
     Route::get('/partners', [SuperAdminController::class, 'index']);
 });
