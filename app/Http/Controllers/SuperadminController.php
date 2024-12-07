@@ -75,10 +75,12 @@ class SuperAdminController extends Controller
             'role' => 'Partner',
             'company_id' => $company->id,
         ]);
+
+        // load company into user
+        $user->load('company');
     
         return response()->json([
             'message' => 'Company and User created successfully!',
-            'company' => $company,
             'user' => $user,
         ]);
     }
