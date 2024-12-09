@@ -208,4 +208,33 @@ public function destroy($id)
         }
     }
 
+    public function updateLogo(Request $request, $company_id)
+{
+    // Validate the incoming request
+    $validated = $request->validate([
+        'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    // Retrieve the company by ID
+    $company = Company::findOrFail($company_id);
+
+    // Check if a new logo file is provided
+    if ($request->hasFile('logo')) {
+        // Delete the old logo if it exists
+        if ($company->logo && Storage::disk('public')->exists($company->logo)) {
+            Storage::disk('public')->delete($company->logo);
+        }
+
+        // Store the new logo and update the database
+        $path = $request->file('logo')->store('logos', 'public');
+        $company->logo = $path;
+        $company->save();
+    }
+
+    return response()->json([
+        'message' => 'Company logo updated successfully!',
+        'company' => $company,
+    ]);
+}
+
 }

@@ -58,7 +58,8 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/sports/{id}', [SportController::class, 'destroy']);
 
         Route::get('/reservations', [ReservationController::class, 'index']); // Get all reservations
-        Route::get('/reservations/{id}', [ReservationController::class, 'show']); // Get a specific reservation
+        // Route::get('/reservations/{id}', [ReservationController::class, 'show']); // Get a specific reservation
+        Route::get('/reservations/{company_id}', [ReservationController::class, 'showByPartner']);
         Route::put('/reservations/{id}', [ReservationController::class, 'update']); // Update a reservation
         Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']); // Delete a reservation
         Route::post('/reservations', [ReservationController::class, 'store']); // Create a new reservation
@@ -70,6 +71,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     
     Route::post('/partner', [SuperAdminController::class, 'createCompanyAndUser']);
     Route::put('/partner', [SuperAdminController::class, 'updateCompanyAndUser']);
+    Route::post('/partner/logo/{company_id}', [SuperAdminController::class, 'updateLogo']);
     Route::delete('/partner/{id}', [SuperAdminController::class, 'destroy']);
     Route::get('/partners', [SuperAdminController::class, 'index']);
 });

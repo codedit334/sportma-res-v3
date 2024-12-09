@@ -28,12 +28,16 @@ class ReservationController extends Controller
 
 
     // Get a specific reservation by ID
-    public function show($id)
-    {
-        $reservation = Reservation::findOrFail($id);
+    public function showByPartner($company_id)
+{
+    // Fetch reservations that belong to the specified company_id
+    $reservations = Reservation::whereHas('user', function ($query) use ($company_id) {
+        $query->where('company_id', $company_id);
+    })->get();
 
-        return response()->json($reservation, 200);
-    }
+    // Return the reservations as a JSON response
+    return response()->json($reservations, 200);
+}
 
     // Create a new reservation
     public function store(Request $request)
