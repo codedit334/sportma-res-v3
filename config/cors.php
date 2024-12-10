@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -15,21 +14,22 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*'], // Only allow paths under 'api/*'
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE'], // Specify necessary HTTP methods
 
-    'allowed_origins' => ['*'],
-    // 'allowed_origins' => ['http://localhost:5173'],
+    'allowed_origins' => [
+        'http://localhost:5173', // Example of a trusted local origin
+        'https://sportma-res.onrender.com', // Example of a trusted production origin
+    ],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'Authorization'], // Specify required headers
 
     'exposed_headers' => [],
 
-    'max_age' => 0,
+    'max_age' => 3600, // Cache the preflight request for 1 hour
 
-    'supports_credentials' => false,
-
+    'supports_credentials' => true,
 ];

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -31,7 +32,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
@@ -40,6 +41,14 @@ class UserController extends Controller
             'profile_picture' => 'nullable|string',
             'is_superuser' => 'nullable|boolean',
         ]);
+        
+        if ($validator->fails()) {
+            // Throw a validation exception with the errors
+            throw new \Illuminate\Validation\ValidationException($validator, response()->json([
+                'message' => 'Validation Failed',
+                'errors' => $validator->errors(),
+            ], 422));
+        }
         
         // Get auth user's company_id
         $company_id = auth()->user()->company_id;
@@ -66,8 +75,7 @@ class UserController extends Controller
             // Find the user by ID or return a 404 error if not found
             $user = User::findOrFail($id);
     
-            // Validate the incoming data
-            $validatedData = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8', // Password is optional for updating
@@ -75,6 +83,14 @@ class UserController extends Controller
                 'permissions' => 'nullable|array',
                 'profile_picture' => 'nullable|string',
             ]);
+            
+            if ($validator->fails()) {
+                // Throw a validation exception with a custom response
+                throw new \Illuminate\Validation\ValidationException($validator, response()->json([
+                    'message' => 'Validation Failed',
+                    'errors' => $validator->errors(),
+                ], 422));
+            }
     
             // Update user attributes conditionally
             if (isset($validatedData['name'])) {

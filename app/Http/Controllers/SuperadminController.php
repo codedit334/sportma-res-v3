@@ -116,22 +116,7 @@ class SuperAdminController extends Controller
     // Handle Logo upload or external URL
     $logoPath = $company->logo; // Keep the current logo by default
 
-    if ($request->hasFile('logo')) {
-        // Upload new logo from the file
-        $logoPath = $request->file('logo')->store('logos', 'public');
-    } elseif ($request->filled('logo_url')) {
-        // Download and store the new logo from URL
-        try {
-            $imageContents = file_get_contents($request->logo_url);
-            $fileName = 'logos/' . uniqid() . '.jpg'; // Generate a unique file name
-            Storage::disk('public')->put($fileName, $imageContents);
-            $logoPath = $fileName;
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to download logo from the provided URL.',
-            ], 400);
-        }
-    }
+    
 
     // Step 1: Update the company
     $company->update([
