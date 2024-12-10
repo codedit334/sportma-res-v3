@@ -76,7 +76,7 @@ class ReservationController extends Controller
                     if ($existingEvent) {
                         return response()->json([
                             'success' => false,
-                            'message' => "An event with the start time '{$validated['start']}' already exists.",
+                            'message' => "An event with the start time '{$validated['start']}' and the same category '{$validated['split']}' already exists.",
                         ], 422);
                     }
         
