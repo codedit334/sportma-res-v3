@@ -18,10 +18,7 @@ return [
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify necessary HTTP methods
 
-    'allowed_origins' => [
-        'http://localhost:5173', // Example of a trusted local origin
-        'https://sportma-res.onrender.com', // Example of a trusted production origin
-    ],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
