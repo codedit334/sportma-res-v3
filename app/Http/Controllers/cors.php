@@ -14,9 +14,9 @@ return [
     |
     */
 
-   'paths' => ['public/*', 'api/*', 'storage/*', 'storage/logos/*'],// Only allow paths under 'api/*'
+    'paths' => ['api/*', 'storage/logos/*'], // Only allow paths under 'api/*'
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify necessary HTTP methods
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE'], // Specify necessary HTTP methods
 
     'allowed_origins' => [
         'http://localhost:5173', // Example of a trusted local origin
