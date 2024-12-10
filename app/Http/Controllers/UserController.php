@@ -75,15 +75,16 @@ class UserController extends Controller
             // Find the user by ID or return a 404 error if not found
             $user = User::findOrFail($id);
     
+            // Validate the incoming request data
             $validator = Validator::make($request->all(), [
-                'name' => 'sometimes|string|max:255',
-                'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8', // Password is optional for updating
                 'role' => 'sometimes|string',
                 'permissions' => 'nullable|array',
                 'profile_picture' => 'nullable|string',
             ]);
-            
+    
             if ($validator->fails()) {
                 // Throw a validation exception with a custom response
                 throw new \Illuminate\Validation\ValidationException($validator, response()->json([
@@ -93,6 +94,8 @@ class UserController extends Controller
             }
     
             // Update user attributes conditionally
+            $validatedData = $validator->validated(); // Get validated data
+    
             if (isset($validatedData['name'])) {
                 $user->name = $validatedData['name'];
             }
