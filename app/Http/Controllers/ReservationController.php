@@ -257,4 +257,20 @@ class ReservationController extends Controller
         
         return response()->json(['message' => 'Reservation deleted successfully'], 200);
     }
+
+    Route::get('/proxy-image/{url}', function ($url) {
+        // Use finfo to detect the MIME type of the file
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($url);
+    
+        // Fetch the image content
+        $imageContent = file_get_contents($url);
+    
+        if ($imageContent === false) {
+            abort(404, 'Image not found');
+        }
+    
+        return response($imageContent)
+            ->header('Content-Type', $mimeType); // Set the correct MIME type
+    });
 }

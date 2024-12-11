@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -76,6 +78,30 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/partners', [SuperAdminController::class, 'index']);
 });
 
+// routes/web.php or routes/api.php
+Route::get('/proxy-image/{url}', function ($url) {
+    // Use finfo to detect the MIME type of the file
+    $fullUrl = Storage::disk('public')->path("logos/{$url}");
+
+    // Fetch the image content
+    $imageContent = file_get_contents($fullUrl);
+
+    if ($imageContent === false) {
+        return response()->json(['error' => 'Image not found'], 404);
+        abort(404, 'Image not found');
+    }
+    
+    $imageData = base64_encode($imageContent);
+    $mimeType = mime_content_type($fullUrl);
+
+    // Prepare the base64 string response
+    $base64String = "data:$mimeType;base64,$imageData";
+
+    return response()->json(['image' => $base64String]);
+    // return response()->json($imageContent);
+    // return response($imageContent);
+        // ->header('Content-Type', $mimeType); // Set the correct MIME type
+});
 
 Route::get('/user/profile', function () {
     // Retrieve the authenticated user with their associated company
