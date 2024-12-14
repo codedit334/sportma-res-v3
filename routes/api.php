@@ -98,9 +98,6 @@ Route::get('/proxy-image/{url}', function ($url) {
     $base64String = "data:$mimeType;base64,$imageData";
 
     return response()->json(['image' => $base64String]);
-    // return response()->json($imageContent);
-    // return response($imageContent);
-        // ->header('Content-Type', $mimeType); // Set the correct MIME type
 });
 
 Route::get('/user/profile', function () {
