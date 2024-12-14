@@ -60,7 +60,6 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/sports/{id}', [SportController::class, 'destroy']);
 
         Route::get('/reservations', [ReservationController::class, 'index']); // Get all reservations
-        // Route::get('/reservations/{id}', [ReservationController::class, 'show']); // Get a specific reservation
         Route::get('/reservations/{company_id}', [ReservationController::class, 'showByPartner']);
         Route::put('/reservations/{id}', [ReservationController::class, 'update']); // Update a reservation
         Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']); // Delete a reservation
