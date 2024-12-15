@@ -249,8 +249,6 @@ class ReservationController extends Controller
     // Delete a reservation
     public function destroy($id)
     {
-        // $reservation = Reservation::findOrFail($id);
-        // $reservation->delete();
         
         $reservation = Reservation::where('calendar_reservation_uuid', $id)->firstOrFail();
         $reservation->delete();
