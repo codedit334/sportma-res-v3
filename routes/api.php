@@ -65,10 +65,6 @@ Route::middleware(['jwt.auth'])->group(function () {
         Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']); // Delete a reservation
         Route::post('/reservations', [ReservationController::class, 'store']); // Create a new reservation
         Route::post('/reservations/batch', [ReservationController::class, 'batchStore']);
-
-    Route::get('/calendar-configs/{companyId}', [CalendarConfigController::class, 'show']);
-    Route::post('/calendar-configs', [CalendarConfigController::class, 'store']);
-    Route::put('/calendar-configs/{companyId}', [CalendarConfigController::class, 'update']);
     
     Route::post('/partner', [SuperAdminController::class, 'createCompanyAndUser']);
     Route::post('/partner/edit', [SuperAdminController::class, 'updateCompanyAndUser']);
